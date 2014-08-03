@@ -565,6 +565,55 @@ int power(int num, int pow) {
 }
 					</pre>
 				</div>
+                <div id="prog10" class="progactive">
+					<h2>Problem 10</h2>
+					<p>The sum of the primes below 10 is 2+3+5+7 = 17. Find the sum of all the primes below two million.</p>
+					<h2>Comments</h2>
+					<p>None.</p>
+					<h2>Output</h2>
+					<p>The sum of all primes below 2000000 equals 837799.</p>
+					<pre class="brush: cpp;">
+#include &lt;stdio.h>
+#define TARGET 2000000
+
+int ceiling(float value);
+
+int main() {
+    double sum=17;
+    int term;
+    
+    for(term=9;term&lt;TARGET;term+=2) {
+        if(isPrime(term)) {
+            sum+=term;
+        }
+    }
+    
+    printf("The sum of all primes below %d equals %.0f.\n",TARGET,sum);
+
+    return 0;
+}
+
+int isPrime(int value) {
+    int i;
+    
+    for(i=3;i&lt;=ceiling((float)value/i);i++) {
+        if(value%i==0) {
+            return 0;
+        }
+    }
+    
+    return 1;
+}
+
+int ceiling(float value) {
+    if((int)value&lt;value)
+        return ((int)value)+1;
+    else
+    	return (int)value;
+}
+
+					</pre>
+				</div>
 				<div id="prog11" class="progactive">
 					<h2>Problem 11 (C++)</h2>
 					<p>In the 20×20 grid below, four numbers along a diagonal line have been marked in red.</p><br>
@@ -944,6 +993,56 @@ double power(int num, int power) {
                 ans*=num;
         }
         return ans;
+}
+					</pre>
+				</div>
+                <div id="prog14" class="progactive">
+					<h2>Problem 14</h2>
+                    <p>The following iterative sequence is defined for the set of positive integers:</p>
+                    <p>n -&gt; n/2 (n is even) <br>
+                    n -&gt; 3n + 1 (n is odd)</p>
+                    <p>Using the rule above and starting with 13, we generate the following sequence:<br>
+                        13 -&gt; 40 -&gt; 20 -&gt; 10 -&gt; 5 -&gt; 16 -&gt; 8 -&gt; 4 -&gt; 2 -&gt; 1<br>
+                        It can be seen that this sequence (starting at 13 and finishing at 1) contains 10 terms. Although it has not been proved yet (Collatz Problem), it is thought that all starting numbers finish at 1.<br>
+                        Which starting number, under one million, produces the longest chain?<br>
+                        NOTE: Once the chain starts the terms are allowed to go above one million.</p>
+					<h2>Comments</h2>
+					<p>None.</p>
+					<h2>Output</h2>
+					<p>The longest sequence chain is 525 terms long and occurs when starting at 837799.</p>
+					<pre class="brush: cpp;">
+#include &lt;stdio.h>
+#define TARGET 1000000
+
+int main() {
+	long count;
+    long iter;
+    long value;
+    long maxCount=1;
+    long maxCountAt=0;	
+
+    for(iter=2; iter&lt;TARGET; iter++) {
+        value=iter;
+        count=1;
+        
+        while(value>1) {
+            if(value%2==0) { //if even
+                value/=2;
+            } else {		 //if odd
+                value=3*value+1;
+            }
+            count++;
+        }
+        
+        if(count>maxCount) {
+            maxCount=count;
+            maxCountAt=iter;
+        }
+    }
+    
+    printf("The longest sequence chain is %d terms long and occurs when starting at %d.\n",maxCount,maxCountAt);
+
+    return 0;
 }
 					</pre>
 				</div>
