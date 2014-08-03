@@ -60,14 +60,16 @@ $(document).ready(function(){
 		var count=0;
 		var color;
 
-		if(id=="mflag1")
+		if(id=="mflag1")	  //facebook
 			color="#3b5999";
-		else if(id=="mflag2")
+		else if(id=="mflag2") //g+
 			color="#cb3b2a";
-		else if(id=="mflag3")
+		else if(id=="mflag3") //linkedin
 			color="#0274b3";
-		else
+		else if(id=="mflag4") //email
 			color="#d9d9d9";
+		else 				  //github
+			color="#cdcdcd";
 
 		var anim = setInterval(function(){
 			count++;
