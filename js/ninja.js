@@ -69,7 +69,7 @@ $(document).ready(function(){
 		else if(id=="mflag4") //email
 			color="#d9d9d9";
 		else 				  //github
-			color="#cdcdcd";
+			color="#492248";
 
 		var anim = setInterval(function(){
 			count++;
