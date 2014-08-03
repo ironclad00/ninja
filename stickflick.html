@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<link rel="shortcut icon" type="image/x-icon" href="images/favicon.ico">
+		<meta name="description" content="A portfolio of my recent programming and design projects.">
+		<meta name="keywords" content="liftoff, web design, University of Florida, UF, undergrad, undergraduate, design, programming, coding, portfolio, projects">
+		<meta name="author" content="Jeremy Baker">
+		<title>J. Baker - Portfolio</title>
+
+		<link href="css/bootstrap.min.css" rel="stylesheet">
+		<link href="css/ninja.css" rel="stylesheet">
+		<link href='http://fonts.googleapis.com/css?family=Rosario|Open+Sans' rel='stylesheet' type='text/css'>
+
+		<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+		<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+		<!--[if lt IE 9]>
+			<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+			<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+		<![endif]-->
+	</head>
+	<body>
+		<header class="banner hidden-xs">
+			<div class="container">
+				<img src="images/logo-web.png" height="80px;"/>
+			</div>
+		</header>
+
+		<div class="navbar navbar-inverse" role="navigation">
+			<div class="container">
+				<div class="navbar-header">
+					<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+						<span class="sr-only">Toggle navigation</span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+					</button>
+					<a class="navbar-brand hidden-sm hidden-md hidden-lg" href="javascript:;" data-toggle="collapse" data-target=".navbar-collapse">Main Menu</a>
+				</div>
+				<div class="collapse navbar-collapse">
+					<ul class="nav navbar-nav">
+						<li><a href="/">About</a></li>
+						<li><a href="resume">Resume</a></li>
+						<li><a href="liftoff">Liftoff</a></li>
+						<li class="active"><a href="stickflick">Stick Flick</a></li>
+						<li><a href="photoshop">Photoshop</a></li>
+						<li><a href="euler">Euler</a></li>
+					</ul>
+				</div>
+			</div>
+		</div>
+
+		<div class="desktopMedia">
+			<a href="https://www.facebook.com/jjbaker2" target="_blank"><img id="mflag1" src="images/facebook.png"/></a>
+			<a href="https://plus.google.com/u/0/+JeremyBaker920/posts" target="_blank"><img id="mflag2" src="images/google.png"/></a>
+			<a href="https://www.linkedin.com/profile/view?id=227703452" target="_blank"><img id="mflag3" src="images/linked.png"/></a>
+			<a href="mailto:jbaker920@ufl.edu" target="_blank"><img id="mflag4" src="images/email.png"/></a>
+		</div>
+		<div class="mobileMedia hidden-md hidden-lg">
+			<a href="https://www.facebook.com/jjbaker2" target="_blank"><img title="Facebook" src="images/facebook.png"/></a>
+			<a href="https://plus.google.com/u/0/+JeremyBaker920/posts" target="_blank"><img title="Google+" src="images/google.png"/></a>
+			<a href="https://www.linkedin.com/profile/view?id=227703452" target="_blank"><img title="LinkedIn" src="images/linked.png"/></a>
+			<a href="mailto:jbaker920@ufl.edu" target="_top"><img title="Email" src="images/email.png"/></a>
+		</div>
+		<a href="#top"><img id="topShortcut" title="To Top" src="images/top.png"/></a>
+
+		<div id="stickFlick" class="container mainTab">
+			<div class="col-md-10">
+				<h1 class="hidden-xs">Stick Flick</h1>
+				<div class="row">
+					<div class="col-sm-3">
+						<img id="jumpToIndent" class="img-responsive headerPicNoBorder" src="images/sf/logo.png"/>
+						<p class="caption hidden-xs">Stick Flick's Logo</p>
+					</div>
+					<h1 id="jumpToIndent" class="mobileTitle">Stick Flick</h1>
+					<div class="row mobileSubNav hidden-lg hidden-md hidden-sm">
+						<div class="col-xs-6">
+							<a class="blueBtn" href="#diffs">Major Differences</a>
+							<a class="blueBtn" href="#enemies">Enemies</a>
+						</div>
+						<div class="col-xs-6">
+							<a class="blueBtn" href="#pas">Powerups</a>
+							<a class="blueBtn" href="#animations">Animations</a>
+						</div>
+					</div>
+					<div id="jumpToBounds" class="col-sm-9 pFixWithMargins">
+						<h2 class="hidden-lg hidden-md hidden-sm firstH2">Overview</h2>
+						<p>Stick Flick is an Android game concept that I began working on for my Intro to Software Engineering class. The purpose of the class was to become familiarized with agile methodology and version control by working on a software project in 8- or 9-person groups. Right now the app is not publicly available since my group and I are still working on it, but I've discussed how the game works below. All of the displayed artwork for Stick Flick was created by myself unless it is marked with a red asterisk (<red>*</red>).</p>
+						<p>Stick Flick is a reimagining of the old flash game <a href="http://www.xgenstudios.com/play/castle" target="_blank">Defend Your Castle</a> (DyC) by XGen Studios for the Android platform. The objective is to flick incoming enemies into the air so they cannot damage your castle. It is similar to DyC in that it is a tower defence game, you must throw enemies into the air to defend yourself, and you can purchase various powerups that can be used in-game. Differences between the two games are discussed below.</p>
+					</div>
+				</div>
+				<h2 id="diffs">Major Differences</h2>
+				<p>Instead of a side-scrolling perspective that DyC and many similar games use, we wanted to experiment with different perspectives. In Stick Flick, enemies spawn at the castle in the hills and move down the screen towards the player's castle wall at the bottom.</p>
+				<p>Notice that the player cannot see the bottom of their own wall. If enemies make to the horizon line of your castle, they will run behind the wall, out of view, and damage the castle. Players must use a special ability for killing enemies at the base of the wall called Boiling Oil which is presented in greater detail in the <a href="pas" >Powerups</a> section.
+				<div class="col-md-6">
+					<img class="img-responsive" id="sfBack" src="images/back.png"/>
+					<img class="img-responsive" id="sfBackHover" src="images/backhover.png"/>
+					<p id="onImgCaption">Hover Over</p>
+					<p class="caption">Background for Stick Flick</p>
+				</div>
+				<div class="col-md-6">
+					<img class="img-responsive" src="images/dyc.png"/>
+					<p class="caption">Background for DyC</p>
+				</div>
+				<p>DyC progresses using levels. Every time a level is beaten, the player can access a store to buy powerups and then move on to the next, more difficult level. If the player losses or starts a new game, none of the currency from the previous game will be saved.</p>
+				<p>Instead of a level-based system, Stick Flick is a timed survival game where each game lasts until the player is overwhelmed by increased spawn rates. During each game, players are awarded points based on how long they survive. These points can be spent at the store before/after a game to purchase powerups that will help the player last longer in the next game. A purchased powerup only lasts one game.</p>
+				<p>Stick Flick also introduces flying enemies. Unlike the standard ground units, flying units spawn behind the mountains, hover above the horizon, and must be drug downwards to be killed.</p>
+				<h2 id="enemies">Enemies</h2>
+				<p>The enemies in Stick Flick are intended to be somewhat comical. Each is referred to as a 'dude' and the final version of their faces is supposed to be the game's logo.</p>
+				<div class="row">
+					<div class="col-md-6">
+						<div class="row">
+							<div class="col-xs-3">
+								<img class="img-responsive rnd5" src="images/sf/dude.png"/>
+							</div>
+							<div class="col-xs-9 pFix">
+								<p>Stick Dude</p>
+								<p>Health: <fade>Normal</fade></p>
+								<p>Strength: <fade>Normal</fade></p>
+								<p>Speed: <fade>Normal</fade></p>
+								<p>Behavior: <fade>Runs directly at the castle and attacks when within melee range.</fade></p>
+							</div>
+						</div>
+					</div>
+					<div class="col-md-6">
+						<div class="row">
+							<div class="col-xs-3 pFix">
+								<img class="img-responsive rnd5" src="images/sf/archer.png"/>
+							</div>
+							<div class="col-xs-9 pFix">
+								<p>Archer Dude</p>
+								<p>Health: <fade>Normal</fade></p>
+								<p>Strength: <fade>Normal</fade></p>
+								<p>Speed: <fade>Normal</fade></p>
+								<p>Behavior: <fade>Runs into view, then stands still in the field and shoots at the castle.</fade></p>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-md-6">
+						<div class="row">
+							<div class="col-xs-3">
+								<img class="img-responsive rnd5" src="images/sf/demo.png"/>
+							</div>
+							<div class="col-xs-9 pFix">
+								<p>Demo Dude</p>
+								<p>Health: <fade>High</fade></p>
+								<p>Strength: <fade>High</fade></p>
+								<p>Speed: <fade>Slow</fade></p>
+								<p>Behavior: <fade>Ambles slowly towards the castle. Once behind the wall, Demo Dude will explode once, dealing considerable damage.</fade></p>
+							</div>
+						</div>
+					</div>
+					<div class="col-md-6">
+						<div class="row">
+							<div class="col-xs-3 pFix">
+								<img class="img-responsive rnd5" src="images/sf/spring.png"/>
+							</div>
+							<div class="col-xs-9 pFix">
+								<p>Spring Dude</p>
+								<p>Health: <fade>Normal</fade></p>
+								<p>Strength: <fade>Normal</fade></p>
+								<p>Speed: <fade>Normal</fade></p>
+								<p>Behavior: <fade>Bounces instead of walks. Acts as a ground unit if its touching the ground, and an air unit if mid-bounce.</fade></p>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-md-6">
+						<div class="row">
+							<div class="col-xs-3">
+								<img class="img-responsive rnd5" src="images/sf/noimg.png"/>
+							</div>
+							<div class="col-xs-9 pFix">
+								<p>Big Dude</p>
+								<p>Health: <fade>Very High</fade></p>
+								<p>Strength: <fade>Very High</fade></p>
+								<p>Speed: <fade>Very Slow</fade></p>
+								<p>Behavior: <fade>Can only be flicked a short distance. Slowly ambles to the castle and does continuous, massive damage if it reaches the wall. Meant to be a boss encounter and thus rarely spawns.</fade></p>
+							</div>
+						</div>
+					</div>
+					<div class="col-md-6">
+						<div class="row">
+							<div class="col-xs-3 pFix">
+								<img class="img-responsive rnd5" src="images/sf/priest.png"/>
+							</div>
+							<div class="col-xs-9 pFix">
+								<p>Priest Dude</p>
+								<p>Health: <fade>Normal</fade></p>
+								<p>Strength: <fade>N/A</fade></p>
+								<p>Speed: <fade>Fast</fade></p>
+								<p>Behavior: <fade>Runs around the field randomly. For the duration of a Priest Dude's existence, every enemy on the field is healed over time, reducing the effectiveness of flicking.</fade></p>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-md-6">
+						<div class="row">
+							<div class="col-xs-3">
+								<img class="img-responsive rnd5" src="images/sf/noimg.png"/>
+							</div>
+							<div class="col-xs-9 pFix">
+								<p>Anti-Magic Flier</p>
+								<p>Health: <fade>Normal</fade></p>
+								<p>Strength: <fade>N/A</fade></p>
+								<p>Speed: <fade>Normal</fade></p>
+								<p>Behavior: <fade>Flies until its above the wall, then drops anti-magic bombs every 5 seconds that do not damage the castle, but prevents ability use for the following 5 seconds.</fade></p>
+							</div>
+						</div>
+					</div>
+					<div class="col-md-6">
+						<div class="row">
+							<div class="col-xs-3 pFix">
+								<img class="img-responsive rnd5" src="images/sf/flier.png"/>
+							</div>
+							<div class="col-xs-9 pFix">
+								<p>Stick Flier</p>
+								<p>Health: <fade>Normal</fade></p>
+								<p>Strength: <fade>High</fade></p>
+								<p>Speed: <fade>Normal</fade></p>
+								<p>Behavior: <fade>Flies until its above the wall, then drops explosives until killed.</fade></p>
+							</div>
+						</div>
+					</div>
+				</div>
+				<!-- ==================================================================== -->
+				<!-- POWERUPS AND THE STORE -->
+				<!-- ==================================================================== -->
+				<h2 id="pas">Powerups</h2>
+				<p>Powerups are used to help players defend their castle for longer periods of time and to reward players for playing the game. They're meant to not only be helpful, but also satisfying and fun to use.</p>
+				<p>There are two types of powerups that a player can use: passive and active. Passive powerups do not need to be activated and are always running in the background once they are purchased. Active powerups need to be engaged by the user and usually only last for a short duration.</p>
+				<br>
+				<div class="row">
+					<div class="col-md-6">
+						<div class="row">
+							<div class="col-xs-3">
+								<img class="img-responsive" src="images/sf/fog.png"/>
+							</div>
+							<div class="col-xs-9 pFix">
+								<p>Finger of God</p>
+								<p>Type: <fade>Active</fade></p>
+								<p>Cost: <fade>Moderate</fade></p>
+								<p>Cooldown: <fade>Moderate</fade></p>
+								<p>Use: <fade>Enemies can also be killed by tapping for the next few seconds.</fade></p>
+							</div>
+						</div>
+					</div>
+					<div class="col-md-6">
+						<div class="row">
+							<div class="col-xs-3 pFix">
+								<img class="img-responsive" src="images/sf/oil.png"/>
+							</div>
+							<div class="col-xs-9 pFix">
+								<p>Boiling Oil<red>*</red></p>
+								<p>Type: <fade>Active</fade></p>
+								<p>Cost: <fade>Free (always available)</fade></p>
+								<p>Cooldown: <fade>Moderate</fade></p>
+								<p>Use: <fade>Kills all enemies that are attacking the base of your castle wall.</fade></p>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-md-6">
+						<div class="row">
+							<div class="col-xs-3">
+								<img class="img-responsive rnd5" src="images/sf/noimg-sm.png"/>
+							</div>
+							<div class="col-xs-9 pFix">
+								<p>Bomb Catapult</p>
+								<p>Type: <fade>Active</fade></p>
+								<p>Cost: <fade>High</fade></p>
+								<p>Cooldown: <fade>Long</fade></p>
+								<p>Use: <fade>Kills all enemies on the screen, including flying ones.</fade></p>
+							</div>
+						</div>
+					</div>
+					<div class="col-md-6">
+						<div class="row">
+							<div class="col-xs-3 pFix">
+								<img class="img-responsive" src="images/sf/hotcicon.png"/>
+							</div>
+							<div class="col-xs-9 pFix">
+								<p>Horn of the Champion<red>*</red></p>
+								<p>Type: <fade>Active</fade></p>
+								<p>Cost: <fade>High</fade></p>
+								<p>Cooldown: <fade>Moderate</fade></p>
+								<p>Use: <fade>Sends the champion of your castle out into the fray to kill enemies with melee attacks.</fade></p>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-md-6">
+						<div class="row">
+							<div class="col-xs-3">
+								<img class="img-responsive" src="images/sf/blizzard.png"/>
+							</div>
+							<div class="col-xs-9 pFix">
+								<p>Blizzard</p>
+								<p>Type: <fade>Active</fade></p>
+								<p>Cost: <fade>Moderate</fade></p>
+								<p>Cooldown: <fade>Short</fade></p>
+								<p>Use: <fade>Slows every enemy on the screen by 50% for a few seconds.</fade></p>
+							</div>
+						</div>
+					</div>
+					<div class="col-md-6">
+						<div class="row">
+							<div class="col-xs-3 pFix">
+								<img class="img-responsive" src="images/sf/arrow.png"/>
+							</div>
+							<div class="col-xs-9 pFix">
+								<p>Archers<red>*</red></p>
+								<p>Type: <fade>Passive</fade></p>
+								<p>Cost: <fade>Low</fade></p>
+								<p>Cooldown: <fade>N/A</fade></p>
+								<p>Use: <fade>Inflicts constant ranged damage to enemy units. Can kill enemy units without flicking. Can purchase more than once to increase overall DPS.</fade></p>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-md-6">
+						<div class="row">
+							<div class="col-xs-3">
+								<img class="img-responsive" src="images/sf/mageicon.png"/>
+							</div>
+							<div class="col-xs-9 pFix">
+								<p>Mages</p>
+								<p>Type: <fade>Passive</fade></p>
+								<p>Cost: <fade>Low</fade></p>
+								<p>Cooldown: <fade>N/A</fade></p>
+								<p>Use: <fade>Inflicts constant ranged damage to enemy units that is less than the DPS of the archers. Can kill enemy units without flicking. Can purchase more than once to increase overall DPS. Each purchase results in a 0.5% reduced cooldown on every powerup use. </fade></p>
+							</div>
+						</div>
+					</div>
+					<div class="col-md-6">
+						<div class="row">
+							<div class="col-xs-3 pFix">
+								<img class="img-responsive rnd5" src="images/sf/noimg-sm.png"/>
+							</div>
+							<div class="col-xs-9 pFix">
+								<p>Serfs</p>
+								<p>Type: <fade>Passive</fade></p>
+								<p>Cost: <fade>Low</fade></p>
+								<p>Cooldown: <fade>N/A</fade></p>
+								<p>Use: <fade>Repairs 0.5% of the castle's health every 20 seconds.</fade></p>
+							</div>
+						</div>
+					</div>
+				</div>
+				<h2 id="animations">Animations</h2>
+				<p>I also created all of the animations for Stick Flick. 2D animations are image files that contain multiple frames of the animated element performing its specific action. I've included examples of some of these animation images here.</p>
+				<div id="animGallery" class="col-xs-12">
+					<img src="images/sf/animations/archer.png"/>
+					<img src="images/sf/animations/demo.png"/>
+					<img src="images/sf/animations/oil.png"/>
+					<img src="images/sf/animations/priest.png"/>
+					<img src="images/sf/animations/spring.png"/>
+					<div class="col-xs-12">
+						<p class="caption">From left to right: Friendly archers firing left, demo dude walking forward, boiling oil being poured, priest dude running right, spring dude running forward.</p>
+					</div>
+				</div>
+					
+				<div class="col-md-6">
+					<video controls>
+						<source style="float:right;" src="files/running.mp4" type="video/mp4">
+						Your browser does not support the video tag.
+					</video>
+				</div>
+				<div class="col-md-6 pFix">
+					<p>To make animation files like these, I create a 3D model and animation of the element I wanted to animate, such as a stick figure running as seen in this video. Then I split the 3D animation into however many frames I want the 2D animation to have and take screenshots of the 3D model at each split. Every screenshot is then compiled into a single image file.</p>
+				</div>
+			</div>
+			<div id="jumpTo" class="col-md-2 hidden-xs hidden-sm">
+				<h3>Jump to...</h3>
+				- <a href="#top">Overview</a><br>
+				- <a href="#diffs">Major Differences</a><br>
+				- <a href="#enemies">Enemies</a><br>
+				- <a href="#pas">Powerups</a><br>
+				- <a href="#animations">Animations</a><br><br>
+			</div>
+		</div>
+
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+		<script src="js/bootstrap.min.js"></script>
+		<script src="js/jquery.transit.min.js"></script>
+		<script src="js/ninja.js"></script>
+		<script src="js/jquery.mobile.custom.js"></script>
+		<script src="js/raphael.js"></script>
+	</body>
+</html>

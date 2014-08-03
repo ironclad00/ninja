@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<link rel="shortcut icon" type="image/x-icon" href="images/favicon.ico">
+		<meta name="description" content="A portfolio of recent programming and design projects.">
+		<meta name="keywords" content="liftoff, web design, University of Florida, UF, undergrad, undergraduate, design, programming, coding, portfolio, projects">
+		<meta name="author" content="Jeremy Baker">
+		<title>J. Baker - Portfolio</title>
+
+		<link href="css/bootstrap.min.css" rel="stylesheet">
+		<link href="css/ninja.css" rel="stylesheet">
+		<link href='http://fonts.googleapis.com/css?family=Rosario|Open+Sans' rel='stylesheet' type='text/css'>
+
+		<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+		<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+		<!--[if lt IE 9]>
+			<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+			<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+		<![endif]-->
+	</head>
+	<body>
+		<header class="banner hidden-xs">
+			<div class="container">
+				<img src="images/logo-web.png" height="80px;"/>
+			</div>
+		</header>
+
+		<div class="navbar navbar-inverse" role="navigation">
+			<div class="container">
+				<div class="navbar-header">
+					<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse" onclick="vibrate(50)">
+						<span class="sr-only">Toggle navigation</span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+					</button>
+					<a class="navbar-brand hidden-sm hidden-md hidden-lg" href="javascript:;" data-toggle="collapse" data-target=".navbar-collapse">Main Menu</a>
+				</div>
+				<div class="collapse navbar-collapse">
+					<ul class="nav navbar-nav">
+						<li><a href="index.html">About</a></li>
+						<li><a href="resume.html">Resume</a></li>
+						<li><a href="liftoff.html">Liftoff</a></li>
+						<li><a href="stickflick.html">Stick Flick</a></li>
+						<li><a href="photoshop.html">Photoshop</a></li>
+						<li><a href="euler.html">Euler</a></li>
+						<li class="active"><a href="chess.html">Chess</a></li>
+					</ul>
+				</div>
+			</div>
+		</div>
+
+		<div id="gameboard"></div>
+
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+		<script src="js/bootstrap.min.js"></script>
+		<script src="js/jquery.transit.min.js"></script>
+		<script src="js/ninja.js"></script>
+		<script src="js/chess.js"></script>
+		<script src="js/raphael.js"></script>
+		<script src="js/jquery.mobile.custom.min.js"></script>
+	</body>
+</html>

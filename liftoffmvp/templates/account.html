@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<!-- <meta name="description" content="">
+		<meta name="author" content="">
+		<link rel="shortcut icon" href="../../assets/ico/favicon.ico"> -->
+		<!-- FILL THESE IN LATER -->
+
+		<title>Account Settings</title>
+		<link rel="shortcut icon" href="../static/images/favicon.ico">
+
+		<!-- Bootstrap -->
+		<link href="../static/css/bootstrap.min.css" rel="stylesheet">
+		<link href="../static/css/liftoff.css" rel="stylesheet" type="text/css">
+		<link href="../static/css/fonts.css" rel="stylesheet" type="text/css">
+
+		<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+		<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+		<!--[if lt IE 9]>
+			<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+			<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+		<![endif]-->
+	</head>
+
+
+
+	<!-- Notes 
+	* need to figure out how to set a max-height property for the badge selection modal
+	* badge modal needs work... kinda clunky to work with from a database standpoint
+	* some account items dont overflow properly on mobile
+	* 
+	* theres TONS of issues with repeat IDs and whatnot
+	/Notes -->
+
+
+
+	<body>
+		<!-- ===================================== -->
+		<!--         Login/Register Modal          -->
+		<!-- ===================================== -->
+		<div class="modal fade" id="loginRegister" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+						<h4 class="modal-title">Login/Register</h4>
+					</div>
+					<div class="modal-body">
+						<h1 class="noHead">Login</h1>
+						<form role="form">
+							<div class="form-group">
+								<label class="sr-only" for="emailInput">Email address</label>
+								<input type="email" class="form-control" id="emailLogin" placeholder="Enter email">
+							</div>
+							<div class="form-group">
+								<label class="sr-only" for="passwordInput">Password</label>
+								<input type="password" class="form-control" id="pwLogin" placeholder="Enter password">
+							</div>
+							<div class="form-group">
+								<div class="col-sm-4">
+									<div class="checkbox">
+										<label>
+											<input type="checkbox"> Remember me
+										</label>
+									</div>
+									<div class="form-group">
+										<div class="inlineWithCheckbox"><a href="forgot">Forgot your password?</a></div>
+									</div>
+								</div>
+							</div>
+							<br>
+							<!-- NEED TO FILL IN INFO FOR DATABASE ACTIONS -->
+							<a href="about" class="btn btn-submit">Submit</a>
+							<!-- NEED TO FILL IN INFO FOR DATABASE ACTIONS -->
+						</form>
+						<br>
+						<h1>New to Liftoff? Register Here</h1>
+						<form role="form">
+							<div class="form-group">
+								<label class="sr-only" for="emailInput">Email address</label>
+								<input type="email" class="form-control" id="emailRegister" placeholder="Enter email">
+							</div>
+							<div class="form-group">
+								<label class="sr-only" for="passwordInput">Password</label>
+								<input type="password" class="form-control" id="pwRegister1" placeholder="Enter password">
+							</div>
+							<div class="form-group">
+								<label class="sr-only" for="passwordInput">Re-enter Password</label>
+								<input type="password" class="form-control" id="pwRegister2" placeholder="Re-enter password">
+							</div>
+							<div class="col-md-12">
+								<a href="about" class="btn btn-submit">Submit</a>
+							</div>
+							<br><br><br>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div><!-- /Login/Register Modal -->
+
+		<!-- ===================================== -->
+		<!--         Badge Modal Placeholder       -->
+		<!-- ===================================== -->
+		<div id="badgeSelectionPlaceholder" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"></div>
+
+		<!-- ===================================== -->
+		<!--             Navbar Content            -->
+		<!-- ===================================== -->
+		<div class="container" id="navCont">
+			<div class="navbar navbar-default" role="navigation">
+				<div class="container-fluid">
+					<div class="navbar-header">
+						<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+							<span class="sr-only">Toggle navigation</span>
+							<span class="icon-bar"></span>
+							<span class="icon-bar"></span>
+							<span class="icon-bar"></span>
+						</button>
+						<div class="hidden-sm hidden-md hidden-lg"> <!-- This text only appears on mobile devices -->
+							<a class="navbar-brand" data-toggle="collapse" data-target=".navbar-collapse">Main Menu</a>
+						</div>
+					</div>
+					<div class="navbar-collapse collapse">
+						<ul class="nav navbar-nav">
+							<li><a href="index">Home</a></li>
+							<li><a href="about">About</a></li>
+							<li><a href="browse">Browse</a></li>
+							<li><a href="create">Create</a></li>
+							<li><a href="http://z13.invisionfree.com/LiftoffCommunity/" target="_blank">Forums</a></li>
+							<li class="active"><a href="account">My Account*</a></li>
+						</ul>
+						<ul class="nav navbar-nav navbar-right">
+							<li>
+								<a class="hidden-sm hidden-xs" href="#" data-toggle="modal" data-target="#loginRegister">Login/Register</a>
+								<a class="hidden-md hidden-lg" href="login">Login/Register*</a>
+							</li>
+							<!-- <li><a href="#">Log Out</a></li> This only displays if the user is logged in -->
+							<li class="help"><a href="help">Help</a></li>
+						</ul>
+				</div>
+			</div>
+		</div><!-- /Navbar Content -->
+
+		<h1 class="pageTitle">Account Settings</h1>
+
+		<!-- ===================================== -->
+		<!--         Mobile Settings Menu          -->
+		<!-- ===================================== -->
+		<div class="container hidden-md hidden-lg" id="navCont"> <!-- NAVBAR FOR MOBILE DASHBOARD -->
+			<div class="navbar navbar-sub" role="navigation">
+				<div class="container-fluid">
+					<div class="navbar-header">
+						<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse-sub">
+							<span class="sr-only">Toggle settings options</span>
+							<span class="icon-bar"></span>
+							<span class="icon-bar"></span>
+							<span class="icon-bar"></span>
+						</button>
+						<div class="hidden-sm hidden-md hidden-lg" > <!-- This text only appears on mobile devices -->
+							<a class="navbar-brand-sub" data-toggle="collapse" data-target=".navbar-collapse-sub">Settings Menu</a>
+						</div>
+					</div>
+					<div class="navbar-collapse-sub collapse"> <!-- note: each function uses liSettingsDx (for Desktop) instead of M because the JS function changes all incoming Ds to Ms; in other words, it was more simple to stick with only Ds on the javascript end -->
+						<ul class="nav navbar-nav">
+							<li id="liSettingsM1"><a data-toggle="collapse" data-target=".navbar-collapse-sub" onclick="toggleSettingsUI('liSettingsD1','settingsAccountInfo');">Basic Account Info</a></li>
+							<li id="liSettingsM2"><a data-toggle="collapse" data-target=".navbar-collapse-sub" onclick="toggleSettingsUI('liSettingsD2','settingsCreateBand');">Create Band Profile</a></li>
+							<li id="liSettingsM3"><a data-toggle="collapse" data-target=".navbar-collapse-sub" onclick="toggleSettingsUI('liSettingsD3','settingsManageBand');">Manage Band Profile(s)</a></li>
+							<li id="liSettingsM4"><a data-toggle="collapse" data-target=".navbar-collapse-sub" onclick="window.location=('create');">Create Campaign</a></li>
+							<li id="liSettingsM5"><a data-toggle="collapse" data-target=".navbar-collapse-sub" onclick="toggleSettingsUI('liSettingsD5','settingsEditCampaign');">Edit/Update Campaign</a></li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div><!-- /Navbar -->
+
+		<div class="container">
+			<!-- ===================================== -->
+			<!--         Desktop Settings Menu         -->
+			<!-- ===================================== -->
+			<div class="col-md-3 noMobileMarPad hidden-sm hidden-xs">
+				<div class="col-md-12 dashboard">
+					<h3 style="text-align: center">Settings Menu</h3>
+					<hr class="hr-std">
+					<!-- <h4 id="liSettingsD1">&#187; <a href="javascript:;" onclick="toggleSettingsUI('liSettingsD1','settingsAccountInfo');">Basic Account Info</a></h4> -->
+					<h4 id="liSettingsD1">&#187; <a href="javascript:;" onclick="toggleSettings(1)">Basic Account Info</a></h4>
+					<h4 id="liSettingsD2">&#187; <a href="javascript:;" onclick="toggleSettings(2)">Create Band Profile</a></h4>
+					<h4 id="liSettingsD3">&#187; <a href="javascript:;" onclick="toggleSettings(3)">Manage Band Profile(s)</a></h4>
+					<h4 id="liSettingsD4">&#187; <a href="create" target="_blank">Create Campaign</a></h4>
+					<h4 id="liSettingsD5">&#187; <a href="javascript:;" onclick="toggleSettings(5)">Edit/Update Campaign</a></h4>
+				</div>
+			</div>
+			<!-- ===================================== -->
+			<!--            Settings Content           -->
+			<!-- ===================================== -->
+			<div class="col-md-9 noMobileMarPad">
+				<div class="col-md-12 mainCanvas">
+					<div id="settingsOption0">
+						<p><i>Please select an option from the Settings Menu to view and edit account settings.</i></p>
+					</div>
+					<!-- ===================================== -->
+					<!--              Account Info             -->
+					<!-- ===================================== -->
+					<div id="settingsOption1">
+						<h2>Basic Account Info</h2>
+						<hr class="hr-std">
+						<p><i>Save changes by clicking the submit button below.</i></p>
+						<div class="form-horizontal" role="form">
+							<div class="form-group">
+								<label for="enterName" class="col-xs-2 control-label">Profile URL:</label>
+								<div class="col-xs-10">
+									<p class="accountItem"><a href="profile" target="blank_">www.liftoffcommunity.com/u/jbaker920</a></p>
+								</div>
+							</div>
+							<div class="form-group">
+								<label for="displayEmail" class="col-xs-2 control-label">Email:</label>
+								<div class="col-xs-10">
+									<p class="accountItem">ironclad00@gmail.com</p>
+								</div>
+							</div>
+							<div class="form-group">
+								<label for="enterName" class="col-xs-2 control-label">Name:</label>
+								<div class="col-xs-10">
+									<input type="text" class="form-control" id="settingsEnterName" placeholder="Enter Name">
+								</div>
+							</div>
+							<div class="form-group">
+								<label for="enterZip" class="col-xs-2 control-label ">Zip Code:</label>
+								<div class="col-xs-10">
+									<input type="text" class="form-control" id="settingsEnterZip" placeholder="Enter Zip Code">
+								</div>
+							</div>
+						</div>
+						<br><h5>Media Links</h5>
+						<p><i>These links are not required, but they will help your channels gain exposure when users visit your Liftoff profile page.</i></p>
+						<div class="col-md-6">
+							<form role="form">
+								<div class="form-group">
+									<label class="sr-only" for="publicEmail">Public Email Address</label>
+									<input type="email" class="form-control" id="publicEmail" placeholder="Email Address">
+								</div>
+								<div class="form-group">
+									<label class="sr-only" for="userTwitterLink">Twitter Account</label>
+									<input type="text" class="form-control" id="userTwitterLink" placeholder="Twitter Account">
+								</div>
+								<div class="form-group">
+									<label class="sr-only" for="userInstagramLink">Instagram Account</label>
+									<input type="text" class="form-control" id="userInstagramLink" placeholder="Instagram Account">
+								</div>
+							</form>
+						</div>
+						<div class="col-md-6">
+							<form role="form">
+								<div class="form-group">
+									<label class="sr-only" for="userFBLink">Facebook Account</label>
+									<input type="text" class="form-control" id="userFBLink" placeholder="Facebook Account">
+								</div>
+								<div class="form-group">
+									<label class="sr-only" for="userYoutubeLink">YouTube Account</label>
+									<input type="text" class="form-control" id="userYoutubeLink" placeholder="YouTube Account">
+								</div>
+								<div class="form-group">
+									<label class="sr-only" for="userWebLink">Personal Website</label>
+									<input type="text" class="form-control" id="userWebLink" placeholder="Personal Website">
+								</div>
+							</form><br>
+						</div>
+						<div class="row">
+							<div class="col-md-6">
+							<h5>Avatar Selection</h5>
+								<div class="media">
+									<a class="pull-left" href="#">
+										<img class="media-object" src="../static/images/donor1.png" height="128px" title="Donate over $1000 in total" alt="...">
+									</a>
+									<div class="media-body">
+										<h4 class="media-heading">Current Selection:</h4>
+										<p class="avatarBadgeName">Donor #1 Badge</p>
+										<button type="button" class="btn btn-defaultL hidden-sm hidden-xs" onclick="displayBadgeSelection()">Choose Avatar</button>
+										<button type="button" class="btn btn-defaultL hidden-md hidden-lg" onclick="window.location='badges';" target="_blank">Choose Avatar</button>
+									</div>
+								</div>
+							</div><br><br>
+							<div class="col-md-6">
+								<h5>Change Password</h5>
+								<form role="form">
+									<div class="form-group">
+										<label class="sr-only" for="pwChange1">Old Password</label>
+										<input type="password" class="form-control" id="pwChange1" placeholder="Old Password">
+									</div>
+									<div class="form-group">
+										<label class="sr-only" for="pwChange2">Password</label>
+										<input type="password" class="form-control" id="pwChange2" placeholder="New Password">
+									</div>
+									<div class="form-group">
+										<label class="sr-only" for="pwChange3">Re-enter Password</label>
+										<input type="password" class="form-control" id="pwChange3" placeholder="Re-Enter New Password">
+									</div>
+								</form>
+							</div>
+						</div>
+						<br>
+						<div class="col-md-12">
+							<a title="Save all of the changes made in the above page" href="#" class="btn btn-block btn-submit">Save All Changes</a><br>
+						</div>
+					</div>
+					<!-- ===================================== -->
+					<!--              Create Band              -->
+					<!-- ===================================== -->
+					<div id="settingsOption2">
+						<h2>Create Band Profile</h2>
+						<hr class="hr-std">
+						<p><i>This profile is separate from your user account and has its own profile page. You can post and contribute with your personal account or under any band profile that you're a part of. <strong>Remember:</strong> Any item marked with a <span class="red">*</span> cannot be changed once you save and submit your band.</i></p>
+						<h5>Basic Info<span class="red">*</span></h5>
+						<div class="form-horizontal createBandMargins" role="form">
+							<div class="radio-inline">
+								<label>
+									<input type="radio" name="groupOrSoloRadios" id="groupRadio">
+									Group of Artists
+								</label>
+							</div>
+							<div class="radio-inline">
+								<label>
+									<input type="radio" name="groupOrSoloRadios" id="soloRadio">
+									Solo Artist
+								</label>
+							</div>
+							<div class="form-group">
+								<label for="enterName" class="col-md-3 control-label">Band/Artist Name:</label>
+								<div class="col-md-9">
+									<input type="text" class="form-control" id="settingsEnterName" placeholder="Enter Name">
+								</div>
+							</div>
+						</div><br>
+						<h5>Select Genre(s)</h5>
+						<p><i>You can choose up to two primary genres to describe your work. If you feel that the primary genres aren't descriptive enough, you can also choose one subgenre for each primary genre.</i></p>
+						<div class="form-horizontal createBandMargins">
+							<div class="btn-group">
+								<button type="button" class="btn btn-default">Select Primary Genre 1</button>
+								<button type="button" class="btn btn-defaultL dropdown-toggle" data-toggle="dropdown">
+									<span class="caret"></span>
+									<span class="sr-only">Toggle Dropdown</span>
+								</button>
+								<ul class="dropdown-menu" role="genreSelect">
+									<li><a href="#">ALL</a></li>
+									<li class="divider"></li>
+									<li><a href="#">Rock</a></li>
+									<li><a href="#">Blues</a></li>
+									<li><a href="#">Electronic</a></li>
+									<li><a href="#">Etc</a></li>
+								</ul>
+							</div>
+							<div class="btn-group">
+								<button type="button" class="btn btn-default">Select Subgenre 1</button>
+								<button type="button" class="btn btn-defaultL-sub dropdown-toggle" data-toggle="dropdown">
+									<span class="caret"></span>
+									<span class="sr-only">Toggle Dropdown</span>
+								</button>
+								<ul class="dropdown-menu" role="genreSelect">
+									<li><a href="#">ALL</a></li>
+									<li class="divider"></li>
+									<li><a href="#">Rock</a></li>
+									<li><a href="#">Blues</a></li>
+									<li><a href="#">Electronic</a></li>
+									<li><a href="#">Etc</a></li>
+								</ul>
+							</div>
+						</div>
+						<div class="form-horizontal createBandMargins">
+							<div class="btn-group">
+								<button type="button" class="btn btn-default">Select Primary Genre 2</button>
+								<button type="button" class="btn btn-defaultL dropdown-toggle" data-toggle="dropdown">
+									<span class="caret"></span>
+									<span class="sr-only">Toggle Dropdown</span>
+								</button>
+								<ul class="dropdown-menu" role="genreSelect">
+									<li><a href="#">ALL</a></li>
+									<li class="divider"></li>
+									<li><a href="#">Rock</a></li>
+									<li><a href="#">Blues</a></li>
+									<li><a href="#">Electronic</a></li>
+									<li><a href="#">Etc</a></li>
+								</ul>
+							</div>
+							<div class="btn-group">
+								<button type="button" class="btn btn-default">Select Subgenre 2</button>
+								<button type="button" class="btn btn-defaultL-sub dropdown-toggle" data-toggle="dropdown">
+									<span class="caret"></span>
+									<span class="sr-only">Toggle Dropdown</span>
+								</button>
+								<ul class="dropdown-menu" role="genreSelect">
+									<li><a href="#">ALL</a></li>
+									<li class="divider"></li>
+									<li><a href="#">Rock</a></li>
+									<li><a href="#">Blues</a></li>
+									<li><a href="#">Electronic</a></li>
+									<li><a href="#">Etc</a></li>
+								</ul>
+							</div>
+						</div><br>
+						<h5>Media Links</h5>
+						<p><i>These links are not required, but they will help your channels gain exposure when users visit your Liftoff artist page.</i></p>
+						<div class="col-md-6">
+							<form role="form">
+								<div class="form-group">
+									<label class="sr-only" for="publicEmail">Public Email Address</label>
+									<input type="email" class="form-control" id="publicEmail" placeholder="Email Address">
+								</div>
+								<div class="form-group">
+									<label class="sr-only" for="userTwitterLink">Twitter Account</label>
+									<input type="text" class="form-control" id="userTwitterLink" placeholder="Twitter Account">
+								</div>
+								<div class="form-group">
+									<label class="sr-only" for="userInstagramLink">Instagram Account</label>
+									<input type="text" class="form-control" id="userInstagramLink" placeholder="Instagram Account">
+								</div>
+							</form>
+						</div>
+						<div class="col-md-6">
+							<form role="form">
+								<div class="form-group">
+									<label class="sr-only" for="userFBLink">Facebook Account</label>
+									<input type="text" class="form-control" id="userFBLink" placeholder="Facebook Account">
+								</div>
+								<div class="form-group">
+									<label class="sr-only" for="userYoutubeLink">YouTube Account</label>
+									<input type="text" class="form-control" id="userYoutubeLink" placeholder="YouTube Account">
+								</div>
+								<div class="form-group">
+									<label class="sr-only" for="userWebLink">Personal Website</label>
+									<input type="text" class="form-control" id="userWebLink" placeholder="Personal Website">
+								</div>
+							</form><br>
+						</div>
+						<div class="col-md-12">
+							<a title="Save and Create Band" href="#" class="btn btn-block btn-submit">Save and Create Band</a><br>
+						</div>
+					</div>
+					<!-- ===================================== -->
+					<!--              Manage Band              -->
+					<!-- ===================================== -->
+					<div id="settingsOption3">
+						<h2>Manage Band Profile(s)</h2>
+						<hr class="hr-std">
+						<h3>
+							Band Name 1
+							<button id="toggleSearch" class="btn btn-xs btn-defaultL" onclick="toggleManage(1)">Edit</button>
+							<button id="toggleSearch" class="btn btn-xs btn-red" onclick="">Leave</button>
+						</h3>
+						<div id="manageBand1" class="col-md-12">
+							<h5>Select Genre(s)</h5>
+							<p><i>You can choose up to two primary genres to describe your work. If you feel that the primary genres aren't descriptive enough, you can also choose one subgenre for each primary genre.</i></p>
+							<div class="form-horizontal createBandMargins">
+								<div class="btn-group">
+									<button type="button" class="btn btn-default">Select Primary Genre 1</button>
+									<button type="button" class="btn btn-defaultL dropdown-toggle" data-toggle="dropdown">
+										<span class="caret"></span>
+										<span class="sr-only">Toggle Dropdown</span>
+									</button>
+									<ul class="dropdown-menu" role="genreSelect">
+										<li><a href="#">ALL</a></li>
+										<li class="divider"></li>
+										<li><a href="#">Rock</a></li>
+										<li><a href="#">Blues</a></li>
+										<li><a href="#">Electronic</a></li>
+										<li><a href="#">Etc</a></li>
+									</ul>
+								</div>
+								<div class="btn-group">
+									<button type="button" class="btn btn-default">Select Subgenre 1</button>
+									<button type="button" class="btn btn-defaultL-sub dropdown-toggle" data-toggle="dropdown">
+										<span class="caret"></span>
+										<span class="sr-only">Toggle Dropdown</span>
+									</button>
+									<ul class="dropdown-menu" role="genreSelect">
+										<li><a href="#">ALL</a></li>
+										<li class="divider"></li>
+										<li><a href="#">Rock</a></li>
+										<li><a href="#">Blues</a></li>
+										<li><a href="#">Electronic</a></li>
+										<li><a href="#">Etc</a></li>
+									</ul>
+								</div>
+							</div>
+							<div class="form-horizontal createBandMargins">
+								<div class="btn-group">
+									<button type="button" class="btn btn-default">Select Primary Genre 2</button>
+									<button type="button" class="btn btn-defaultL dropdown-toggle" data-toggle="dropdown">
+										<span class="caret"></span>
+										<span class="sr-only">Toggle Dropdown</span>
+									</button>
+									<ul class="dropdown-menu" role="genreSelect">
+										<li><a href="#">ALL</a></li>
+										<li class="divider"></li>
+										<li><a href="#">Rock</a></li>
+										<li><a href="#">Blues</a></li>
+										<li><a href="#">Electronic</a></li>
+										<li><a href="#">Etc</a></li>
+									</ul>
+								</div>
+								<div class="btn-group">
+									<button type="button" class="btn btn-default">Select Subgenre 2</button>
+									<button type="button" class="btn btn-defaultL-sub dropdown-toggle" data-toggle="dropdown">
+										<span class="caret"></span>
+										<span class="sr-only">Toggle Dropdown</span>
+									</button>
+									<ul class="dropdown-menu" role="genreSelect">
+										<li><a href="#">ALL</a></li>
+										<li class="divider"></li>
+										<li><a href="#">Rock</a></li>
+										<li><a href="#">Blues</a></li>
+										<li><a href="#">Electronic</a></li>
+										<li><a href="#">Etc</a></li>
+									</ul>
+								</div>
+							</div><br>
+							<h5>Media Links</h5>
+							<p><i>These links are not required, but they will help your channels gain exposure when users visit your Liftoff artist page.</i></p>
+							<div class="col-md-6">
+								<form role="form">
+									<div class="form-group">
+										<label class="sr-only" for="publicEmail">Public Email Address</label>
+										<input type="email" class="form-control" id="publicEmail" placeholder="Email Address">
+									</div>
+									<div class="form-group">
+										<label class="sr-only" for="userTwitterLink">Twitter Account</label>
+										<input type="text" class="form-control" id="userTwitterLink" placeholder="Twitter Account">
+									</div>
+									<div class="form-group">
+										<label class="sr-only" for="userInstagramLink">Instagram Account</label>
+										<input type="text" class="form-control" id="userInstagramLink" placeholder="Instagram Account">
+									</div>
+								</form>
+							</div>
+							<div class="col-md-6">
+								<form role="form">
+									<div class="form-group">
+										<label class="sr-only" for="userFBLink">Facebook Account</label>
+										<input type="text" class="form-control" id="userFBLink" placeholder="Facebook Account">
+									</div>
+									<div class="form-group">
+										<label class="sr-only" for="userYoutubeLink">YouTube Account</label>
+										<input type="text" class="form-control" id="userYoutubeLink" placeholder="YouTube Account">
+									</div>
+									<div class="form-group">
+										<label class="sr-only" for="userWebLink">Personal Website</label>
+										<input type="text" class="form-control" id="userWebLink" placeholder="Personal Website">
+									</div>
+								</form><br>
+							</div>
+							<div class="col-md-12">
+								<a title="Save and Create Band" href="#" class="btn btn-block btn-submit">Save Changes</a><br>
+							</div>
+						</div>
+
+						<h3>
+							Band Name 2
+							<button id="toggleSearch" class="btn btn-xs btn-defaultL" onclick="">Edit</button>
+							<button id="toggleSearch" class="btn btn-xs btn-red" onclick="">Leave</button>
+						</h3>
+					</div>
+					<!-- ========= CREATE CAMPAIGN ========== -->
+					<div id="settingsOption4">
+						<h2>How did you get here? You're not supposed to be able to access this window! Go to the <a href="create">campaign creation page</a> to find what you're looking for.</h2>
+					</div>
+					<!-- ===================================== -->
+					<!--         Edit/Update Campaign          -->
+					<!-- ===================================== -->
+					<div id="settingsOption5">
+						<h2>Edit/Update Campaign</h2>
+						<hr class="hr-std">
+					</div>
+				</div>
+				<br>
+			</div>
+		</div>
+
+
+		<footer>
+			<hr class="hr-foot">
+			<p>&copy; Liftoff Music Company 2014</p>
+			<p><a href="#">Private Policy</a>&nbsp;|&nbsp;<a href="#">Other Things? O_o</a></p>
+		</footer>
+		<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+		<!-- Include all compiled plugins (below), or include individual files as needed -->
+		<script src="../static/js/bootstrap.min.js"></script>
+		<script src="../static/js/liftoff.js"></script>
+	</body>
+</html>

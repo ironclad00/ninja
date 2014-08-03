@@ -1,0 +1,895 @@
+/* Notes
+* 
+* 
+* 
+/Notes */
+
+
+/*==========================================================*/
+/*               Default Tag Overwrites and @               */
+/*==========================================================*/
+@media (max-width: 768px) { /* Items that ONLY display on mobile */
+	#indexSubTitle { /* Shrinks the subtitle font on mobile devices */
+		font-size: 150%;
+	} 
+
+	#indexInfo { /* Shrinks the 'learn more' paragraph on mobile devices */
+		font-size: 75%;
+	} 
+
+	.logo { /* eliminates the top header margins for 'Liftoff' text */
+		margin-top: 0;
+	}
+
+	.newsPost { /* adds a little space after the news box */
+		margin-bottom: 20px;
+	}
+
+	#navCont { /* Causes the mobile navbar to stretch to the ends of the screen */
+		margin: 0;
+		padding: 0;
+	}
+
+	.simpleInfoBox { /* defines attributes for the text box on information-dedicated pages */
+		padding: 12px;
+		padding-top: 0;
+		margin-left: 12px;
+		margin-right: 12px;
+	}
+
+	.noMobileMarPad {
+		margin: 0;
+		padding: 0;
+	}
+
+	#settingsAccountInfo > div > .settingsDataItem,
+	#settingsCreateBand > div > .settingsDataItem,
+	#settingsManageBand > div > .settingsDataItem,
+	#settingsCreateCampaign > div > .settingsDataItem,
+	#settingsEditCampaign > div > .settingsDataItem {
+		margin-left: 20px;
+	}
+
+	#searchOptions {
+		display: none;
+	}
+	#searchOptions div > button,
+	#searchOptions button {
+		margin-bottom: 10px;
+
+	}
+
+	.cardContainer { /* sets spacing attributes for mobile browse cards */
+		padding: 0;
+		margin-top: 10px;
+		margin-bottom: 10px;
+	}
+	.browseCard { /* sets spacing attributes for mobile browse cards */
+		margin-top: 10px;
+		margin-bottom: 10px;
+	}
+	.browseCard h3 {
+		font-size: 100%;
+		font-weight: bold;
+	}
+	.browseCard h4 { /* shrinks mobile campign title and genres on browse cards to avoid overflow problems*/
+		font-size: 100%;
+	}
+
+	.browseCard .campaignStats p {
+		margin: 2px;
+	}
+
+	.createBandMargins {
+		margin-left: 20px;
+	}
+
+	.campaignCardTop p,
+	.campaignCardTop2 {
+		text-align: center;
+		margin-top: 5px;
+	}
+}
+
+@media (min-width: 768px) { /* Items that ONLY display on desktop */
+	#newsContainer { /* creates fancy shadows and rounded borders */
+		box-shadow: 4px 4px 5px #c0c0c0;
+		border-radius: 4px;
+	}
+
+	body /* part of the code from Bootstrap's navbar template */
+	{
+		padding-top: 20px;
+		padding-bottom: 20px;
+	}
+
+	.navbar /* part of the code from Bootstrap's navbar template */
+	{
+		margin-bottom: 20px;
+	}
+
+	.simpleInfoBox { /* defines attributes for the text box on information-dedicated pages */
+		box-shadow: 4px 4px 5px #c0c0c0;
+		border-radius: 4px;
+	}
+
+	.mainCanvas {
+		border-radius: 4px;
+		box-shadow: 4px 4px 5px #c0c0c0;
+	}
+
+	#searchOptionsBox h3 {
+		margin-bottom:0;
+	}
+
+	#searchCampaignName {
+		margin-top:16px;
+	}
+
+	.cardContainer { /* browse cards need extra spacing on desktop */
+		padding: 10px;
+	}
+
+	.campaignStats p {
+		margin: 10px;
+	}
+
+	#searchOptionsBox {
+		border-radius: 4px;
+		box-shadow: 4px 4px 5px #c0c0c0;
+	}
+
+	.campaignCard {
+		border-radius: 4px;
+		box-shadow: 4px 4px 5px #c0c0c0;
+	}
+
+	.avatarBadgeName {
+		margin-left: 10px;
+	}
+
+	.createBandMargins {
+		margin-left: 36px;
+	}
+
+	#settingsCreateBand .form-horizontal > .radio-inline {
+		margin-left: 36px;
+	}
+
+	.campaignCardTop,
+	.campaignCardTop2 {
+		border-top-right-radius:4px;
+		border-top-left-radius:4px;
+		box-shadow: 4px 4px 5px #c0c0c0;
+	}
+	.campaignCardTop button,
+	.campaignCardTop2 button {
+		margin-top: 5px;
+	}
+	.campaignCardTop p,
+	.campaignCardTop2 p {
+		margin-top: 12px;
+	}
+
+	.campaignCardBottom,
+	.campaignCardBottom2 {
+		border-bottom-right-radius:4px;
+		border-bottom-left-radius:4px;
+		box-shadow: 4px 4px 5px #c0c0c0;
+	}
+
+	.extraInfoBox {
+		border-radius:4px;
+		border-radius:4px;
+	}
+}
+
+body { /* sets default font and background color */
+	background: #fff;
+	font-family: Corbel;
+}
+
+p { /* sets default paragraph attributes */
+	font-family: Corbel;
+	color: #484848;
+}
+
+button { /* sets default button font */
+	font-family: Corbel;
+}
+
+h5 {
+	font-size: 180%;
+}
+
+footer p {
+	margin:0;
+	text-align:center;
+}
+
+
+
+
+/*==========================================================*/
+/*                   Bootstrap Overwrites                   */
+/*==========================================================*/
+.navbar-default .navbar-nav > li > a { /* overrides the default color and font of the Bootstrap navbar items */
+	font-family: Corbel;
+	font-size: 120%;
+	color: #333;
+}
+
+.navbar-default .navbar-nav > .active > a { /* overrides the default color and font of the Bootstrap navbar items */
+	font-family: Corbel;
+	font-size: 120%;
+	color: #333;
+	background: #ffe1a5;
+}
+.navbar-sub .navbar-nav > .active > a {
+	font-family: Corbel;
+	font-size: 120%;
+	color: #333;
+	background: #cedae7;
+}
+
+.navbar-default .navbar-brand,
+.navbar-default .navbar-brand,
+.navbar-default .navbar-brand:hover,
+.navbar-default .navbar-brand:focus,
+.navbar-sub .navbar-brand-sub,
+.navbar-sub .navbar-brand-sub,
+.navbar-sub .navbar-brand-sub:hover,
+.navbar-sub .navbar-brand-sub:focus { /* overrides the default color of the Bootstrap navbar items */
+  color: #333;
+  background-color: transparent;
+  text-decoration: none;
+}
+
+.navbar-default .navbar-nav > li > a:hover,
+.navbar-default .navbar-nav > li > a:focus { /* overrides the default color of the Bootstrap navbar items */
+	color: #999;
+	background-color: #ffe1a5;
+}
+
+.navbar-default { /* overrides the default color of the Bootstrap navbar */
+	background-color: #ffcc66;
+	border-color: #999;
+}
+
+.navbar-sub { /* this sets attributes for all sub-navbars that are used in the mobile version of the site */
+	/*IMPORTANT: it is possible that not all classes and/or IDs were copied over from Bootstrap when I created this class (navbar-sub is just a duplicated
+	version of navbar-default, only not as wide). Keep this in mind if problems occur with the navbar-sub class */
+	background-color: #b9d0e7;
+	border-color: #e7e7e7;
+	margin-left: 20px;
+	margin-right: 20px;
+}
+
+.navbar-default .navbar-toggle,
+.navbar-sub .navbar-toggle {
+	border-color: #666;
+}
+
+.navbar-default .navbar-toggle .icon-bar,
+.navbar-sub .navbar-toggle .icon-bar { /* overrides the default color of the Bootstrap bar glyphs for mobile menu button */
+  background-color: #666;
+}
+
+.navbar-collapse-sub {
+	border-color: #ff0000;
+	border-top: 1px solid transparent;
+}
+.navbar-toggle:hover,
+.navbar-toggle:focus { /* */
+	background-color: #ddd;
+}
+
+.navbar-collapse-sub { /* duplicates the properties of navbar-collapse */
+  max-height: 340px;
+  padding-right: 15px;
+  padding-left: 15px;
+  overflow-x: visible;
+  -webkit-overflow-scrolling: touch;
+  border-top: 1px solid transparent;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .1);
+}
+
+.navbar-collapse-sub .navbar-nav > li > a {
+	color: #333;
+}
+
+.navbar-sub .navbar-collapse-sub,
+.navbar-sub .navbar-form { /* creates a dividing border for the navbar-sub class */
+	border-color: #e7e7e7;
+}
+
+.container > .navbar-collapse-sub,
+.container-fluid > .navbar-collapse-sub { /* fixes the problem where the dividing line on the navbar-sub does not extend to the edges of the box */
+  margin-right: -15px;
+  margin-left: -15px;
+}
+
+.progress {
+	border-color: #666;
+	border-style: solid;
+	border-width: 1px;
+	margin-top: 10px;
+	margin-bottom: 0;
+}
+
+.form,
+.form-control { /* made default field border darker for better contrast */
+	border-color: #999;
+}
+
+.media-body {
+	overflow: visible;
+}
+
+.media-heading {
+	font-family: Corbel;
+	color: #333;
+	font-weight: bold;
+}
+
+.media p {
+	font-size: 100%;
+	color: #666;
+}
+
+
+
+
+
+/*==========================================================*/
+/*                      Custom Classes                      */
+/*==========================================================*/
+.logo { /* for the 'Liftoff' text on the index */
+	margin-top: 0;
+	text-align: center;
+	font-family: Open Sans;
+	font-weight: bold;
+	color: #ff4646;
+	font-size: 600%;
+}
+
+.indexInfo { /* for the 'learn more about Liftoff' part of the index */
+	margin-top: 30px;
+	text-align: center;
+	font-size: 150%;
+}
+
+.newsPostContent { /* for the text (NOT title) in each news post on the index */
+	color: #555;
+	padding-left: 20px;
+}
+
+.btn-defaultL { /* overwrite for default button using custom color scheme */
+  color: #fff;
+  background-color: #428bca;
+  border-color: #336699;
+}
+.btn-defaultL:hover,
+.btn-defaultL:focus,
+.btn-defaultL:active,
+.btn-defaultL.active,
+.open .dropdown-toggle.btn-defaultL,
+.btn-defaultL-sub:hover,
+.btn-defaultL-sub:focus,
+.btn-defaultL-sub:active,
+.btn-defaultL-sub.active,
+.open .dropdown-toggle.btn-defaultL-sub { /* overwrite for default button EFFECTS using custom color scheme */
+  color: #fff;
+  background-color: #336699;
+  border-color: #428bca;
+}
+.btn-defaultL-sub { /* overwrite for default button using custom color scheme */
+  color: #fff;
+  background-color: #6f9fc8;
+  border-color: #41619f;
+}
+
+.btn-submit { /* code for submit button using Bootstrap's success color scheme */
+  color: #fff;
+  background-color: #5cb85c;
+  border-color: #4cae4c;
+}
+.btn-submit:hover,
+.btn-submit:focus,
+.btn-submit:active,
+.btn-submit.active,
+.open .dropdown-toggle.btn-submit { /* code for submit button EFFECTS using Bootstrap's success color scheme */
+  color: #fff;
+  background-color: #47a447;
+  border-color: #398439;
+}
+
+.btn-red { /* code for red button using custom color scheme */
+  color: #fff;
+  background-color: #ff4646;
+  border-color: #993333;
+}
+.btn-red:hover,
+.btn-red:focus,
+.btn-red:active,
+.btn-red.active,
+.open .dropdown-toggle.btn-red { /* code for red button EFFECTS using custom color scheme */
+  color: #fff;
+  background-color: #993333;
+  border-color: #ff4646;
+}
+
+.imgCenter { /* centers any image */
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.pageTitle { /* centers text */
+	text-align: center;
+	margin-bottom: 10px;
+	margin-top: 0;
+	font-family: Trebuchet;
+}
+
+.pageSubTitle {
+	font-size: 200%;
+	color: #444;
+	text-align: center;
+	margin-top: 0px;
+	margin-bottom: 20px;
+	font-family: Trebuchet;
+}
+
+.brand { /* control size of the logo image on index */
+	height: 150px;
+}
+
+.inlineWithRadio,
+.inlineWithCheckbox { /* any element inline with a radio or checkbox will be centered appropriately */
+  display: block;
+  min-height: 20px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.noHead { /* eliminates top margins; mostly for headers */
+	margin-top: 0;
+}
+
+.simpleInfoBox { /* defines attributes for the text box on information-dedicated pages */
+	margin-top: 20px;
+	margin-bottom: 20px;
+	background-color: #eee;
+	border-color: #999;
+	border-width: 1px;
+	border-style: solid;
+}
+.simpleInfoBox > p {
+	margin-left: 15px;
+}
+.simpleInfoBox > h2 {
+	color: #444;
+}
+.simpleInfoBox > h3 {
+	margin-left: 15px;
+	color: #555;
+	font-size: 140%;
+	display: inline;
+}
+
+.btn-PM {
+	margin-left:15px;
+}
+
+.dashboard {
+	background-color: #b9d0e7;
+	border-radius: 4px;
+	border-style: solid;
+	border-width: 1px;
+	border-color: #666;
+	box-shadow: 4px 4px 5px #c0c0c0;
+}
+
+.navbar-brand-sub {
+  float: left;
+  height: 50px;
+  padding: 15px 15px;
+  font-size: 18px;
+  line-height: 20px;
+}
+
+.container .dashboard > .active { /* highlights the currently viewed setting on the My Account page */
+	background: #cedae7;
+}
+
+.txtCent { /* general class for centering text */
+	text-align: center;
+}
+
+.red { /* simple class for changing text color; usually used for highlighting important items */
+	color: #ff4646;
+	font-weight: normal;
+	font-style: normal;
+}
+
+.mainCanvas { /* attributes for the background of the main content box on most pages */
+	background-color: #eee;
+	border-style: solid;
+	border-width: 1px;
+	border-color: #666;
+}
+.mainCanvas p { /* fixes spacing issues with paragraphs in mainCanvas classes */
+	margin-top: 10px;
+}
+.mainCanvas .accountItem {
+	margin:0;
+	margin-top:6px;
+}
+
+.hr-std { /* definition of standard horizontal line attributes */
+	margin:0;
+	border-color:#333;
+}
+
+.hr-foot {
+	margin-top: 50px;
+	margin-bottom: 5px;
+	border-color:#999;
+}
+
+.browseCard {
+	white-space: nowrap;
+	margin-top: 10px;
+	background-color: #eee;
+	border-style: solid;
+	border-width: 1px;
+	border-color: #666;
+}
+.browseCard h3 {
+	overflow:hidden;
+	text-overflow:ellipsis;
+}
+
+.cardContainer > a > div:hover,
+.cardContainer > a > div:focus { /* sets background color when hovering over or clicking on browse cards */
+	background: #ccc;
+}
+.cardContainer a:link { /* text does not display hyperlink attributes when its used in browse cards */
+	text-decoration: none;
+	color: #333;
+}
+
+.embed-container { /* third-party css for making youtube videos responsive */
+	position: relative;
+	padding-bottom: 56.25%;
+	padding-top: 30px;
+	height: 0;
+	overflow: hidden;
+	max-width: 100%;
+	height: auto;
+}
+.embed-container iframe, .embed-container object, .embed-container embed { /* third-party css for making youtube videos responsive */
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+}
+
+.campaignStats p {
+	color: #333;
+	font-size: 100%;
+	font-weight: bold;
+	font-family: Trebuchet;
+}
+
+.searchOptionsBox {
+	background-color: #cedae7;
+}
+
+.campaignCard {
+	border-style: solid;
+	border-color: #333;
+	border-width: 1px;
+	background-color: #eee;
+}
+.campaignCard h2 {
+	text-align: center;
+	color: #000;
+	font-family: Trebuchet;
+	margin:20px;
+}
+.campaignCard h3,
+.campaignCard h4 {
+	text-align: center;
+	color: #333;
+	font-family: Trebuchet;
+	margin:10px;
+}
+.campaignCard p {
+	margin: 10px;
+}
+
+.campaignCardTop {
+	background-color:#bbb;
+	border:1px solid #333;
+	margin-bottom:0;
+	padding: 5px;
+	padding-bottom: 0;
+}
+.campaignCardTop button {
+	margin-bottom: 10px;
+}
+
+.campaignCardTop2 {
+	border-style: solid;
+	border-color: #333;
+	border-width: 1px;
+	border-bottom-style: none;
+	background-color: #eee;
+}
+.campaignCardTop2 button {
+	margin-bottom: 10px;
+}
+
+.campaignCardBottom,
+.campaignCardBottom2 {
+	background-color:#eee;
+	border:1px solid #333;
+	border-top-style: none;
+	margin-top:0;
+	padding-top: 15px;
+}
+.campaignCardBottom2 {
+	border-top-style:none;
+	background-color:#fff;
+}
+
+.progress-bar-camp1 {
+	background-color: #a0aefe;
+}
+.progress-bar-camp2 {
+	background-color: #5e80ff;
+}
+
+.introText {
+	margin-top: 10px;
+}
+
+.marginTB5 {
+	margin-top: 5px;
+	margin-bottom: 5px;
+}
+
+.progress-tall {
+	height: 25px;
+}
+
+.fix-margin {
+	margin-left: 0;
+	margin-right: 0;
+}
+
+.fix-margin-dbl {
+	margin-left: 15px;
+	margin-right: 15px;
+}
+
+.help { /* sets a red background on the Help link on the navbar */
+	background-color: #ff9b9b;
+}
+
+.createBandMargins {
+	margin-bottom: 10px;
+}
+
+.listOfBadges {
+	overflow: scroll;
+	max-height: 200px;
+}
+
+.avatarBadgeName {
+	color: #999;
+}
+
+.modalBadge {
+	padding: 30px;
+}
+.modalBadge:hover,
+.modalBadge:focus {
+	overflow: hidden;
+	background-color: #eee;
+}
+
+.browsePlaceholder {
+	margin:10px;
+}
+
+.updateItemTitle {
+	margin-bottom: 0;
+	font-family: Trebuchet;
+	color: #222;
+}
+
+.updateItem {
+	margin-bottom: 15px;
+	margin-left: 20px;
+}
+
+.glyph {
+	height: 32px;
+	width: auto;
+}
+
+.mediaGlyph {
+	height: 48px;
+	width: auto;
+	margin: 5px;
+}
+
+.avatar {
+	height: 64px;
+	width: auto;
+	margin:15px;
+	margin-top:0;
+}
+
+.mediaLinks {
+	margin-left: 36px;
+}
+h3+.mediaLinks {
+	margin-bottom: 20px;
+}
+
+.tab-pane h1,
+.tab-pane h2,
+.tab-pane h3,
+.tab-pane h4,
+.tab-pane h5 {
+	margin-top: 0;
+	margin-left: 20px;
+}
+
+.extraInfoBox {
+	margin-top: 10px;
+	background-color: #fff;
+	border: 1px solid #333;
+	text-align: center;
+}
+
+.notAvailable {
+	opacity: 0.5;
+}
+
+.rewardContainer {
+	padding:10px;
+}
+
+.rewardCard {
+	border: 1px solid #333;
+	background-color: #fff;
+}
+.rewardCard h3 {
+	margin:10px;
+}
+
+.subText {
+	font-family: Trebuchet;
+	color:#666;
+	font-size:65%;
+	text-decoration: none;
+}
+.subText > div {
+	padding-right:20px;
+}
+
+.manageBand {
+	background:#999;
+}
+
+
+
+
+/*==========================================================*/
+/*                          Custom IDs                      */
+/*==========================================================*/
+#indexSubTitle { /* sets attributes for the 'Crowdfunding  & Community' text on index */
+	font-family: Trebuchet;
+	text-align: center;
+	margin-top: 0;
+	margin-bottom: 0;
+	color: #000;
+}
+
+#newsContainer { /* sets attributes for the News box on index */
+	background-color: #b9d0e7;
+	border-color: #999;
+	border-width: 1px;
+	border-style: solid;
+	padding: 0;
+}
+#newsContainer > div > h4 { /* sets attributes for EACH news post title on index */
+	font-size: 120%;
+	color: #444;
+	font-weight: bold;
+}
+
+#indexNews { /* controls the attributes of the 'News' title text on index */
+	margin-top: 10px;
+	margin-bottom: 5px;
+	font-size: 250%;
+}
+
+#settingsOption1,
+#settingsOption2,
+#settingsOption3,
+#settingsOption4,
+#settingsOption5,
+#enterBandName1,
+#enterBandName2,
+#enterBandName3,
+#enterBandName4,
+#enterBandName5,
+#makeAdminInfo,
+#adminBandName1,
+#adminBandName2,
+#adminBandName3,
+#adminBandName4,
+#adminBandName5,
+#manageBand1,
+#manageBand2 {
+	display: none;
+}
+
+#settingsAccountInfo > div > p,
+#settingsCreateBand > div >p,
+#settingsManageBand > div > p,
+#settingsCreateCampaign > div > p,
+#settingsEditCampaign > div > p {
+	margin: 0;
+}
+
+#searchOptionsBox {
+	border-color: #666;
+	border-width: 1px;
+	border-style: solid;
+	background-color:#eee;
+	padding-left:10px;
+	padding-right:10px;
+	padding-top:5px;
+	padding-bottom:5px;
+}
+
+#generalInfoBox {
+	height: 200px;
+}
+
+#footer { /* copied from Bootstrap's examples */
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  /* Set the fixed height of the footer here */
+  height: 60px;
+  background-color: #f5f5f5;
+}
+
+#itinerary p {
+	color: #333;
+	margin-left: 10px;
+	margin-top: 10px;
+	font-size: 70%;
+}
+#itinerary h4 {
+	margin:0;
+	background-color:#c0c0c0;
+	padding:5px;
+}
+
+#contributors h3,
+#contributors h4 {
+	margin-left: 0;
+}
+#contributors h3 {
+	margin-bottom: 0;
+}

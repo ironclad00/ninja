@@ -1,0 +1,585 @@
+/* BOOSTRAP SIZE REFERENCE:
+0-768:		xs
+768-992:	sm
+992-1200:	md
+1200-inf:	lg
+*/
+
+/* ISSUES
+* problems caused on iPad - seems to register as size xs, but banner is still displayed and is centered
+* redo styles for red and blue buttons, including their class name
+* 
+/ISSUES */
+
+
+/*==========================================================*/
+/*                   Media-Specific Styles                  */
+/*==========================================================*/
+@media (min-width: 768px) and (max-width: 900px) { /*fixes the overlap between the media banner and page content*/
+	.container {
+		padding-left: 80px;
+	}
+}
+
+@media (min-width: 990px) and (max-width: 1100px) { /*fixes the overlap between the media banner and page content*/
+	.container {
+		padding-left: 70px;
+	}
+}
+
+@media (min-width: 1200px) and (max-width: 1320px) { /*fixes the overlap between the media banner and page content*/
+	.container {
+		padding-left: 70px;
+	}
+}
+
+@media (max-width: 768px) { /*all styles for xs-ONLY screens*/
+	.navbar-inverse {
+		background-color:#ae1818;
+	}
+
+	.headerPic {
+		height:100px;
+		margin-top:20px;
+		border-radius:1000px;
+		display: block;
+		margin-left: auto;
+		margin-right: auto;
+		border:2px solid #fff;
+	}
+
+	.headerPicNoBorder {
+		height:100px;
+		margin-top:20px;
+		border-radius:1000px;
+		display: block;
+		margin-left: auto;
+		margin-right: auto;
+	}
+
+	.mobileTitle {
+		text-align:center;
+	}
+
+	.desktopTitle {
+		display:none;
+	}
+
+	img {
+		display:block;
+		margin-left:auto;
+		margin-right:auto;
+	}
+
+	.banner img {
+		display:inline;
+	}
+
+	.desktopMedia {
+		display:none;
+	}
+
+	.mainTab {
+		margin-bottom:70px;
+	}
+
+	#sflogo {
+		max-height:200px;
+	}
+
+	.largeNumberBlock {
+		font-size:60%;
+	}
+}
+
+@media (max-width: 992px) { /*all styles for sm and xs screens*/
+	.tnCollect img {
+		width:18%;
+		display:inline;
+	}
+
+	#photoDisplay img {
+		width:90%;
+	}
+
+	.tnCollect {
+		border-bottom:1px solid white;
+		border-top:1px solid white;
+		margin-bottom:60px;
+	}
+
+	.btnPhoto {
+		width:48%;
+	}
+
+	#stickFlick h2,
+	#liftoff h2,
+	#about h2 {
+		margin-top:40px;
+		color:#f0ad4e;
+	}
+}
+
+@media (min-width: 993px) { /*all styles for md and lg screens*/
+	.tnCollect {
+		border-right:1px solid white;
+	}
+
+	#photoDisplay {
+		margin-left:10px;
+	}
+
+	.tnCollect img {
+		width:48%;
+		display:inline;
+	}
+
+	#photoDisplay img {
+		width:60%;
+	}
+
+	.btnPhoto {
+		width:30%;
+	}
+
+	#stickFlick h2,
+	#liftoff h2 {
+		margin-top:80px;
+		color:#f0ad4e;
+	}
+
+	#badgeDisplay {
+		padding-left:75px;
+		padding-right:75px;
+	}
+}
+
+
+@media (min-width: 768px) { /*all styles for NON-xs screens*/
+	.navbar-inverse {
+		background-color:#000;
+		margin-left:-28px;
+	}
+	
+	.navbar-inverse .navbar-nav > .active > a {
+		color: #000;
+		background-color: #fff;
+		border-bottom-right-radius: 5px;
+		border-bottom-left-radius: 5px;
+	}
+
+	.mobileTitle {
+		display:none;
+	}
+
+	.navbar-sub .subactive a {
+		color:#000;
+	}
+
+	.navbar-sub .subactive {
+		background-color:#fff;
+		border-radius:5px;
+	}
+
+	.navbar-sub li {
+		background-color:#000;
+		border-radius:5px;
+	}
+
+	.navbar-sub {
+		margin-bottom:40px;
+	}
+
+	.mainTab {
+		margin-bottom:50px;
+	}
+
+	.mainTab p {
+		margin-left:20px;
+	}
+
+	.mobileMedia {
+		display:none;
+	}
+
+	.headerPic {
+		border-radius:10px;
+	}
+
+	.headerPicNoBorder {
+		border-radius:10px;
+	}
+
+	.largeNumberBlock {
+		margin-left:20px;
+	}
+
+	#liftoff h3 {
+		margin-left:20px;
+	}
+}
+
+
+
+
+/*==========================================================*/
+/*                  Default Tag Overwrites                  */
+/*==========================================================*/
+a,
+a:hover {
+	text-decoration:none;
+	color:#428bca;
+}
+
+html, body {
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
+body {
+	font-family: Open Sans;
+	background: #000;
+	color:#fff;
+}
+
+h3, h4, h5 {
+	font-family: Open Sans;
+}
+
+p {
+	font-family: Open Sans;
+}
+
+table {
+	width:100%;
+}
+
+table,th,td {
+	border:1px solid #999;
+}
+
+td,th {
+	padding:5px;
+	text-align:center;
+}
+
+td+.solved:hover {
+	background-color:#666;
+}
+
+button {
+	margin-bottom: 16px;
+}
+
+video {
+	margin:0;
+	padding:0;
+	max-width:100%;
+}
+
+red {
+	color:#f00;
+}
+
+yellow {
+	color: #f0ad4e;
+	font-size:120%;
+}
+
+fade {
+	color:#999;
+}
+
+
+
+
+/*==========================================================*/
+/*                   Boostrap Overwrites                    */
+/*==========================================================*/
+.navbar-brand img {
+	margin-top:-5px;
+}
+
+.navbar-inverse {
+	border:none;
+}
+
+.navbar-inverse .navbar-nav > li > a {
+	color: #fff;
+}
+
+.navbar-inverse .navbar-nav > li > a:hover,
+.navbar-inverse .navbar-nav > li > a:focus {
+	color: #999;
+	background-color: transparent;
+}
+
+.navbar-inverse .navbar-nav > .active > a {
+	color: #000;
+	background-color: #fff;
+}
+
+.navbar-inverse .navbar-nav > .active > a:hover,
+.navbar-inverse .navbar-nav > .active > a:focus {
+	background-color:#ddd;
+	color:#333;
+}
+
+.navbar-inverse .navbar-brand {
+	color:#fff;
+}
+
+.navbar-inverse .navbar-toggle {
+  border-color: #fff;
+  background-color: #D63030;
+}
+
+
+
+
+/*==========================================================*/
+/*                     Custom Classes                       */
+/*==========================================================*/
+.banner {
+	background: -webkit-linear-gradient(#D63030, #850000); /* For Safari 5.1 to 6.0 */
+	background: -o-linear-gradient(#D63030, #850000); /* For Opera 11.1 to 12.0 */
+	background: -moz-linear-gradient(#D63030, #850000); /* For Firefox 3.6 to 15 */
+	background: linear-gradient(#D63030, #850000); /* Standard syntax */
+	border-bottom:5px solid #fff;
+	padding-top:10px;
+	padding-bottom:10px;
+}
+
+.redBtn {
+	background: #aa0000;
+	border:1px solid #850000;
+	padding:5px;
+	color: #ddd;
+	border-radius:5px;
+}
+.blueBtn {
+	background: #00a;
+	border:1px solid #000087;
+	padding:5px;
+	color: #ddd;
+	border-radius:5px;
+}
+
+.navbar-sub li {
+	display:inline;
+	padding:10px;
+	font-size:90%;
+}
+
+.headerCell {
+	background-color: #435a5f;
+	color: #e99400;
+}
+
+.solved {
+	background-color: #0f192a;
+}
+
+.solved a {
+	color: #e99400;
+}
+
+.desktopMedia {
+	position:fixed;
+	left:0;
+}
+
+.desktopMedia img {
+	display:block;
+	height:48px;
+}
+
+.mobileMedia {
+	position:fixed;
+	left:0;
+	bottom:0;
+	z-index:1;
+}
+
+.mobileMedia img {
+	margin:0;
+	padding:0;
+	margin-right:-4px;
+	display: inline;
+	height: 48px;
+}
+
+.fixMarginEmbed {
+	margin-left:-15px;
+	margin-right:-15px;
+}
+
+.hovering, .viewing {
+	opacity:0.5;
+}
+
+.btnPhoto {
+	background-color:#0f192a;
+	display:inline;
+	margin:0;
+	margin-bottom:10px;
+}
+
+.mainTab .caption {
+	margin:0;
+	margin-bottom:10px;
+	font-style:italic;
+	text-align:center;
+}
+
+.rnd5 {
+	border-radius:5px;
+}
+
+.pFix p {
+	margin:0;
+}
+
+.pFixWithMargins p {
+	margin:0;
+	margin-bottom:10px;
+}
+
+.pFix, .pFixWithMargins {
+	margin-bottom:10px;
+}
+
+.img2, .img3, .img4, .img5, .img6, .img7, .img8, .img9, .img10, .img11, .img12, .img13 {
+	display:none;
+}
+
+.firstH2 {
+	margin-top:0 !important;
+}
+
+.mobileSubNav {
+	margin-left:10px;
+	margin-right:10px;
+	margin-bottom:40px;
+	padding-top:10px;
+	padding-bottom:10px;
+}
+
+.mobileSubNav .col-xs-6 {
+	padding-left:3px;
+	padding-right:3px;
+}
+
+.mobileSubNav a {
+	text-align:center;
+	margin-bottom:10px;
+	display:block;
+	width:100%;
+	overflow: hidden;
+}
+
+
+
+
+/*==========================================================*/
+/*                       Custom IDS                         */
+/*==========================================================*/
+#prog2, #prog3, #prog4, #prog5, #prog6, #prog7, #prog8, #prog9, #prog10, #prog11, #prog12, #prog13, #prog14, #prog15, #prog16, #prog17,
+#prog18, #prog19, #prog20, #prog21, #prog22, #prog23, #prog24, #prog25, #prog26, #prog27, #prog28, #prog29, #prog30, #prog31, #prog32,
+#prog33, #prog34, #prog35, #prog36, #prog37, #prog38, #prog39, #prog40, #prog41, #prog42, #prog43, #prog44, #prog45, #prog46, #prog47,
+#prog48, #prog49, #prog50 {
+	display:none;
+}
+
+#about p {
+	margin-left:0;
+	margin-bottom:10px;
+}
+
+#photoDisplay p {
+	margin-top:10px;
+	margin-left:0;
+}
+ 
+#photoshop h2 {
+	color:#f0ad4e;
+	font-size:140%;
+}
+
+#jumpTo h3 {
+	font-size:125% !important;
+	color:white !important;
+	margin-left:0 !important;
+}
+
+#euler h2 {
+	color:#ff4646;
+	font-size:140%;
+}
+
+#topShortcut {
+	display: inline;
+	height: 48px;
+	position:fixed;
+	bottom:0;
+	right:0;
+	z-index:1;
+	border-top-left-radius: 5px;
+}
+
+#enemies > div p {
+	margin:0;
+}
+
+#stickFlick .rnd5 {
+	margin-bottom:10px;
+}
+
+#jumpTo {
+	border-left:1px solid white;
+	border-bottom:1px solid white;
+	margin-top:70px;
+}
+
+#sflogo {
+	margin:0;
+	border-radius:5px;
+	position:block;
+	margin-left:auto;
+	margin-right:auto;
+}
+
+#topShortcut {
+	display:none;
+}
+
+#sfBackHover {
+	display:none;
+}
+
+#onImgCaption {
+	display:none;
+}
+
+#animGallery img {
+	float:left;
+	margin:4px;
+	max-height:200px;
+	border-radius:5px;
+}
+
+#animGallery {
+	margin-bottom:30px;
+}
+
+#liftoff h3 {
+	color:#ff4646;
+	font-size:140%;
+}
+
+#widgets {
+	background-color:#bbb;
+	border-radius:10px;
+	margin-left:20px;
+	margin-right:20px;
+}

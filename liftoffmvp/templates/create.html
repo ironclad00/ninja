@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<!-- <meta name="description" content="">
+		<meta name="author" content="">
+		<link rel="shortcut icon" href="../../assets/ico/favicon.ico"> -->
+		<!-- FILL THESE IN LATER -->
+
+		<title>Welcome to Liftoff</title>
+		<link rel="shortcut icon" href="../static/images/favicon.ico">
+
+		<!-- Bootstrap -->
+		<link href="../static/css/bootstrap.min.css" rel="stylesheet">
+		<link href="../static/css/liftoff.css" rel="stylesheet" type="text/css">
+		<link href="../static/css/fonts.css" rel="stylesheet" type="text/css">
+
+		<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+		<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+		<!--[if lt IE 9]>
+			<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+			<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+		<![endif]-->
+	</head>
+
+
+
+	<!-- Notes 
+	* page 1: basic info
+	* page 2: media links
+	* page 3: itinerary
+	* page 4: connections
+	* page 5: rewards
+	* 
+	/Notes -->
+
+
+
+	<body>
+		<!-- ===================================== -->
+		<!--         Login/Register Modal          -->
+		<!-- ===================================== -->
+		<div class="modal fade" id="loginRegister" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+						<h4 class="modal-title">Login/Register</h4>
+					</div>
+					<div class="modal-body">
+						<h1 class="noHead">Login</h1>
+						<form role="form">
+							<div class="form-group">
+								<label class="sr-only" for="emailInput">Email address</label>
+								<input type="email" class="form-control" id="emailLogin" placeholder="Enter email">
+							</div>
+							<div class="form-group">
+								<label class="sr-only" for="passwordInput">Password</label>
+								<input type="password" class="form-control" id="pwLogin" placeholder="Enter password">
+							</div>
+							<div class="form-group">
+								<div class="col-sm-4">
+									<div class="checkbox">
+										<label>
+											<input type="checkbox"> Remember me
+										</label>
+									</div>
+									<div class="form-group">
+										<div class="inlineWithCheckbox"><a href="forgot">Forgot your password?</a></div>
+									</div>
+								</div>
+							</div>
+							<br>
+							<!-- NEED TO FILL IN INFO FOR DATABASE ACTIONS -->
+							<a href="about" class="btn btn-submit">Submit</a>
+							<!-- NEED TO FILL IN INFO FOR DATABASE ACTIONS -->
+						</form>
+						<br>
+						<h1>New to Liftoff? Register Here</h1>
+						<form role="form">
+							<div class="form-group">
+								<label class="sr-only" for="emailInput">Email address</label>
+								<input type="email" class="form-control" id="emailRegister" placeholder="Enter email">
+							</div>
+							<div class="form-group">
+								<label class="sr-only" for="passwordInput">Password</label>
+								<input type="password" class="form-control" id="pwRegister1" placeholder="Enter password">
+							</div>
+							<div class="form-group">
+								<label class="sr-only" for="passwordInput">Re-enter Password</label>
+								<input type="password" class="form-control" id="pwRegister2" placeholder="Re-enter password">
+							</div>
+							<div class="col-md-12">
+								<!-- NEED TO FILL IN INFO FOR DATABASE ACTIONS -->
+								<a href="about" class="btn btn-submit">Submit</a>
+								<!-- NEED TO FILL IN INFO FOR DATABASE ACTIONS -->
+							</div>
+							<br><br><br>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div><!-- /Login/Register Modal -->
+
+		<!-- ===================================== -->
+		<!--             Navbar Content            -->
+		<!-- ===================================== -->
+		<div class="container" id="navCont">
+			<div class="navbar navbar-default" role="navigation">
+				<div class="container-fluid">
+					<div class="navbar-header">
+						<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+							<span class="sr-only">Toggle navigation</span>
+							<span class="icon-bar"></span>
+							<span class="icon-bar"></span>
+							<span class="icon-bar"></span>
+						</button>
+						<div class="hidden-sm hidden-md hidden-lg"> <!-- This text only appears on mobile devices -->
+							<a class="navbar-brand" data-toggle="collapse" data-target=".navbar-collapse">Main Menu</a>
+						</div>
+					</div>
+					<div class="navbar-collapse collapse">
+						<ul class="nav navbar-nav">
+							<li><a href="index">Home</a></li>
+							<li><a href="about">About</a></li>
+							<li><a href="browse">Browse</a></li>
+							<li class="active"><a href="create">Create</a></li>
+							<li><a href="http://z13.invisionfree.com/LiftoffCommunity/" target="_blank">Forums</a></li>
+							<li><a href="account">My Account*</a></li>
+						</ul>
+						<ul class="nav navbar-nav navbar-right">
+							<li>
+								<a class="hidden-sm hidden-xs" href="#" data-toggle="modal" data-target="#loginRegister">Login/Register</a>
+								<a class="hidden-md hidden-lg" href="login">Login/Register*</a>
+							</li>
+							<!-- <li><a href="#">Log Out</a></li> This only displays if the user is logged in -->
+							<li class="help"><a href="help">Help</a></li>
+						</ul>
+				</div>
+			</div>
+		</div><!-- /Navbar Content -->
+
+		<h1 class="pageTitle">Create a Campaign</h1>
+		<div class="container">
+			<div class="col-md-6 col-md-offset-3 simpleInfoBox">
+				<p class="introText">Welcome to the campaign creation page! We here on the Liftoff team are excited to see that you're interested in creating one of the first campaigns on our site!</p>
+				<p><i>Before you get started, remember to watch our tutorial video that covers how to create an awesome campaign on Liftoff!</i> If you ever need help with the creation process, check out our <a href="help">help page</a> or make a post on our <a href="http://z13.invisionfree.com/LiftoffCommunity/index.php?showforum=7" target="_blank">help and support forums</a>!</p>
+			</div>
+			<div class="col-md-6 col-md-offset-3 mainCanvas">
+				<h2>Basic Campaign Info</h2>
+				<hr class="hr-std">
+				<p><i>Any item marked with a <span class="red">*</span> cannot be changed once you finalize and submit your campaign.</i></p>
+				<div class="form" role="form">
+					<div class="form-group">
+						<label for="enterTourName" class="control-label">Tour Name<span class="red">*</span></label>
+						<div class="col-xs-11 col-xs-offset-1">
+							<input type="text" class="form-control" id="createTourName" placeholder="Think of something engaging!">
+						</div>
+					</div>
+				</div>
+				<br>
+				<p><strong>You appear to have multiple band profiles attached to your account. Which one(s) will be participating in this tour?<span class="red">*</span></strong></p>
+				<div class="col-xs-11 col-xs-offset-1" style="margin-top:-10px;"> <!-- INLINE CSS -->
+					<div class="checkbox">
+						<label>
+							<input type="checkbox"s>
+							[Band 1]
+						</label>
+					</div>
+					<div class="checkbox">
+						<label>
+							<input type="checkbox"s>
+							[Band 2]
+						</label>
+					</div>
+				</div>
+				<br>
+				<p><strong>How many bands <i>other than your own</i> will be participating?<span class="red">*</span></strong></p>
+				<div class="col-xs-11 col-xs-offset-1">
+					<div class="btn-group">
+						<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" id="numBandsInTour">
+							No Other Bands <span class="caret"></span>
+						</button>
+						<ul class="dropdown-menu" role="genreSelect">
+							<li><a href="javascript:;" onclick="addBandFields(0)">None</a></li>
+							<li><a href="javascript:;" onclick="addBandFields(1)">One Band</a></li>
+							<li><a href="javascript:;" onclick="addBandFields(2)">Two Bands</a></li>
+							<li><a href="javascript:;" onclick="addBandFields(3)">Three Bands</a></li>
+							<li><a href="javascript:;" onclick="addBandFields(4)">Four Bands</a></li>
+							<li><a href="javascript:;" onclick="addBandFields(5)">Five Bands</a></li>
+						</ul>
+					</div>
+					<div class="form" role="form" id="enterBandName1">
+						<div class="input-group marginTB5">
+							<label for="enterBandNames" class="sr-only">Participating Band Name 1</label>
+							<span class="input-group-addon">1</span>
+							<input type="text" class="form-control" placeholder="Band Name 1">
+						</div>
+					</div>
+					<div class="form" role="form" id="enterBandName2">
+						<div class="input-group marginTB5">
+							<label for="enterBandNames" class="sr-only">Participating Band Name 2</label>
+							<span class="input-group-addon">2</span>
+							<input type="text" class="form-control" placeholder="Band Name 2">
+						</div>
+					</div>
+					<div class="form" role="form" id="enterBandName3">
+						<div class="input-group marginTB5">
+							<label for="enterBandNames" class="sr-only">Participating Band Name 3</label>
+							<span class="input-group-addon">3</span>
+							<input type="text" class="form-control" placeholder="Band Name 3">
+						</div>
+					</div>
+					<div class="form" role="form" id="enterBandName4">
+						<div class="input-group marginTB5">
+							<label for="enterBandNames" class="sr-only">Participating Band Name 4</label>
+							<span class="input-group-addon">4</span>
+							<input type="text" class="form-control" placeholder="Band Name 4">
+						</div>
+					</div>
+					<div class="form" role="form" id="enterBandName5">
+						<div class="input-group">
+							<label for="enterBandNames" class="sr-only">Participating Band Name 5</label>
+							<span class="input-group-addon">5</span>
+							<input type="text" class="form-control" placeholder="Band Name 5">
+						</div>
+					</div>
+				</div>
+				<br><br>
+				<p id="makeAdminInfo"><strong>Of the bands entered above, do you want to make any of them capable of editing and updating this campaign? Check all that apply.</strong></p>
+				<div class="col-xs-11 col-xs-offset-1">
+					<div class="form" role="form" id="adminBandName1">
+						<div class="input-group marginTB5">
+							<label for="makeBandAdmin" class="sr-only">Admin Band Name 1</label>
+							<span class="input-group-addon">
+								<input type="checkbox">
+							</span>
+							<input type="text" class="form-control" placeholder="[Band Name]">
+						</div>
+					</div>
+					<div class="form" role="form" id="adminBandName2">
+						<div class="input-group marginTB5">
+							<label for="makeBandAdmin" class="sr-only">Admin Band Name 2</label>
+							<span class="input-group-addon">
+								<input type="checkbox">
+							</span>
+							<input type="text" class="form-control" placeholder="[Band Name]">
+						</div>
+					</div>
+					<div class="form" role="form" id="adminBandName3">
+						<div class="input-group marginTB5">
+							<label for="makeBandAdmin" class="sr-only">Admin Band Name 3</label>
+							<span class="input-group-addon">
+								<input type="checkbox">
+							</span>
+							<input type="text" class="form-control" placeholder="[Band Name]">
+						</div>
+					</div>
+					<div class="form" role="form" id="adminBandName4">
+						<div class="input-group marginTB5">
+							<label for="makeBandAdmin" class="sr-only">Admin Band Name 4</label>
+							<span class="input-group-addon">
+								<input type="checkbox">
+							</span>
+							<input type="text" class="form-control" placeholder="[Band Name]">
+						</div>
+					</div>
+					<div class="form" role="form" id="adminBandName5">
+						<div class="input-group marginTB5">
+							<label for="makeBandAdmin" class="sr-only">Admin Band Name 5</label>
+							<span class="input-group-addon">
+								<input type="checkbox">
+							</span>
+							<input type="text" class="form-control" placeholder="[Band Name]">
+						</div>
+					</div>
+				</div>
+				<div class="form" role="form">
+					<div class="form-group">
+						<label for="enterPromoLink" class="control-label">Promotional Video Link</label>
+						<div class="col-xs-11 col-xs-offset-1 marginTB5">
+							<input type="text" class="form-control" id="promoVideoLink" placeholder="Please Only Use YouTube URLs">
+						</div>
+					</div>
+				</div>
+				<div class="form" role="form">
+					<div class="form-group">
+						<label for="enterGeneralInfo" class="control-label">Introduction and General Info</label>
+						<div class="col-xs-11 col-xs-offset-1 marginTB5">
+							<textarea type="text" class="form-control" id="generalInfoBox" placeholder="If you need help writing this, check out our tutorials."></textarea>
+						</div>
+					</div>
+				</div>
+				<button onclick="window.location='create2';" type="submit" class="btn btn-defaultL btn-block">Next Step (1/4) &#187;</button>
+				<button class="btn btn-warning btn-block">Save and Come Back Later</button>
+				<br>
+			</div>
+		</div>
+		<br>
+
+
+		<footer>
+			<hr class="hr-foot">
+			<p>&copy; Liftoff Music Company 2014</p>
+			<p><a href="#">Private Policy</a>&nbsp;|&nbsp;<a href="#">Other Things? O_o</a></p>
+		</footer>
+		<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+		<!-- Include all compiled plugins (below), or include individual files as needed -->
+		<script src="../static/js/bootstrap.min.js"></script>
+		<script src="../static/js/liftoff.js"></script>
+	</body>
+</html>
