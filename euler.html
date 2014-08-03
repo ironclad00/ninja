@@ -569,9 +569,9 @@ int power(int num, int pow) {
 					<h2>Problem 10</h2>
 					<p>The sum of the primes below 10 is 2+3+5+7 = 17. Find the sum of all the primes below two million.</p>
 					<h2>Comments</h2>
-					<p>None.</p>
+					<p>This one was quite challenging for me. I eventually ended up solving it by treating each potential prime <i>p</i> as a pair of numbers (<i>a</i>,<i>b</i>) such that <i>a</i>*<i>b</i>=<i>p</i>, which exponentially reduced the time complexity of my algorithm. See line 24.</p>
 					<h2>Output</h2>
-					<p>The sum of all primes below 2000000 equals 837799.</p>
+					<p>The sum of all primes below 2000000 equals 142913828922.</p>
 					<pre class="brush: cpp;">
 #include &lt;stdio.h>
 #define TARGET 2000000
