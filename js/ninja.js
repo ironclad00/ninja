@@ -68,8 +68,10 @@ $(document).ready(function(){
 			color="#0274b3";
 		else if(id=="mflag4") //email
 			color="#d9d9d9";
-		else 				  //github
+		else if(id=="mflag5") //github
 			color="#492248";
+		else 				  //twitter
+			color="#5ea9dd";
 
 		var anim = setInterval(function(){
 			count++;
