@@ -98,6 +98,10 @@
 		display:inline;
 	}
 
+	#formula16 {
+		width:100%;
+	}
+
 	#photoDisplay img {
 		width:90%;
 	}
@@ -123,6 +127,11 @@
 @media (min-width: 993px) { /*all styles for md and lg screens*/
 	.tnCollect {
 		border-right:1px solid white;
+	}
+
+	#formula16 {
+		margin-left:20px;
+		width:40%;
 	}
 
 	#photoDisplay {
