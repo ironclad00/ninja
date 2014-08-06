@@ -102,7 +102,7 @@
 						<td>15</td>
 						<td class="solved"><a href="javascript:;" onclick="loadProg(16)">16</a></td>
 						<td class="solved"><a href="javascript:;" onclick="loadProg(17)">17</a></td>
-						<td>18</td>
+						<td class="solved"><a href="javascript:;" onclick="loadProg(18)">18</a></td>
 						<td>19</td>
 						<td>20</td>
 						<td>21</td>
@@ -139,6 +139,34 @@
 						<td>49</td>
 						<td>50</td>
 					</tr>
+                    <tr>
+						<th class="headerCell">51-75</th>
+						<td>51</td>
+						<td>52</td>
+						<td>53</td>
+						<td>54</td>
+						<td>55</td>
+						<td>56</td>
+						<td>57</td>
+						<td>58</td>
+						<td>59</td>
+						<td>60</td>
+						<td>61</td>
+						<td>62</td>
+						<td>63</td>
+						<td>64</td>
+						<td>65</td>
+						<td>66</td>
+						<td class="solved"><a href="javascript:;" onclick="loadProg(18)">67</a></td>
+						<td>68</td>
+						<td>69</td>
+						<td>70</td>
+						<td>71</td>
+						<td>72</td>
+						<td>73</td>
+						<td>74</td>
+						<td>75</td>
+					</tr>
 				</table>
 				<div class="btn-group hidden-lg hidden-md" style="width:100%;">
 					<button type="button" class="btn btn-warning btn-block dropdown-toggle" data-toggle="dropdown">
@@ -160,7 +188,9 @@
 						<li><a href="javascript:;" onclick="loadProg(14)">14</a></li>
 						<li><a href="javascript:;" onclick="loadProg(16)">16</a></li>
 						<li><a href="javascript:;" onclick="loadProg(17)">17</a></li>
+						<li><a href="javascript:;" onclick="loadProg(18)">18</a></li>
 						<li><a href="javascript:;" onclick="loadProg(48)">48</a></li>
+						<li><a href="javascript:;" onclick="loadProg(67)">67</a></li>
 					</ul>
 				</div><br><br>
 				<div id="prog1" class="progactive">
@@ -1322,6 +1352,120 @@ int main() {
     printf("one thousand\n");
     
     printf("The sum of the number of letters in the numbers [1,1000] is %d.\n",sum);
+
+    return 0;
+}
+					</pre>
+				</div>
+                <div id="prog18" class="progactive">
+					<h2>Problem 18 and 67 (C++)</h2>
+					<p>By starting at the top of the triangle below and moving to adjacent numbers on the row below, the maximum total from top to bottom is 23.<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<red>3</red><br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;<red>7</red> 4<br>
+                        &nbsp;&nbsp;2 <red>4</red> 6<br>
+                        8 5 <red>9</red> 3<br>
+                        That is, 3+7+4+9 = 23.</p>
+                    <p>
+                        <i>For 18: </i>Find the maximum total from top to bottom in the triangle give in <a href="https://github.com/ironclad00/euler/blob/master/18input.txt">my github file</a> that contains 15 rows.<br>
+                        <i>For 67: </i>Find the maximum total from top to bottom in <a href="https://projecteuler.net/project/triangle.txt">triangle.txt</a>, a 15K text file containing a triangle with one-hundred rows.
+                    </p>
+					<h2>Comments</h2>
+					<p>This entry encompasses solutions for both problems 18 and 67, which are technically the same, only 67 forces the coder to use a more efficient algorithm than in 18. </p>
+					<h2>Output</h2>
+                    <p><i>For 18:</i><br>
+                        Use input from problem 18 (small) or problem 67 (large)? Enter desired problem number and press enter: 18<br>
+					    The maximum total from top to bottom of the triangle with 15 lines is 1074.
+                    </p>
+                    <p><i>For 67:</i><br>
+                        Use input from problem 18 (small) or problem 67 (large)? Enter desired problem number and press enter: 67<br>
+					    The maximum total from top to bottom of the triangle with 100 lines is 7273.
+                    </p>
+					<pre class="brush: cpp;">
+#include &lt;iostream>
+#include &lt;fstream>
+#include &lt;string>
+using namespace std;
+
+int main() {
+    string temp;		//stores individual lines read in through .txt file
+    string pref;		//stores the user's decision to run 18 or 67 in STRING form
+    int choice;			//stores the user's decision to run 18 or 67 in INT form
+    int i,j;
+    int dig1,dig2;		//temporary storage used when converting string numbers to ints
+    int TARGET;			//stores how many lines are read in from .txt file
+    int userInput=0;	//tracks whether or not the user has entered appropriate input
+    ifstream textFile;
+    
+    while(!userInput) { //allows user to choose between running prob18 and prob67
+    	cout&lt;&lt;"Use input from problem 18 (small) or problem 67 (large)? Enter desired problem number and press enter: ";
+    	cin>>pref;
+        if(pref.length()==2) {
+        	dig1 = (int)pref[0]-48;
+        	dig2 = (int)pref[1]-48;
+        }
+        else {
+            cout&lt;&lt;"\nInvalid input. Please try again.\n";
+        }
+        choice=dig1*10+dig2;
+        
+        if(choice==18) {
+            TARGET=15;
+    		textFile.open("18input.txt");
+            userInput=1;
+        }
+        else if(choice==67) {
+            TARGET=100;
+    		textFile.open("67input.txt");
+            userInput=1;
+        }
+        else {
+            cout&lt;&lt;"\nInvalid input. Please try again.\n";
+        }
+    }
+
+    //reading input from file and storing in string form
+	string line[TARGET];  //stores the entire .txt input in string form
+    if(textFile.is_open())
+        for(i=0;i&lt;TARGET;i++) {
+        	getline(textFile,temp);
+        	line[i]=temp;
+    	}
+    else
+        printf("A file-related error occurred.\n");
+    textFile.close();
+    //end read
+
+	//formatting string input to int array    
+    int triangle[TARGET][TARGET];
+    for(i=0;i&lt;TARGET;i++) {
+        for(j=0;j&lt;TARGET;j++) {
+            triangle[i][j]=-1; //unused indecies initialized to -1 for debugging purposes
+        }
+    }
+    for(i=0;i&lt;TARGET;i++) {
+        int k=0;
+        for(j=0;j&lt;=i;j++) {
+            int dig1=((int)line[i][k]-48)*10;
+            int dig2=(int)line[i][k+1]-48;
+            int num=dig1+dig2;
+            triangle[i][j]=num;
+            k+=3;
+        }
+    }//end format
+    
+    //algorithm begins
+    for(i=TARGET-1;i>=0;i--) {
+        for(j=0;j&lt;i;j++) {
+            if(triangle[i][j]>triangle[i][j+1]) {
+                triangle[i-1][j]+=triangle[i][j];
+            }
+            else {
+                triangle[i-1][j]+=triangle[i][j+1];
+            }
+        }
+    }//end algorithm
+    
+    cout&lt;&lt;"The maximum total from top to bottom of the triangle with "&lt;&lt;TARGET&lt;" lines is "&lt;&lt;triangle[0][0]&lt;&lt;".\n";
 
     return 0;
 }
