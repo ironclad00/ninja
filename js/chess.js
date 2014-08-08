@@ -1,10 +1,10 @@
 "use strict";
+//http://commons.wikimedia.org/wiki/Category:SVG_chess_pieces
 
 $(document).ready(function(){
 	if(document.getElementById("gameboard")) {
 		$("svg").remove();
 		$("#gameboard").css({"width":"90%","margin-left":"5%"});
-		drawGameBoard();
 
 		$(".navbar-toggle").click(function(){
 			$("svg").toggle();
@@ -12,17 +12,48 @@ $(document).ready(function(){
 	}
 });
 
-function drawGameBoard() {
+function playChess() {
+	$(".banner").fadeOut(500);
+	$(".navbar").fadeOut(500);
+	$(".desktopMedia").fadeOut(500);
+	$(".desktopMedia").fadeOut(500);
+	$(".mobileMedia").fadeOut(500);
+	$("#top").fadeOut();
+	$("#chess").fadeOut();
+	setTimeout(function() { drawGameBoard(1); }, 550);
+	;
+}
+
+function quitChess() {
+	$("svg").fadeOut(500);
+	$("#gameControls").fadeOut(500);
+	$("svg").remove();
+	//$("p").css("font-family","Open Sans");
+	setTimeout(function() {
+		$(".banner").fadeIn(500);
+		$(".navbar").fadeIn(500);
+		$(".desktopMedia").fadeIn(500);
+		$(".desktopMedia").fadeIn(500);
+		$(".mobileMedia").fadeIn(500);
+		$("#top").fadeIn();
+		$("#chess").fadeIn();
+	}, 550);
+	;
+}
+
+function drawGameBoard(resize) {
+	//$("p").css("font-family","Montserrat");
+	$("#gameControls").css({"display":"block"});
 	var isWide,paper,rad1;
 	var color1="#333";
 	var color2="#bbb";
 	var colorH="#0ff";
 	var colorS="";
 	var colorHS="#016E6E";
-	var colorSelect="#FFFF52";
-	var colorSelectS="#8C8C2E";
-	var colorCapture="#FF6666";
-	var colorCaptureS="";
+	var colorSelect="#FFFF52";		//remove
+	var colorSelectS="#8C8C2E";		//remove
+	var colorCapture="#FF6666";		//remove
+	var colorCaptureS="#8C2E2E";	//remove
 	if($(window).width() > $(window).height()) //determines board orientation
 		isWide=1;
 	else
@@ -47,7 +78,7 @@ function drawGameBoard() {
 	}
 
 	var startX=($(window).width()/2)-(boardWidth/2);
-	var startY=bounds.top+window.pageYOffset;
+	var startY=(bounds.top+window.pageYOffset)+($(window).height()*0.05);
 	paper=Raphael(startX, startY, boardWidth, boardHeight);
 	$("svg").css({"margin-bottom":"40px"});
 
@@ -76,6 +107,10 @@ function drawGameBoard() {
 		spaceObjectArray[i].occupied=0;	//odd=white, even=black
 	}
 
+
+	/*	set direction attributes for each space on the board
+	even indexes are cardinal directions
+	odd indexes are diagonal directions with 0=west and ascending clock-wise */
 	spaceObjectArray[0].direct[4]=1;
 	spaceObjectArray[0].direct[5]=6;
 	spaceObjectArray[0].direct[6]=5;
@@ -283,9 +318,9 @@ function drawGameBoard() {
 	spaceObjectArray[26].direct[1]=16;
 	spaceObjectArray[26].direct[2]=27;
 	spaceObjectArray[26].direct[3]=38;
-	spaceObjectArray[26].direct[4]=37;
-	spaceObjectArray[26].direct[5]=37;
-	spaceObjectArray[26].direct[6]=37;
+	spaceObjectArray[26].direct[4]=37; //problem
+	spaceObjectArray[26].direct[5]=37; //problem
+	spaceObjectArray[26].direct[6]=37; //problem
 	spaceObjectArray[26].direct[7]=36;
 
 	spaceObjectArray[27].direct[0]=26;
@@ -330,11 +365,11 @@ function drawGameBoard() {
 	spaceObjectArray[31].direct[6]=42;
 	spaceObjectArray[31].direct[7]=41;
 
-	spaceObjectArray[32].direct[3]=21;
-	spaceObjectArray[32].direct[4]=22;
-	spaceObjectArray[32].direct[5]=33;
-	spaceObjectArray[32].direct[6]=44;
-	spaceObjectArray[32].direct[7]=43;
+	spaceObjectArray[32].direct[2]=21;
+	spaceObjectArray[32].direct[3]=22;
+	spaceObjectArray[32].direct[4]=33;
+	spaceObjectArray[32].direct[5]=44;
+	spaceObjectArray[32].direct[6]=43;
 
 	spaceObjectArray[33].direct[0]=32;
 	spaceObjectArray[33].direct[1]=21;
@@ -374,9 +409,9 @@ function drawGameBoard() {
 
 	spaceObjectArray[37].direct[0]=36;
 	spaceObjectArray[37].direct[1]=25;
-	spaceObjectArray[37].direct[2]=26;
-	spaceObjectArray[37].direct[3]=26;
-	spaceObjectArray[37].direct[4]=26;
+	spaceObjectArray[37].direct[2]=26; //problem
+	spaceObjectArray[37].direct[3]=26; //problem
+	spaceObjectArray[37].direct[4]=26; //problem
 	spaceObjectArray[37].direct[5]=27;
 	spaceObjectArray[37].direct[6]=38;
 	spaceObjectArray[37].direct[7]=47;
@@ -584,7 +619,8 @@ function drawGameBoard() {
 	spaceObjectArray[63].direct[1]=57;
 	spaceObjectArray[63].direct[2]=58;
 
-	/* draw all 64 pieces on the board individually */
+
+	/* draw all 64 pieces on the board and store each one in spacePathArray */
 	spacePathArray[0] =paper.path("M"+(cx-Math.sqrt(Math.pow(rad5,2)-Math.pow(rad4,2)))+",0 A"+rad5+","+rad5+" 0,0,0 "+(cx-Math.sqrt(Math.pow(rad5,2)-Math.pow(rad3,2)))+","+(cy-rad3)+" L"+(cx-Math.sqrt(Math.pow(rad6,2)-Math.pow(rad3,2)))+","+(cy-rad3)+" A"+rad6+","+rad6+" 0,0,1 "+(cx-Math.sqrt(Math.pow(rad6,2)-Math.pow(rad4,2)))+",0 Z");
 	spacePathArray[1] =paper.path("M"+cx+",0 A"+rad4+","+rad4+" 0,0,0 "+(cx-Math.sqrt(Math.pow(rad4,2)-Math.pow(rad3,2)))+","+(cy-rad3)+" L"+(cx-Math.sqrt(Math.pow(rad5,2)-Math.pow(rad3,2)))+","+(cy-rad3)+" A"+rad5+","+rad5+" 0,0,1 "+(cx-Math.sqrt(Math.pow(rad5,2)-Math.pow(rad4,2)))+",0 Z");
 	spacePathArray[2] =paper.path("M"+cx+","+(cy-rad3)+" L"+(cx+Math.sqrt(Math.pow(rad4,2)-Math.pow(rad3,2)))+","+(cy-rad3)+" A"+rad4+","+rad4+" 0,0,0 "+(cx-Math.sqrt(Math.pow(rad4,2)-Math.pow(rad3,2)))+","+(cy-rad3)+" Z");
@@ -650,15 +686,16 @@ function drawGameBoard() {
 	spacePathArray[62]=paper.path("M"+cx+","+(cy+rad4)+" A"+rad4+","+rad4+" 0,0,0 "+(cx+Math.sqrt(Math.pow(rad4,2)-Math.pow(rad3,2)))+","+(cy+rad3)+" L"+(cx+Math.sqrt(Math.pow(rad5,2)-Math.pow(rad3,2)))+","+(cy+rad3)+" A"+rad5+","+rad5+" 0,0,1 "+(cx+Math.sqrt(Math.pow(rad5,2)-Math.pow(rad4,2)))+","+(cy+rad4)+" Z");
 	spacePathArray[63]=paper.path("M"+(cx+Math.sqrt(Math.pow(rad5,2)-Math.pow(rad4,2)))+","+(cy+rad4)+" A"+rad5+","+rad5+" 0,0,0 "+(cx+Math.sqrt(Math.pow(rad5,2)-Math.pow(rad3,2)))+","+(cy+rad3)+" L"+(cx+Math.sqrt(Math.pow(rad6,2)-Math.pow(rad3,2)))+","+(cy+rad3)+" A"+rad6+","+rad6+" 0,0,1 "+(cx+Math.sqrt(Math.pow(rad6,2)-Math.pow(rad4,2)))+","+(cy+rad4)+" Z");
 
+
 	/* if its a new game, set up pieces in their starting positions */
-	spaceObjectArray[1].occupied=1;
+	/*spaceObjectArray[1].occupied=1;
 	spaceObjectArray[6].occupied=1;
 	spaceObjectArray[13].occupied=1;
 	spaceObjectArray[22].occupied=1;
 	spaceObjectArray[33].occupied=1;
 	spaceObjectArray[44].occupied=1;
 	spaceObjectArray[53].occupied=1;
-	spaceObjectArray[60].occupied=0;
+	spaceObjectArray[60].occupied=1;
 	spaceObjectArray[3].occupied=2;
 	spaceObjectArray[10].occupied=2;
 	spaceObjectArray[19].occupied=2;
@@ -666,7 +703,7 @@ function drawGameBoard() {
 	spaceObjectArray[41].occupied=2;
 	spaceObjectArray[50].occupied=2;
 	spaceObjectArray[57].occupied=2;
-	spaceObjectArray[62].occupied=2;
+	spaceObjectArray[62].occupied=2;*/
 
 	spaceObjectArray[0].occupied=3;
 	spaceObjectArray[59].occupied=3;
@@ -689,11 +726,11 @@ function drawGameBoard() {
 	spaceObjectArray[21].occupied=11;
 	spaceObjectArray[42].occupied=12;
 
-	/* test pieces - remove from final */
-	spaceObjectArray[18].occupied=2;
-	spaceObjectArray[29].occupied=2;
 
-	/* set default direction vectors */
+	/* set default prev-direction vectors. these values indicate the direction that 
+	each pieces has moved from so that its path can be calculated based on this directon
+	for white, default=0 (west)
+	for black, default=4 (east)*/
 	for(var i=0; i<64; i++) {
 		var temp = spaceObjectArray[i].occupied;
 		if(temp!=0 && temp%2==0) {
@@ -704,7 +741,7 @@ function drawGameBoard() {
 	}
 
 
-	/* set basic space attributes */
+	/* set basic space attributes. this includes: id, index #, color, and the (x,y) coord of the center of the piece */
 	for(var i=0; i<64; i++) {
 		var title=i.toString();
 		var id="sp".concat((i+1).toString());
@@ -721,7 +758,7 @@ function drawGameBoard() {
 		spacePathArray[i].node.setAttribute("class","boardSpace");
 		spacePathArray[i].node.setAttribute("id",id);
 
-
+		//creates the x,y coordinates for each space (NEEDS ADJUSTING)
 		var sBounds = spacePathArray[i].getBBox();
 		if(i==1 || i==7 || i==15 || i==25 || i==36 || i==46 || i==54 || i==60)
 			spaceObjectArray[i].cx=sBounds.x+(sBounds.width/3.6);
@@ -732,64 +769,12 @@ function drawGameBoard() {
 		spaceObjectArray[i].cy=sBounds.y+rad05;
 	}
 
-	/* draw pieces */
-	for(i=0; i<64; i++) {
-		switch(spaceObjectArray[i].occupied) {
-			case(1): //white pawn
-				var pawn=paper.circle(spaceObjectArray[i].cx, spaceObjectArray[i].cy, 25);
-				pawn.attr("fill","white");
-				pawn.attr("stroke","white");
-				pawn.node.setAttribute("class","piece");
-				break;
-			case(2): //black pawn
-				var pawn=paper.circle(spaceObjectArray[i].cx, spaceObjectArray[i].cy, 25);
-				pawn.attr("fill","black");
-				pawn.attr("stroke","black");
-				pawn.node.setAttribute("class","piece");
-				break;
-			case(3): //white rook
-				var rook=paper.rect(spaceObjectArray[i].cx-25, spaceObjectArray[i].cy-25, 40,40);
-				rook.attr("fill","white");
-				rook.attr("stroke","white");
-				rook.node.setAttribute("class","piece");
-				break;
-			case(4): //black rook
-				var rook=paper.rect(spaceObjectArray[i].cx-10, spaceObjectArray[i].cy-25, 40,40);
-				rook.attr("fill","black");
-				rook.attr("stroke","black");
-				rook.node.setAttribute("class","piece");
-				break;
-			case(5): //white knite
-				var rook=paper.rect(spaceObjectArray[i].cx-25, spaceObjectArray[i].cy-25, 40,40);
-				rook.attr("fill","white");
-				rook.attr("stroke","white");
-				rook.node.setAttribute("class","piece");
-				break;
-			case(6): //black knite
 
-				break;
-			case(7): //white bishop
-
-				break;
-			case(8): //black bishop
-
-				break;
-			case(9): //white queen
-
-				break;
-			case(10): //black queen
-
-				break;
-			case(11): //white king
-
-				break;
-			case(12): //black king
-
-				break;
-			default:
-				break;
-		}
+	/* draw pieces (first time set-up) */
+	for(var i=0;i<64;i++) {
+		setPiece(paper, spaceObjectArray[i].occupied, spaceObjectArray[i].cx, spaceObjectArray[i].cy, i);
 	}
+
 
 	/* set space hover attributes */
 	$(".boardSpace").hover(function(){
@@ -806,6 +791,7 @@ function drawGameBoard() {
 			$(this).attr("stroke",colorS);
 		}
 	});
+
 
 	/* set ALL space click functionality */
 	$(".boardSpace").click(function(){
@@ -830,213 +816,189 @@ function drawGameBoard() {
 			switch(isOccupied) {
 /*white pawn*/	case(1):
 /*black pawn*/	case(2):
-					//check forward
-					var nextDirIndex = spaceObjectArray[index].prevDirIndex+4;
-					if(nextDirIndex>7)
-						nextDirIndex-=8;
-					else if(nextDirIndex<0)
-						nextDirIndex+=8;
-					var nextIndex = spaceObjectArray[index].direct[nextDirIndex];
-					if(nextIndex!=-1 && spaceObjectArray[nextIndex].occupied==0) { //if the next board space exists and is unoccupied
-						for(var i=0; i<8; i++) //get piece's vector from current space and store it in next space
-							if(spaceObjectArray[nextIndex].direct[i]==index)
-								spaceObjectArray[nextIndex].prevDirIndex=i;
-						var moveToIndex = parseInt(spacePathArray[nextIndex].node.getAttribute("id").replace("sp",""))-1;
-						var movable = spacePathArray[nextIndex].clone();
-						movable.node.setAttribute("class","movableSpaces");
-						movable.node.setAttribute("to",moveToIndex);
-						movable.node.setAttribute("from",index);
-						movable.node.setAttribute("with",isOccupied);
-						movable.attr("fill",colorSelect);
-						movable.attr("stroke",colorSelectS);
-					}
-
-					//check diagonals
-					var capDirIndex1 = spaceObjectArray[index].prevDirIndex+3;
-					var capDirIndex2 = spaceObjectArray[index].prevDirIndex+5;
-					if(capDirIndex1>7)
-						capDirIndex1-=8;
-					else if(capDirIndex1<0)
-						capDirIndex1+=8;
-					if(capDirIndex2>7)
-						capDirIndex2-=8;
-					else if(capDirIndex2<0)
-						capDirIndex2+=8;
-					var capIndex1 = spaceObjectArray[index].direct[capDirIndex1];
-					var capIndex2 = spaceObjectArray[index].direct[capDirIndex2];
-					if(index==3 || index==10) {
-						spaceObjectArray[capIndex1].prevDirIndex=2;
-						spaceObjectArray[capIndex2].prevDirIndex=2;
-					}
-
-					if(capIndex1!=-1 && spaceObjectArray[capIndex1].occupied!=0 && ((spaceObjectArray[index].occupied%2==0 && spaceObjectArray[capIndex1].occupied%2!=0) || (spaceObjectArray[index].occupied%2!=0 && spaceObjectArray[capIndex1].occupied%2==0))) { //if the next board space exists and is occupied by enemy
-						for(var i=0; i<8; i++)
-							if(spaceObjectArray[capIndex1].direct[i]==index)
-								spaceObjectArray[capIndex1].prevDirIndex=spaceObjectArray[index].prevDirIndex;
-						moveToIndex = parseInt(spacePathArray[capIndex1].node.getAttribute("id").replace("sp",""))-1;
-						movable = spacePathArray[capIndex1].clone();
-						movable.node.setAttribute("class","movableSpaces");
-						movable.node.setAttribute("to",moveToIndex);
-						movable.node.setAttribute("from",index);
-						movable.node.setAttribute("with",isOccupied);
-						movable.attr("fill",colorCapture);
-						movable.attr("stroke",colorCaptureS);
-					}
-					if(capIndex2!=-1 && spaceObjectArray[capIndex2].occupied!=0 && ((spaceObjectArray[index].occupied%2==0 && spaceObjectArray[capIndex2].occupied%2!=0) || (spaceObjectArray[index].occupied%2!=0 && spaceObjectArray[capIndex2].occupied%2==0))) { //if the next board space exists and is occupied by enemy
-						for(var i=0; i<8; i++)
-							if(spaceObjectArray[capIndex2].direct[i]==index)
-								spaceObjectArray[capIndex2].prevDirIndex=spaceObjectArray[index].prevDirIndex;
-						moveToIndex = parseInt(spacePathArray[capIndex2].node.getAttribute("id").replace("sp",""))-1;
-						movable = spacePathArray[capIndex2].clone();
-						movable.node.setAttribute("class","movableSpaces");
-						movable.node.setAttribute("to",moveToIndex);
-						movable.node.setAttribute("from",index);
-						movable.node.setAttribute("with",isOccupied);
-						movable.attr("fill",colorCapture);
-						movable.attr("stroke",colorCaptureS);
-					}
+					//account for 2 squares on first turn
+					//account for en passant
+					//account for diagonal captures
 					break;
 /*white rook*/	case(3):
+/*black rook*/	case(4):
+					//check ALL directions
 					var originalIndex=index;
-					//check forward
-					var nextDirIndex = spaceObjectArray[index].prevDirIndex+4;
-					if(nextDirIndex>7)
-						nextDirIndex-=8;
-					else if(nextDirIndex<0)
-						nextDirIndex+=8;
-					var nextIndex = spaceObjectArray[index].direct[nextDirIndex];
-					while(nextIndex!=-1 && spaceObjectArray[nextIndex].occupied==0) { //if the next board space exists and is unoccupied
-						for(var i=0; i<8; i++) //get piece's vector from current space and store it in next space
-							if(spaceObjectArray[nextIndex].direct[i]==index)
-								spaceObjectArray[nextIndex].prevDirIndex=i;
-						var moveToIndex = parseInt(spacePathArray[nextIndex].node.getAttribute("id").replace("sp",""))-1;
-						var movable = spacePathArray[nextIndex].clone();
-						movable.node.setAttribute("class","movableSpaces");
-						movable.node.setAttribute("to",moveToIndex);
-						movable.node.setAttribute("from",index);
-						movable.node.setAttribute("with",isOccupied);
-						movable.attr("fill",colorSelect);
-						movable.attr("stroke",colorSelectS);
+					var originalNextDirIndex=0;
+					var nextDirIndex=0;
+					for(var j=0;j<4;j++) {
+						var nextIndex = spaceObjectArray[index].direct[nextDirIndex];
+						while(nextIndex!=-1 && spaceObjectArray[nextIndex].occupied==0) { //if the next board space exists and is unoccupied
+							for(var i=0; i<8; i++) //get piece's vector from current space and store it in next space
+								if(spaceObjectArray[nextIndex].direct[i]==index)
+									spaceObjectArray[nextIndex].prevDirIndex=i;
+							makeMovableSpace(spacePathArray[nextIndex],originalIndex,isOccupied);
 
-						index=nextIndex;
-						nextDirIndex = spaceObjectArray[index].prevDirIndex+4;
-						if(nextDirIndex>7)
-							nextDirIndex-=8;
-						else if(nextDirIndex<0)
-							nextDirIndex+=8;
-						nextIndex = spaceObjectArray[index].direct[nextDirIndex];
-					}
-					//check backwards
-					index=originalIndex;
-					nextDirIndex = spaceObjectArray[index].prevDirIndex;
-					nextIndex = spaceObjectArray[index].direct[nextDirIndex];
-					while(nextIndex!=-1 && spaceObjectArray[nextIndex].occupied==0) { //if the next board space exists and is unoccupied
-						for(var i=0; i<8; i++) //get piece's vector from current space and store it in next space
-							if(spaceObjectArray[nextIndex].direct[i]==index)
-								spaceObjectArray[nextIndex].prevDirIndex=i;
-						moveToIndex = parseInt(spacePathArray[nextIndex].node.getAttribute("id").replace("sp",""))-1;
-						movable = spacePathArray[nextIndex].clone();
-						movable.node.setAttribute("class","movableSpaces");
-						movable.node.setAttribute("to",moveToIndex);
-						movable.node.setAttribute("from",index);
-						movable.node.setAttribute("with",isOccupied);
-						movable.attr("fill",colorSelect);
-						movable.attr("stroke",colorSelectS);
-
-						index=nextIndex;
-						nextDirIndex = spaceObjectArray[index].prevDirIndex;
-						nextIndex = spaceObjectArray[index].direct[nextDirIndex];
+							index=nextIndex;
+							nextDirIndex = spaceObjectArray[index].prevDirIndex+4;
+							if(nextDirIndex>7)
+								nextDirIndex-=8;
+							else if(nextDirIndex<0)
+								nextDirIndex+=8;
+							nextIndex = spaceObjectArray[index].direct[nextDirIndex];
+						}
+						if(nextIndex!=-1) {
+							if((spaceObjectArray[nextIndex].occupied%2==0 && spaceObjectArray[originalIndex].occupied%2!=0) || (spaceObjectArray[nextIndex].occupied%2!=0 && spaceObjectArray[originalIndex].occupied%2==0)) {
+								makeCaptureSpace(spacePathArray[nextIndex],originalIndex,isOccupied);
+							}
+						}
+						originalNextDirIndex+=2;
+						nextDirIndex=originalNextDirIndex;
+						index=originalIndex;
 					}
 					break;
-				case(4): //black rook
+/*white knight*/case(5):
+/*black knight*/case(6):
+					//ISSUES WITH VECTOR TRANSITIONS IN THE CORNERS OF THE BOARD (same issue with pawns)
+					var originalNextDirIndex=0;
+					var originalIndex=index;
+					var nextDirIndex=0;
+					var nextIndex=spaceObjectArray[index].direct[nextDirIndex];
+					for(var j=0;j<4;j++) {
+						if(nextIndex!=-1 && spaceObjectArray[nextIndex].occupied==0) { //if the next board space exists and is unoccupied
+							for(var i=0; i<8; i++) //get piece's vector from current space and store it in next space
+								if(spaceObjectArray[nextIndex].direct[i]==index)
+									spaceObjectArray[nextIndex].prevDirIndex=i;
+							var diagDirIndex1=nextDirIndex+1;
+							if(diagDirIndex1>7)
+								diagDirIndex1-=8;
+							else if(diagDirIndex1<0)
+								diagDirIndex1+=8;
+							var diagDirIndex2=nextDirIndex-1;
+							if(diagDirIndex2>7)
+								diagDirIndex2-=8;
+							else if(diagDirIndex2<0)
+								diagDirIndex2+=8;
+							
+							var diagIndex1=spaceObjectArray[nextIndex].direct[diagDirIndex1];
+							var diagIndex2=spaceObjectArray[nextIndex].direct[diagDirIndex2];
 
+							if(diagIndex1!=-1) {
+								if(spaceObjectArray[diagIndex1].occupied==0) {
+									makeMovableSpace(spacePathArray[diagIndex1],originalIndex,isOccupied);
+								}
+							}
+							if(diagIndex2!=-1) {
+								if(spaceObjectArray[diagIndex2].occupied==0) {
+									makeMovableSpace(spacePathArray[diagIndex2],originalIndex,isOccupied);
+								}
+							}
+						}
+
+						index=originalIndex;
+						originalNextDirIndex+=2;
+						nextDirIndex=originalNextDirIndex;
+						nextIndex=spaceObjectArray[index].direct[nextDirIndex];
+					}
 					break;
-				case(5): //white knite
+/*white bishop*/case(7):
+/*black bishop*/case(8):
+					var originalIndex=index;
+					var originalNextDirIndex=1;
+					var nextDirIndex=1;
+					for(var j=0;j<4;j++) {
+						var nextIndex = spaceObjectArray[index].direct[nextDirIndex];
+						while(nextIndex!=-1 && spaceObjectArray[nextIndex].occupied==0) { //if the next board space exists and is unoccupied
+							for(var i=0; i<8; i++) //get piece's vector from current space and store it in next space
+								if(spaceObjectArray[nextIndex].direct[i]==index)
+									spaceObjectArray[nextIndex].prevDirIndex=i;
+							makeMovableSpace(spacePathArray[nextIndex],originalIndex,isOccupied);
 
+							index=nextIndex;
+							nextDirIndex = spaceObjectArray[index].prevDirIndex+4;
+							if(nextDirIndex>7)
+								nextDirIndex-=8;
+							else if(nextDirIndex<0)
+								nextDirIndex+=8;
+							nextIndex = spaceObjectArray[index].direct[nextDirIndex];
+						}
+						if(nextIndex!=-1) {
+							if((spaceObjectArray[nextIndex].occupied%2==0 && spaceObjectArray[originalIndex].occupied%2!=0) || (spaceObjectArray[nextIndex].occupied%2!=0 && spaceObjectArray[originalIndex].occupied%2==0)) {
+								makeCaptureSpace(spacePathArray[nextIndex],originalIndex,isOccupied);
+							}
+						}
+						originalNextDirIndex+=2;
+						nextDirIndex=originalNextDirIndex;
+						index=originalIndex;
+					}
 					break;
-				case(6): //black knite
+/*white queen*/	case(9):
+/*black queen*/	case(10):
+					//check ALL directions
+					var originalIndex=index;
+					var originalNextDirIndex=0;
+					var nextDirIndex=0;
+					for(var j=0;j<8;j++) {
+						var nextIndex = spaceObjectArray[index].direct[nextDirIndex];
+						while(nextIndex!=-1 && spaceObjectArray[nextIndex].occupied==0) { //if the next board space exists and is unoccupied
+							for(var i=0; i<8; i++) //get piece's vector from current space and store it in next space
+								if(spaceObjectArray[nextIndex].direct[i]==index)
+									spaceObjectArray[nextIndex].prevDirIndex=i;
+							makeMovableSpace(spacePathArray[nextIndex],originalIndex,isOccupied);
 
+							index=nextIndex;
+							nextDirIndex = spaceObjectArray[index].prevDirIndex+4;
+							if(nextDirIndex>7)
+								nextDirIndex-=8;
+							else if(nextDirIndex<0)
+								nextDirIndex+=8;
+							nextIndex = spaceObjectArray[index].direct[nextDirIndex];
+						}
+						if(nextIndex!=-1) {
+							if((spaceObjectArray[nextIndex].occupied%2==0 && spaceObjectArray[originalIndex].occupied%2!=0) || (spaceObjectArray[nextIndex].occupied%2!=0 && spaceObjectArray[originalIndex].occupied%2==0)) {
+								makeCaptureSpace(spacePathArray[nextIndex],originalIndex,isOccupied);
+							}
+						}
+						originalNextDirIndex++;
+						nextDirIndex=originalNextDirIndex;
+						index=originalIndex;
+					}
 					break;
-				case(7): //white bishop
+/*white king*/	case(11):
+/*black king*/	case(12):
+					//check all directions 1 space away
+					var originalIndex=index;
+					var originalNextDirIndex=0;
+					var nextDirIndex=0;
+					for(var j=0;j<8;j++) {
+						var nextIndex = spaceObjectArray[index].direct[nextDirIndex];
+						if(nextIndex!=-1 && spaceObjectArray[nextIndex].occupied==0) { //if the next board space exists and is unoccupied
+							for(var i=0; i<8; i++) //get piece's vector from current space and store it in next space
+								if(spaceObjectArray[nextIndex].direct[i]==index)
+									spaceObjectArray[nextIndex].prevDirIndex=i;
+							makeMovableSpace(spacePathArray[nextIndex],originalIndex,isOccupied);
 
-					break;
-				case(8): //black bishop
-
-					break;
-				case(9): //white queen
-
-					break;
-				case(10): //black queen
-
-					break;
-				case(11): //white king
-
-					break;
-				case(12): //black king
-
+							index=nextIndex;
+							nextDirIndex = spaceObjectArray[index].prevDirIndex+4;
+							if(nextDirIndex>7)
+								nextDirIndex-=8;
+							else if(nextDirIndex<0)
+								nextDirIndex+=8;
+							nextIndex = spaceObjectArray[index].direct[nextDirIndex];
+						} else if(nextIndex!=-1 && spaceObjectArray[nextIndex].occupied!=0) {
+							if((spaceObjectArray[nextIndex].occupied%2==0 && spaceObjectArray[originalIndex].occupied%2!=0) || (spaceObjectArray[nextIndex].occupied%2!=0 && spaceObjectArray[originalIndex].occupied%2==0)) {
+								makeCaptureSpace(spacePathArray[nextIndex],originalIndex,isOccupied);
+							}
+						}
+						originalNextDirIndex++;
+						nextDirIndex=originalNextDirIndex;
+						index=originalIndex;
+					}
 					break;
 				default:
-					
+					alert("ERROR 1");
 					break;
 			}
 
-			for(i=0; i<64; i++) {
-				switch(spaceObjectArray[i].occupied) {
-					case(1): //white pawn
-						var pawn=paper.circle(spaceObjectArray[i].cx, spaceObjectArray[i].cy, 25);
-						pawn.attr("fill","white");
-						pawn.attr("stroke","white");
-						pawn.node.setAttribute("class","temp");
-						break;
-					case(2): //black pawn
-						var pawn=paper.circle(spaceObjectArray[i].cx, spaceObjectArray[i].cy, 25);
-						pawn.attr("fill","black");
-						pawn.attr("stroke","black");
-						pawn.node.setAttribute("class","temp");
-						break;
-					case(3): //white rook
-						var rook=paper.rect(spaceObjectArray[i].cx-25, spaceObjectArray[i].cy-25, 40,40);
-						rook.attr("fill","white");
-						rook.attr("stroke","white");
-						rook.node.setAttribute("class","temp");
-						break;
-					case(4): //black rook
-						var rook=paper.rect(spaceObjectArray[i].cx-10, spaceObjectArray[i].cy-25, 40,40);
-						rook.attr("fill","black");
-						rook.attr("stroke","black");
-						rook.node.setAttribute("class","piece");
-						break;
-					case(5): //white knite
-						var rook=paper.rect(spaceObjectArray[i].cx-25, spaceObjectArray[i].cy-25, 40,40);
-						rook.attr("fill","white");
-						rook.attr("stroke","white");
-						rook.node.setAttribute("class","piece");
-						break;
-					case(6): //black knite
-
-						break;
-					case(7): //white bishop
-
-						break;
-					case(8): //black bishop
-
-						break;
-					case(9): //white queen
-
-						break;
-					case(10): //black queen
-
-						break;
-					case(11): //white king
-
-						break;
-					case(12): //black king
-
-						break;
-					default:
-						break;
-				}
-			}			
+			// draw pieces
+			for(var i=0;i<64;i++) {
+				setPiece(paper, spaceObjectArray[i].occupied, spaceObjectArray[i].cx, spaceObjectArray[i].cy, i);
+			}
 		}
 
 		$("#selectedSpace").click(function(){
@@ -1055,63 +1017,117 @@ function drawGameBoard() {
 			$("#selectedSpace").remove();
 			$(".movableSpaces").remove();
 			$(".piece").remove();
-			for(i=0; i<64; i++) {
-				switch(spaceObjectArray[i].occupied) {
-					case(1): //white pawn
-						var pawn=paper.circle(spaceObjectArray[i].cx, spaceObjectArray[i].cy, 25);
-						pawn.attr("fill","white");
-						pawn.attr("stroke","white");
-						pawn.node.setAttribute("class","piece");
-						break;
-					case(2): //black pawn
-						var pawn=paper.circle(spaceObjectArray[i].cx, spaceObjectArray[i].cy, 25);
-						pawn.attr("fill","black");
-						pawn.attr("stroke","black");
-						pawn.node.setAttribute("class","piece");
-						break;
-					case(3): //white rook
-						var rook=paper.rect(spaceObjectArray[i].cx-25, spaceObjectArray[i].cy-25, 40,40);
-						rook.attr("fill","white");
-						rook.attr("stroke","white");
-						rook.node.setAttribute("class","piece");
-						break;
-					case(4): //black rook
-						var rook=paper.rect(spaceObjectArray[i].cx-10, spaceObjectArray[i].cy-25, 40,40);
-						rook.attr("fill","black");
-						rook.attr("stroke","black");
-						rook.node.setAttribute("class","piece");
-						break;
-					case(5): //white knite
-						var rook=paper.rect(spaceObjectArray[i].cx-25, spaceObjectArray[i].cy-25, 40,40);
-						rook.attr("fill","white");
-						rook.attr("stroke","white");
-						rook.node.setAttribute("class","piece");
-						break;
-					case(6): //black knite
-
-						break;
-					case(7): //white bishop
-
-						break;
-					case(8): //black bishop
-
-						break;
-					case(9): //white queen
-
-						break;
-					case(10): //black queen
-
-						break;
-					case(11): //white king
-
-						break;
-					case(12): //black king
-
-						break;
-					default:
-						break;
-				}
+			//draw pieces
+			for(var i=0;i<64;i++) {
+				setPiece(paper, spaceObjectArray[i].occupied, spaceObjectArray[i].cx, spaceObjectArray[i].cy, i);
 			}
 		});
 	});
+}
+
+
+function setPiece(paper, piece, x, y, index) {
+	switch(piece) {
+		case(1): //white pawn
+			var pawn = paper.image("images/chess/pawn_white.svg", x-40, y-40, 75, 75);
+			pawn.node.setAttribute("class","piece");
+			pawn.node.setAttribute("index",index);
+			break;
+		case(2): //black pawn
+			var pawn = paper.image("images/chess/pawn_black.svg", x-40, y-40, 75, 75);
+			pawn.node.setAttribute("class","piece");
+			pawn.node.setAttribute("index",index);
+			break;
+		case(3): //white rook
+			var rook = paper.image("images/chess/rook_white.svg", x-40, y-40, 75, 75);
+			rook.node.setAttribute("class","piece");
+			rook.node.setAttribute("index",index);
+			break;
+		case(4): //black rook
+			var rook = paper.image("images/chess/rook_black.svg", x-40, y-40, 75, 75);
+			rook.node.setAttribute("class","piece");
+			rook.node.setAttribute("index",index);
+			break;
+		case(5): //white knite
+			var knight = paper.image("images/chess/knight_white.svg", x-40, y-40, 75, 75);
+			knight.node.setAttribute("class","piece");
+			knight.node.setAttribute("index",index);
+			break;
+		case(6): //black knite
+			var knight = paper.image("images/chess/knight_black.svg", x-40, y-40, 75, 75);
+			knight.node.setAttribute("class","piece");
+			knight.node.setAttribute("index",index);
+			break;
+		case(7): //white bishop
+			var bishop = paper.image("images/chess/bishop_white.svg", x-40, y-40, 75, 75);
+			bishop.node.setAttribute("class","piece");
+			bishop.node.setAttribute("index",index);
+			break;
+		case(8): //black bishop
+			var bishop = paper.image("images/chess/bishop_black.svg", x-40, y-40, 75, 75);
+			bishop.node.setAttribute("class","piece");
+			bishop.node.setAttribute("index",index);
+			break;
+		case(9): //white queen
+			var queen = paper.image("images/chess/queen_white.svg", x-40, y-40, 75, 75);
+			queen.node.setAttribute("class","piece");
+			queen.node.setAttribute("index",index);
+			break;
+		case(10): //black queen
+			var queen = paper.image("images/chess/queen_black.svg", x-40, y-40, 75, 75);
+			queen.node.setAttribute("class","piece");
+			queen.node.setAttribute("index",index);
+			break;
+		case(11): //white king
+			var king = paper.image("images/chess/king_white.svg", x-40, y-40, 75, 75);
+			king.node.setAttribute("class","piece");
+			king.node.setAttribute("index",index);
+			break;
+		case(12): //black king
+			var king = paper.image("images/chess/king_black.svg", x-40, y-40, 75, 75);
+			king.node.setAttribute("class","piece");
+			king.node.setAttribute("index",index);
+			break;
+		default:
+			break;
+	}
+
+	//allow piece image files to be hovered through
+	/*$('.piece').hover(function (test) {
+	    $(this).hide();
+	    $(document.elementFromPoint(test.clientX, test.clientY)).trigger("mouseover");
+	    $(this).show();
+	},function (test) {
+	    $(this).hide();
+	    $(document.elementFromPoint(test.clientX, test.clientY)).trigger("mouseout");
+	    $(this).show();
+	});
+
+	$('.piece').click(function (test) {
+	    $(this).hide();
+	    $(document.elementFromPoint(test.clientX, test.clientY)).trigger("click");
+	    $(this).show();
+	});*/
+}
+
+function makeMovableSpace(spacePathObject, index, isOccupied) {
+	var moveToIndex = parseInt(spacePathObject.node.getAttribute("id").replace("sp",""))-1;
+	var movable = spacePathObject.clone();
+	movable.node.setAttribute("class","movableSpaces");
+	movable.node.setAttribute("to",moveToIndex);
+	movable.node.setAttribute("from",index);
+	movable.node.setAttribute("with",isOccupied);
+	movable.attr("fill","#FFFF52");
+	movable.attr("stroke","#8C8C2E");
+}
+
+function makeCaptureSpace(spacePathObject, index, isOccupied) {
+	var moveToIndex = parseInt(spacePathObject.node.getAttribute("id").replace("sp",""))-1;
+	var movable = spacePathObject.clone();
+	movable.node.setAttribute("class","movableSpaces");
+	movable.node.setAttribute("to",moveToIndex);
+	movable.node.setAttribute("from",index);
+	movable.node.setAttribute("with",isOccupied);
+	movable.attr("fill","#FF6666");
+	movable.attr("stroke","#8C2E2E");
 }

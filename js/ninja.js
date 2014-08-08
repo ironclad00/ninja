@@ -6,9 +6,11 @@ $(document).ready(function(){
 	var isScrolled=0;
 	var getScrollDir=window.pageYOffset;
 	var mediaIsHidden=0;
-	var dmTop = $(".mainTab").offset().top;
-
-	$(".desktopMedia").css({"top":dmTop+25+"px"});
+	var dmTop;
+	if(!document.getElementById("gameboard")) {
+		dmTop = $(".mainTab").offset().top;
+		$(".desktopMedia").css({"top":dmTop+25+"px"});
+	}
 
 	//=======================================================================
 	// Enable vibration (if supported)

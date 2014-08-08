@@ -592,3 +592,12 @@ fade {
 	margin-left:20px;
 	margin-right:20px;
 }
+
+#gameControls {
+	width:15%;
+	z-index:2;
+	position:fixed;
+	margin-top:15px;
+	margin-left:15px;
+	display:none;
+}
