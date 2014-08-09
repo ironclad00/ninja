@@ -594,10 +594,15 @@ fade {
 }
 
 #gameControls {
-	width:15%;
+	width:100%;
 	z-index:2;
 	position:fixed;
-	margin-top:15px;
-	margin-left:15px;
 	display:none;
+	background: -webkit-linear-gradient(#666699, #47476B); /* For Safari 5.1 to 6.0 */
+	background: -o-linear-gradient(#666699, #47476B); /* For Opera 11.1 to 12.0 */
+	background: -moz-linear-gradient(#666699, #47476B); /* For Firefox 3.6 to 15 */
+	background: linear-gradient(#666699, #47476B); /* Standard syntax */
+	border:solid #333 1px;
+	padding:10px;
+	border-bottom:solid #9898AC 1px;
 }

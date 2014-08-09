@@ -28,7 +28,6 @@ function quitChess() {
 	$("svg").fadeOut(500);
 	$("#gameControls").fadeOut(500);
 	$("svg").remove();
-	//$("p").css("font-family","Open Sans");
 	setTimeout(function() {
 		$(".banner").fadeIn(500);
 		$(".navbar").fadeIn(500);
@@ -42,8 +41,9 @@ function quitChess() {
 }
 
 function drawGameBoard(resize) {
-	//$("p").css("font-family","Montserrat");
-	$("#gameControls").css({"display":"block"});
+	$("#gameControls").css({"display":"inline"});
+	$("body").css({"overflow-y":"hidden"});
+	$("html").css({"overflow-y":"hidden"});
 	var isWide,paper,rad1;
 	var color1="#333";
 	var color2="#bbb";
@@ -78,7 +78,7 @@ function drawGameBoard(resize) {
 	}
 
 	var startX=($(window).width()/2)-(boardWidth/2);
-	var startY=(bounds.top+window.pageYOffset)+($(window).height()*0.05);
+	var startY=(bounds.top+window.pageYOffset)+($(window).height()*0.07);
 	paper=Raphael(startX, startY, boardWidth, boardHeight);
 	$("svg").css({"margin-bottom":"40px"});
 
