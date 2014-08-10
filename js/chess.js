@@ -1027,6 +1027,7 @@ function drawGameBoard(resize) {
 
 
 function setPiece(paper, piece, x, y, index) {
+	$(".piece").remove();
 	switch(piece) {
 		case(1): //white pawn
 			var pawn = paper.image("images/chess/pawn_white.svg", x-40, y-40, 75, 75);
@@ -1093,7 +1094,7 @@ function setPiece(paper, piece, x, y, index) {
 	}
 
 	//allow piece image files to be hovered through
-	/*$('.piece').hover(function (test) {
+	$('.piece').hover(function (test) {
 	    $(this).hide();
 	    $(document.elementFromPoint(test.clientX, test.clientY)).trigger("mouseover");
 	    $(this).show();
@@ -1107,7 +1108,7 @@ function setPiece(paper, piece, x, y, index) {
 	    $(this).hide();
 	    $(document.elementFromPoint(test.clientX, test.clientY)).trigger("click");
 	    $(this).show();
-	});*/
+	});
 }
 
 function makeMovableSpace(spacePathObject, index, isOccupied) {
