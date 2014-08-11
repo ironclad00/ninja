@@ -1,5 +1,5 @@
 "use strict";
-//http://commons.wikimedia.org/wiki/Category:SVG_chess_pieces
+//images from http://commons.wikimedia.org/wiki/Category:SVG_chess_pieces
 
 $(document).ready(function(){
 	if(document.getElementById("gameboard")) {
@@ -996,6 +996,7 @@ function drawGameBoard(resize) {
 			}
 
 			// draw pieces
+			$(".piece").remove();
 			for(var i=0;i<64;i++) {
 				setPiece(paper, spaceObjectArray[i].occupied, spaceObjectArray[i].cx, spaceObjectArray[i].cy, i);
 			}
@@ -1017,7 +1018,9 @@ function drawGameBoard(resize) {
 			$("#selectedSpace").remove();
 			$(".movableSpaces").remove();
 			$(".piece").remove();
+
 			//draw pieces
+			$(".piece").remove();
 			for(var i=0;i<64;i++) {
 				setPiece(paper, spaceObjectArray[i].occupied, spaceObjectArray[i].cx, spaceObjectArray[i].cy, i);
 			}
@@ -1027,7 +1030,6 @@ function drawGameBoard(resize) {
 
 
 function setPiece(paper, piece, x, y, index) {
-	$(".piece").remove();
 	switch(piece) {
 		case(1): //white pawn
 			var pawn = paper.image("images/chess/pawn_white.svg", x-40, y-40, 75, 75);
@@ -1093,25 +1095,30 @@ function setPiece(paper, piece, x, y, index) {
 			break;
 	}
 
-	//allow piece image files to be hovered through
-	$('.piece').hover(function (test) {
-	    $(this).hide();
-	    $(document.elementFromPoint(test.clientX, test.clientY)).trigger("mouseover");
-	    $(this).show();
-	},function (test) {
-	    $(this).hide();
-	    $(document.elementFromPoint(test.clientX, test.clientY)).trigger("mouseout");
-	    $(this).show();
+	//allow the pieces to be hovered through
+	$('.piece').hover(function () {
+		var pathId="#sp".concat(parseInt($(this).attr("index"))+1);
+		$(pathId).attr("fill","#0ff");
+	},function () {
+		var pieceIndex=parseInt($(this).attr("index"));
+	    var pathId="#sp".concat(parseInt($(this).attr("index"))+1);
+	    if(pieceIndex%2!=0) {
+			$(pathId).attr("fill","#333");
+		}
+		else {
+			$(pathId).attr("fill","#bbb");
+		}
 	});
 
-	$('.piece').click(function (test) {
+	//allow the pieces to be clicked through
+	$('.piece').click(function (e) {
 	    $(this).hide();
-	    $(document.elementFromPoint(test.clientX, test.clientY)).trigger("click");
+	    $(document.elementFromPoint(e.clientX, e.clientY)).trigger("click");
 	    $(this).show();
 	});
 }
 
-function makeMovableSpace(spacePathObject, index, isOccupied) {
+function makeMovableSpace(spacePathObject, index, isOccupied) { //function for drawing all highlighted yellow (movable) spaces
 	var moveToIndex = parseInt(spacePathObject.node.getAttribute("id").replace("sp",""))-1;
 	var movable = spacePathObject.clone();
 	movable.node.setAttribute("class","movableSpaces");
@@ -1122,7 +1129,7 @@ function makeMovableSpace(spacePathObject, index, isOccupied) {
 	movable.attr("stroke","#8C8C2E");
 }
 
-function makeCaptureSpace(spacePathObject, index, isOccupied) {
+function makeCaptureSpace(spacePathObject, index, isOccupied) { //function for drawing all highlighted red (capturable) spaces
 	var moveToIndex = parseInt(spacePathObject.node.getAttribute("id").replace("sp",""))-1;
 	var movable = spacePathObject.clone();
 	movable.node.setAttribute("class","movableSpaces");
