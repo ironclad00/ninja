@@ -23,8 +23,12 @@
 	</head>
 	<body>
 		<div id="gameboard"></div>
+		<img id="chessBackground" src="images/chess/chess_background.jpg"/>
 		<div id="gameControls">
-			<button id="quitChess" class="blueBtn" onclick="quitChess()">Quit</button>
+			<button id="quitChess" class="blueBtn" onclick="quitChess(0)">Quit</button>
+			<button id="newGame" class="blueBtn" onclick="quitChess(1)">New Game</button>
+			<button id="devButton1" class="blueBtn">Show Danger Spaces</button>
+			<button id="devButton2" class="blueBtn">Hide Danger Spaces</button>
 			<p id="gameDisplay1"></p>
 			<p id="gameDisplay2"></p>
 		</div>
@@ -78,21 +82,50 @@
 		<a href="#top"><img id="topShortcut" title="To Top" src="images/top.png"/></a>
 
 		<div id="chess" class="container mainTab">
-			<h1>Singularity Chess (under construction)</h1>
-			<div class="row">
-				<div class="col-sm-3">
-					<img src="http://3.bp.blogspot.com/_fPSqkgrOu6o/TLH7L9vMcyI/AAAAAAAARis/TTnaaILrj84/s1600/P1010900.JPG" class="img-responsive"/>
-					<p class="caption">Image from <a href="http://abstractstrategygames.blogspot.com/2010/10/singularity-chess.html" target="_blank">la diagonale du fou</a>
+			<div class="col-md-10">
+				<h1 class="hidden-xs">Singularity Chess</h1>
+				<div class="row">
+					<div class="col-sm-3">
+						<a id="jumpToIndent" href="http://abstractstrategygames.blogspot.com/2010/10/singularity-chess.html" target="_blank"><img id="chessHeader" src="http://3.bp.blogspot.com/_fPSqkgrOu6o/TLH7L9vMcyI/AAAAAAAARis/TTnaaILrj84/s1600/P1010900.JPG" class="img-responsive"></a>
+						<p class="caption hidden-xs">Image from <a href="http://abstractstrategygames.blogspot.com/2010/10/singularity-chess.html" target="_blank">la diagonale du fou</a>
+					</div>
+					<h1 class="mobileTitle">Singularity Chess</h1>
+					<div class="row mobileSubNav hidden-lg hidden-md hidden-sm">
+						<div class="col-xs-6">
+							<a class="blueBtn" href="#howtoplay">How to Play</a>
+							<a class="blueBtn" href="#methods">Programming</a>
+						</div>
+						<div class="col-xs-6">
+							<a class="blueBtn" href="#features">Features & Bugs</a>
+						</div>
+					</div>
+					<div id="jumpToBounds" class="col-sm-9 pFixWithMargins">
+						<h2 class="hidden-lg hidden-md hidden-sm firstH2">Overview</h2>
+							<p>Singularity chess is a chess variant where all the squares converge in the center of the board. I started working on a 2-player version (no AI) of this game as a challenge to myself to make a game/app using nothing but standard web technologies. It has proven to be more difficult than I thought since the warped board renders the meaning of standard directions like "forwards" and "backwards" virtually meaningless.</p>
+							<p>The game is still under construction, but if you want to take a look, press Play!</p>
+					</div>
+					<br>
+					<div class="row">
+						<div class="col-md-10 col-md-offset-1">
+							<button class="redBtn btn-block" onclick="playChess()">Play!</button>
+						</div>
+					</div>
 				</div>
-				<div class="col-sm-9">
-					<p>Singularity chess is a chess variant where all the squares converge in the center of the board. I started working on a 2-player version (no AI) of this game as a challenge to myself to make a game/app using nothing but standard web technologies. It has proven to be more difficult than I thought since the warped board renders the meaning of standard directions like "forwards" and "backwards" virtually meaningless.</p>
-					<p>The game is still under construction, but if you want to take a look, press Play!</p>
-				</div>
-			</div><br>
-			<div class="row">
-				<div class="col-md-8 col-md-offset-2">
-					<button class="redBtn btn-block" onclick="playChess()">Play</button>
-				</div>
+				<h2 id="howtoplay">How to Play</h2>
+					<p><i>Under Construction</i></p>
+				<h2 id="features">Features & Bugs</h2>
+					<p><i>Under Construction</i></p>
+				<h2 id="methods">Programming Methods</h2>
+					<p><i>Under Construction</i></p>
+			</div>
+
+			<div id="jumpTo" class="col-md-2 hidden-xs hidden-sm">
+				<h3>Jump to...</h3>
+				- <a href="#top">Overview</a><br>
+				- <a href="#howtoplay">How to Play</a><br>
+				- <a href="#features">Features & Bugs</a><br>
+				- <a href="#methods">Programming Methods</a><br>
+				<br>
 			</div>
 		</div>
 
@@ -101,6 +134,10 @@
 		<script src="js/jquery.transit.min.js"></script>
 		<script src="js/ninja.js"></script>
 		<script src="js/chess.js"></script>
+		<script src="js/chessDev.js"></script>
+		<script src="js/chessFunctions.js"></script>
+		<script src="js/chessMovement.js"></script>
+
 		<script src="js/raphael.js"></script>
 		<script src="js/jquery.mobile.custom.min.js"></script>
 	</body>

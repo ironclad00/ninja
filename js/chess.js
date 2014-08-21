@@ -2,40 +2,18 @@
 //images from http://commons.wikimedia.org/wiki/Category:SVG_chess_pieces
 
 /* Bug/To-Do list
-	- add path definitions for vertical board orientation
-	- fix direction vector issues in the corners of the board
-	- fix direction vector issues in the center of the board
-	- add piece capturing ability for knights
-	- add all pawn movement rules (including 2 spaces on first move and en passant)
-	- board does not fade out when "Quit" is pressed
+	- add en passant to pawn movement rules
 	- add ability to detect checkmates and unsafe moves for king
-	- fix board spacing issues in wide orientation
+	- tweek piece coords in both wide and vert modes
+	- turn off hover coloring on touchscreen-only devices
+	- ensure knights are moving throught the singularity properly
+	- fix issue: chrome crashes when too many resizes have been done
+	- disable text highlighting
+	- disable user interactions with background picture
 */
 
-$(document).ready(function(){
-	if(document.getElementById("gameboard")) {
-		$("svg").remove();
-		$("#gameboard").css({"width":"90%","margin-left":"5%"});
-
-		$(".navbar-toggle").click(function(){ //temporarily hides the board if the user views the mobile navbar
-			$("svg").toggle();
-		});
-	}
-});
-
-$(window).resize(function() {
-	$("svg").remove();
-	$(".banner").hide();
-	$(".navbar").hide();
-	$(".desktopMedia").hide();
-	$(".mobileMedia").hide();
-	$("#top").hide();
-	$("#chess").hide();
-	$(".mobileMedia").hide();
-	drawGameBoard(1);
-});
-
 function playChess() {
+	$(".dangerSpace").hide();
 	$(".banner").fadeOut(500);
 	$(".navbar").fadeOut(500);
 	$(".desktopMedia").fadeOut(500);
@@ -43,48 +21,80 @@ function playChess() {
 	$("#top").fadeOut();
 	$("#chess").fadeOut();
 	setTimeout(function() {
-		drawGameBoard(0);
+		if($(window).width()>992)
+			drawGameBoard(0,0,1);
+		else
+			drawGameBoard(0,0,0);
+		$("#chessBackground").css({"display":"block"});
 	}, 550);
 }
 
-function quitChess() {
-	$("svg").fadeOut(500); //this disappears immediately instead of fading :(
-	$("#gameControls").fadeOut(500);
-	$("svg").remove();
-	setTimeout(function() {
-		$(".banner").fadeIn(500);
-		$(".navbar").fadeIn(500);
-		$(".desktopMedia").fadeIn(500);
-		$(".desktopMedia").fadeIn(500);
-		$(".mobileMedia").fadeIn(500);
-		$("#top").fadeIn();
-		$("#chess").fadeIn();
-	}, 550);
+
+
+function quitChess(newGame) {
+	var doubleCheck;
+	if(newGame) {
+		doubleCheck = confirm("Are you sure you want to start a new game?");
+		if(doubleCheck) {
+			$("svg").remove();
+			if($(window).width()>992)
+				drawGameBoard(0,0,1);
+			else
+				drawGameBoard(0,0,0);
+		}
+	}
+	else {
+		doubleCheck = confirm("Are you sure you want to quit?");
+		if(doubleCheck) {
+			$(".dangerSpace").hide(); //dev class for displaying danger spaces
+			$("svg").fadeOut(500);
+			$("#gameControls").fadeOut(500);
+			$("#chessBackground").fadeOut(500);
+			$("body").css({"overflow-y":"visible"}); //re-enable scrolling
+			$("html").css({"overflow-y":"visible"}); //re-enable scrolling
+			setTimeout(function() {
+				$(".banner").fadeIn(500);
+				$(".navbar").fadeIn(500);
+				$(".desktopMedia").fadeIn(500);
+				$(".desktopMedia").fadeIn(500);
+				$(".mobileMedia").fadeIn(500);
+				$("#top").fadeIn();
+				$("#chess").fadeIn();
+				$("svg").remove();
+			}, 550);
+		}
+	}
 }
 
-function drawGameBoard(resize) {
+
+
+function drawGameBoard(resize,objectArray,wasBig) { //main function that runs most aspects of the game
 	//initial css changes
+	if(resize)
+		$("svg").remove(); //this prevents the browser from crashing due to too many SVG objects being drawn (browser is still crashing D:)
 	$("#gameControls").css({"display":"inline"});
-	$("body").css({"overflow-y":"hidden"});
-	$("html").css({"overflow-y":"hidden"});
+	$("body").css({"overflow-y":"hidden"}); //disable
+	$("html").css({"overflow-y":"hidden"}); //scrolling
 
 
-	//declarations for a few variables
-	var isWide;				//stores the orientation of the board (vertical or horizontal)
-	var paper;				//Raphael object that the board is drawn in/on
-	var rad1;				//initial radius used to draw the board
-	var turnColor="White";	//tracks whos turn it is
-	var devmode=1;			//turns off turn rotations if enabled (1)
-	var moveCount=1;		//current move number
-	var color1="#333";
-	var color2="#bbb";
-	var colorH="#0ff";
-	var colorS="";
-	var colorHS="#016E6E";
-	var colorSelect="#FFFF52";
-	var colorSelectS="#8C8C2E";
-	var colorCapture="#FF6666";
-	var colorCaptureS="#8C2E2E";
+	//declarations for a some initial variables
+	var isWide;					//stores the orientation of the board (vertical or horizontal)
+	var paper;					//Raphael object that the board is drawn in/on
+	var rad1;					//initial radius used to draw the board
+	var turnColor="White";		//tracks whos turn it is
+	var devmode=1;				//turns off turn rotations if enabled (1)
+	var windowIsSmall=1;		//if true, assume user is on mobile device. used to determine whether or not board spaces should have hover function
+								//true=no hover, false=enable hover
+	var moveCount=1;			//current move number
+	var color1="#333";			//fill color for odd-indexed board spaces (darker)
+	var color2="#bbb";			//fill color for even-indexed board spaces (lighter)
+	var colorS="";				//stroke color for all non-modified board spaces
+	var colorH="#0ff";			//fill color for spaces being hovered over
+	var colorHS="#016E6E";		//stroke (edge) color for spaces being hovered over
+	var colorSelect="#FFFF52";	//fill color for selected and movable spaces
+	var colorSelectS="#8C8C2E";	//stroke (edge) color for selected and movable spaces
+	var colorCapture="#FF6666";	//fill color for capture spaces
+	var colorCaptureS="#8C2E2E";//stroke (edge) color for capture spaces
 
 
 	//set up info displays. if devmode is enabled, display will be static
@@ -97,14 +107,21 @@ function drawGameBoard(resize) {
 	}
 
 
-	//determines board orientation and size. vertical orientation is only used when the window width is less than window height
+	//=======================================================================
+	// Determine board orientation and size
+	//=======================================================================
+	if($(window).width()>992) //uses bootstrap size definitions (xs, sm, md, lg). window is small if its sm or xs
+		windowIsSmall=0;
+	//initial size calculation
 	var windowHeight=$(window).height()-$("#gameControls").height();
 	var windowWidth=$(window).width();
 	var boardHeight=windowHeight*0.9;	//board height is 90% of the window's available height
 	var boardWidth=0;
 
+	//determine if board will be drawn horizontally or vertically
 	if(windowWidth > windowHeight) {
 		isWide=1;
+		$("#chessBackground").css({"width":"100%"});
 		boardWidth=(3/2)*boardHeight;
 		if(boardWidth>=windowWidth) { //prevents board overflow
 			boardWidth=windowWidth*0.9; //meaning 5% spacing on each side
@@ -114,18 +131,26 @@ function drawGameBoard(resize) {
 	}
 	else {
 		isWide=0;
+		$("#chessBackground").css({"width":"200%"});
 		boardWidth=(2/3)*boardHeight;
 		if(boardWidth>=windowWidth) { //prevents board overflow
 			boardWidth=windowWidth*0.9; //meaning 5% spacing on each side
-			boardHeight=(2/3)*boardWidth;
+			boardHeight=(3/2)*boardWidth;
 		}
 		rad1=boardHeight/12;
+
+		//create horiz margins if vertical orientation has board pressed right up against the sides of the screen
+		if(boardWidth>=$(window).width()*0.95) {
+			boardWidth*=0.9;
+			boardHeight=(3/2)*boardWidth;
+		}
 	}
+
 
 
 	//create starting points for the canvas, then create the canvas (with Raphael)
 	var startX=($(window).width()/2)-(boardWidth/2);
-	var startY=(windowHeight/2)-(boardHeight/2)+$(window).height()*0.06; //for some reason, an arbitrary constant is needed to center the board
+	var startY=(windowHeight/2)-(boardHeight/2)+35; //for some reason, an arbitrary constant is needed to center the board
 	paper=Raphael(startX, startY, boardWidth, boardHeight);
 
 
@@ -154,11 +179,22 @@ function drawGameBoard(resize) {
 		spaceObjectArray[i].direct = new Array(8);
 
 		for(var j=0; j<8; j++)
-			spaceObjectArray[i].direct[j]=-1;
-		spaceObjectArray[i].prevDirIndex;
+			spaceObjectArray[i].direct[j]=-1;	//these get manually set below. all edges of the board are marked by -1
+		spaceObjectArray[i].prevDirIndex=0;		//used for determining all other piece directions
 		spaceObjectArray[i].cx=-1;
 		spaceObjectArray[i].cy=-1;
-		spaceObjectArray[i].occupied=0;	//odd=white, even=black
+		spaceObjectArray[i].occupied=0;			//odd=white, even=black
+		spaceObjectArray[i].isPawnUnmoved=0;	/*if 1, space is occupied by a pawn that has not been moved yet (and therefore
+												can be moved two spaces instead of one)*/
+		spaceObjectArray[i].isWhiteDanger=0;	//stores whether or not a white piece can be captured by existing on space i
+		spaceObjectArray[i].isBlackDanger=0;	//stores whether or not a black piece can be captured by existing on space i
+		spaceObjectArray[i].quadrant=0;			/*pawn-only attribute. stores the quadrant that the ith pawn was originally drawn in.
+												quadrants numbers are assigned in the same fashion as quadrants in cartesian coordinate systems*/
+		spaceObjectArray[i].singularity=0;		/*pawn-only attribute. stores whether or not the pawn has passed through the singularity or not.
+												0=not passed/unused
+												1=through the top part of the loop only (indexes 2,8,16, or 26)
+												2=through the bottom part of the loop only (indexes 37,47,55, or 61)
+												3=passed through both parts of the loop*/
 	}
 
 
@@ -184,6 +220,7 @@ function drawGameBoard(resize) {
 	spaceObjectArray[2].direct[7]=6;
 
 	spaceObjectArray[3].direct[0]=2;
+	spaceObjectArray[3].direct[1]=1;
 	spaceObjectArray[3].direct[4]=4;
 	spaceObjectArray[3].direct[5]=11;
 	spaceObjectArray[3].direct[6]=10;
@@ -667,14 +704,15 @@ function drawGameBoard(resize) {
 	spaceObjectArray[62].direct[2]=57;
 	spaceObjectArray[62].direct[3]=58;
 	spaceObjectArray[62].direct[4]=63;
+	spaceObjectArray[62].direct[7]=60;
 
 	spaceObjectArray[63].direct[0]=62;
 	spaceObjectArray[63].direct[1]=57;
 	spaceObjectArray[63].direct[2]=58;
 
 
-	/* draw all 64 pieces on the board and store each one in spacePathArray */
-	if(isWide) {
+	//draw all 64 pieces on the board and store each one in spacePathArray
+	if(isWide) {//horizontal orientation
 		spacePathArray[0] =paper.path("M"+(cx-Math.sqrt(Math.pow(rad5,2)-Math.pow(rad4,2)))+",0 A"+rad5+","+rad5+" 0,0,0 "+(cx-Math.sqrt(Math.pow(rad5,2)-Math.pow(rad3,2)))+","+(cy-rad3)+" L"+(cx-Math.sqrt(Math.pow(rad6,2)-Math.pow(rad3,2)))+","+(cy-rad3)+" A"+rad6+","+rad6+" 0,0,1 "+(cx-Math.sqrt(Math.pow(rad6,2)-Math.pow(rad4,2)))+",0 Z");
 		spacePathArray[1] =paper.path("M"+cx+",0 A"+rad4+","+rad4+" 0,0,0 "+(cx-Math.sqrt(Math.pow(rad4,2)-Math.pow(rad3,2)))+","+(cy-rad3)+" L"+(cx-Math.sqrt(Math.pow(rad5,2)-Math.pow(rad3,2)))+","+(cy-rad3)+" A"+rad5+","+rad5+" 0,0,1 "+(cx-Math.sqrt(Math.pow(rad5,2)-Math.pow(rad4,2)))+",0 Z");
 		spacePathArray[2] =paper.path("M"+cx+","+(cy-rad3)+" L"+(cx+Math.sqrt(Math.pow(rad4,2)-Math.pow(rad3,2)))+","+(cy-rad3)+" A"+rad4+","+rad4+" 0,0,0 "+(cx-Math.sqrt(Math.pow(rad4,2)-Math.pow(rad3,2)))+","+(cy-rad3)+" Z");
@@ -740,29 +778,28 @@ function drawGameBoard(resize) {
 		spacePathArray[62]=paper.path("M"+cx+","+(cy+rad4)+" A"+rad4+","+rad4+" 0,0,0 "+(cx+Math.sqrt(Math.pow(rad4,2)-Math.pow(rad3,2)))+","+(cy+rad3)+" L"+(cx+Math.sqrt(Math.pow(rad5,2)-Math.pow(rad3,2)))+","+(cy+rad3)+" A"+rad5+","+rad5+" 0,0,1 "+(cx+Math.sqrt(Math.pow(rad5,2)-Math.pow(rad4,2)))+","+(cy+rad4)+" Z");
 		spacePathArray[63]=paper.path("M"+(cx+Math.sqrt(Math.pow(rad5,2)-Math.pow(rad4,2)))+","+(cy+rad4)+" A"+rad5+","+rad5+" 0,0,0 "+(cx+Math.sqrt(Math.pow(rad5,2)-Math.pow(rad3,2)))+","+(cy+rad3)+" L"+(cx+Math.sqrt(Math.pow(rad6,2)-Math.pow(rad3,2)))+","+(cy+rad3)+" A"+rad6+","+rad6+" 0,0,1 "+(cx+Math.sqrt(Math.pow(rad6,2)-Math.pow(rad4,2)))+","+(cy+rad4)+" Z");
 	}
-	else {
-		//create SVG elements for vertical board
-		spacePathArray[0] =paper.path();
-		spacePathArray[1] =paper.path();
+	else {//vertical orientation
+		spacePathArray[0] =paper.path("M"+(cx+rad4)+","+(cy-Math.sqrt(Math.pow(rad5,2)-Math.pow(rad4,2)))+" A"+rad5+","+rad5+" 0,0,0 "+(cx+rad3)+","+(cy-Math.sqrt(Math.pow(rad5,2)-Math.pow(rad3,2)))+" L"+(cx+rad3)+","+(cy-Math.sqrt(Math.pow(rad6,2)-Math.pow(rad3,2)))+" A"+rad6+","+rad6+" 0,0,1 "+(cx+rad4)+","+(cy-Math.sqrt(Math.pow(rad6,2)-Math.pow(rad4,2)))+" Z");
+		spacePathArray[1] =paper.path("M"+(cx+rad4)+","+cy+" A"+rad4+","+rad4+" 0,0,0 "+(cx+rad3)+","+(cy-Math.sqrt(Math.pow(rad4,2)-Math.pow(rad3,2)))+" L"+(cx+rad3)+","+(cy-Math.sqrt(Math.pow(rad5,2)-Math.pow(rad3,2)))+" A"+rad5+","+rad5+" 0,0,1 "+(cx+rad4)+","+(cy-Math.sqrt(Math.pow(rad5,2)-Math.pow(rad4,2)))+" Z");
 		spacePathArray[2] =paper.path("M"+(cx+rad3)+","+(cy-Math.sqrt(Math.pow(rad4,2)-Math.pow(rad3,2)))+" A"+rad4+","+rad4+" 0,0,1 "+(cx+rad3)+","+(cy+Math.sqrt(Math.pow(rad4,2)-Math.pow(rad3,2)))+" Z");
-		spacePathArray[3] =paper.path();
-		spacePathArray[4] =paper.path();
-		spacePathArray[5] =paper.path();
-		spacePathArray[6] =paper.path();
-		spacePathArray[7] =paper.path();
+		spacePathArray[3] =paper.path("M"+(cx+rad4)+","+cy+" A"+rad4+","+rad4+" 0,0,1 "+(cx+rad3)+","+(cy+Math.sqrt(Math.pow(rad4,2)-Math.pow(rad3,2)))+" L"+(cx+rad3)+","+(cy+Math.sqrt(Math.pow(rad5,2)-Math.pow(rad3,2)))+" A"+rad5+","+rad5+" 0,0,0 "+(cx+rad4)+","+(cy+Math.sqrt(Math.pow(rad5,2)-Math.pow(rad4,2)))+" Z");
+		spacePathArray[4] =paper.path("M"+(cx+rad4)+","+(cy+Math.sqrt(Math.pow(rad5,2)-Math.pow(rad4,2)))+" A"+rad5+","+rad5+" 0,0,1 "+(cx+rad3)+","+(cy+Math.sqrt(Math.pow(rad5,2)-Math.pow(rad3,2)))+" L"+(cx+rad3)+","+(cy+Math.sqrt(Math.pow(rad6,2)-Math.pow(rad3,2)))+" A"+rad6+","+rad6+" 0,0,0 "+(cx+rad4)+","+(cy+Math.sqrt(Math.pow(rad6,2)-Math.pow(rad4,2)))+" Z");
+		spacePathArray[5] =paper.path("M"+(cx+rad3)+","+(cy-Math.sqrt(Math.pow(rad5,2)-Math.pow(rad3,2)))+" A"+rad5+","+rad5+" 0,0,1 "+(cx+rad2)+","+(cy-Math.sqrt(Math.pow(rad5,2)-Math.pow(rad2,2)))+" L"+(cx+rad2)+","+(cy-Math.sqrt(Math.pow(rad6,2)-Math.pow(rad2,2)))+" A"+rad6+","+rad6+" 0,0,1 "+(cx+rad3)+","+(cy-Math.sqrt(Math.pow(rad6,2)-Math.pow(rad3,2)))+" Z");
+		spacePathArray[6] =paper.path("M"+(cx+rad3)+","+(cy-Math.sqrt(Math.pow(rad4,2)-Math.pow(rad3,2)))+" A"+rad4+","+rad4+" 0,0,0 "+(cx+rad2)+","+(cy-Math.sqrt(Math.pow(rad4,2)-Math.pow(rad2,2)))+" L"+(cx+rad2)+","+(cy-Math.sqrt(Math.pow(rad5,2)-Math.pow(rad2,2)))+" A"+rad5+","+rad5+" 0,0,1 "+(cx+rad3)+","+(cy-Math.sqrt(Math.pow(rad5,2)-Math.pow(rad3,2)))+" Z");
+		spacePathArray[7] =paper.path("M"+(cx+rad3)+","+cy+" A"+rad3+","+rad3+" 0,0,0 "+(cx+rad2)+","+(cy-Math.sqrt(Math.pow(rad3,2)-Math.pow(rad2,2)))+" L"+(cx+rad2)+","+(cy-Math.sqrt(Math.pow(rad4,2)-Math.pow(rad2,2)))+" A"+rad4+","+rad4+" 0,0,1 "+(cx+rad3)+","+(cy-Math.sqrt(Math.pow(rad4,2)-Math.pow(rad3,2)))+" Z");
 		spacePathArray[8] =paper.path("M"+(cx+rad2)+","+(cy-Math.sqrt(Math.pow(rad3,2)-Math.pow(rad2,2)))+" A"+rad3+","+rad3+" 0,0,1 "+(cx+rad2)+","+(cy+Math.sqrt(Math.pow(rad3,2)-Math.pow(rad2,2)))+" Z");
-		spacePathArray[9] =paper.path();
-		spacePathArray[10]=paper.path();
-		spacePathArray[11]=paper.path();
-		spacePathArray[12]=paper.path();
-		spacePathArray[13]=paper.path();
-		spacePathArray[14]=paper.path();
-		spacePathArray[15]=paper.path();
+		spacePathArray[9] =paper.path("M"+(cx+rad3)+","+cy+" A"+rad3+","+rad3+" 0,0,1 "+(cx+rad2)+","+(cy+Math.sqrt(Math.pow(rad3,2)-Math.pow(rad2,2)))+" L"+(cx+rad2)+","+(cy+Math.sqrt(Math.pow(rad4,2)-Math.pow(rad2,2)))+" A"+rad4+","+rad4+" 0,0,0 "+(cx+rad3)+","+(cy+Math.sqrt(Math.pow(rad4,2)-Math.pow(rad3,2)))+" Z");
+		spacePathArray[10]=paper.path("M"+(cx+rad3)+","+(cy+Math.sqrt(Math.pow(rad4,2)-Math.pow(rad3,2)))+" A"+rad4+","+rad4+" 0,0,1 "+(cx+rad2)+","+(cy+Math.sqrt(Math.pow(rad4,2)-Math.pow(rad2,2)))+" L"+(cx+rad2)+","+(cy+Math.sqrt(Math.pow(rad5,2)-Math.pow(rad2,2)))+" A"+rad5+","+rad5+" 0,0,0 "+(cx+rad3)+","+(cy+Math.sqrt(Math.pow(rad5,2)-Math.pow(rad3,2)))+" Z");
+		spacePathArray[11]=paper.path("M"+(cx+rad3)+","+(cy+Math.sqrt(Math.pow(rad5,2)-Math.pow(rad3,2)))+" A"+rad5+","+rad5+" 0,0,1 "+(cx+rad2)+","+(cy+Math.sqrt(Math.pow(rad5,2)-Math.pow(rad2,2)))+" L"+(cx+rad2)+","+(cy+Math.sqrt(Math.pow(rad6,2)-Math.pow(rad2,2)))+" A"+rad6+","+rad6+" 0,0,0 "+(cx+rad3)+","+(cy+Math.sqrt(Math.pow(rad6,2)-Math.pow(rad3,2)))+" Z");
+		spacePathArray[12]=paper.path("M"+(cx+rad2)+","+(cy-Math.sqrt(Math.pow(rad5,2)-Math.pow(rad2,2)))+" A"+rad5+","+rad5+" 0,0,1 "+(cx+rad1)+","+(cy-Math.sqrt(Math.pow(rad5,2)-Math.pow(rad1,2)))+" L"+(cx+rad1)+","+(cy-Math.sqrt(Math.pow(rad6,2)-Math.pow(rad1,2)))+" A"+rad6+","+rad6+" 0,0,1 "+(cx+rad2)+","+(cy-Math.sqrt(Math.pow(rad6,2)-Math.pow(rad2,2)))+" Z");
+		spacePathArray[13]=paper.path("M"+(cx+rad2)+","+(cy-Math.sqrt(Math.pow(rad4,2)-Math.pow(rad2,2)))+" A"+rad4+","+rad4+" 0,0,0 "+(cx+rad1)+","+(cy-Math.sqrt(Math.pow(rad4,2)-Math.pow(rad1,2)))+" L"+(cx+rad1)+","+(cy-Math.sqrt(Math.pow(rad5,2)-Math.pow(rad1,2)))+" A"+rad5+","+rad5+" 0,0,1 "+(cx+rad2)+","+(cy-Math.sqrt(Math.pow(rad5,2)-Math.pow(rad2,2)))+" Z");
+		spacePathArray[14]=paper.path("M"+(cx+rad2)+","+(cy-Math.sqrt(Math.pow(rad3,2)-Math.pow(rad2,2)))+" A"+rad3+","+rad3+" 0,0,0 "+(cx+rad1)+","+(cy-Math.sqrt(Math.pow(rad3,2)-Math.pow(rad1,2)))+" L"+(cx+rad1)+","+(cy-Math.sqrt(Math.pow(rad4,2)-Math.pow(rad1,2)))+" A"+rad4+","+rad4+" 0,0,1 "+(cx+rad2)+","+(cy-Math.sqrt(Math.pow(rad4,2)-Math.pow(rad2,2)))+" Z");
+		spacePathArray[15]=paper.path("M"+(cx+rad2)+","+cy+" A"+rad2+","+rad2+" 0,0,0 "+(cx+rad1)+","+(cy-Math.sqrt(Math.pow(rad2,2)-Math.pow(rad1,2)))+" L"+(cx+rad1)+","+(cy-Math.sqrt(Math.pow(rad3,2)-Math.pow(rad1,2)))+" A"+rad3+","+rad3+" 0,0,1 "+(cx+rad2)+","+(cy-Math.sqrt(Math.pow(rad3,2)-Math.pow(rad2,2)))+" Z");
 		spacePathArray[16]=paper.path("M"+(cx+rad1)+","+(cy-Math.sqrt(Math.pow(rad2,2)-Math.pow(rad1,2)))+" A"+rad2+","+rad2+" 0,0,1 "+(cx+rad1)+","+(cy+Math.sqrt(Math.pow(rad2,2)-Math.pow(rad1,2)))+" Z");
-		spacePathArray[17]=paper.path();
-		spacePathArray[18]=paper.path();
-		spacePathArray[19]=paper.path();
-		spacePathArray[20]=paper.path();
+		spacePathArray[17]=paper.path("M"+(cx+rad2)+","+cy+" A"+rad2+","+rad2+" 0,0,1 "+(cx+rad1)+","+(cy+Math.sqrt(Math.pow(rad2,2)-Math.pow(rad1,2)))+" L"+(cx+rad1)+","+(cy+Math.sqrt(Math.pow(rad3,2)-Math.pow(rad1,2)))+" A"+rad3+","+rad3+" 0,0,0 "+(cx+rad2)+","+(cy+Math.sqrt(Math.pow(rad3,2)-Math.pow(rad2,2)))+" Z");
+		spacePathArray[18]=paper.path("M"+(cx+rad2)+","+(cy+Math.sqrt(Math.pow(rad3,2)-Math.pow(rad2,2)))+" A"+rad3+","+rad3+" 0,0,1 "+(cx+rad1)+","+(cy+Math.sqrt(Math.pow(rad3,2)-Math.pow(rad1,2)))+" L"+(cx+rad1)+","+(cy+Math.sqrt(Math.pow(rad4,2)-Math.pow(rad1,2)))+" A"+rad4+","+rad4+" 0,0,0 "+(cx+rad2)+","+(cy+Math.sqrt(Math.pow(rad4,2)-Math.pow(rad2,2)))+" Z");
+		spacePathArray[19]=paper.path("M"+(cx+rad2)+","+(cy+Math.sqrt(Math.pow(rad4,2)-Math.pow(rad2,2)))+" A"+rad4+","+rad4+" 0,0,1 "+(cx+rad1)+","+(cy+Math.sqrt(Math.pow(rad4,2)-Math.pow(rad1,2)))+" L"+(cx+rad1)+","+(cy+Math.sqrt(Math.pow(rad5,2)-Math.pow(rad1,2)))+" A"+rad5+","+rad5+" 0,0,0 "+(cx+rad2)+","+(cy+Math.sqrt(Math.pow(rad5,2)-Math.pow(rad2,2)))+" Z");
+		spacePathArray[20]=paper.path("M"+(cx+rad2)+","+(cy+Math.sqrt(Math.pow(rad5,2)-Math.pow(rad2,2)))+" A"+rad5+","+rad5+" 0,0,1 "+(cx+rad1)+","+(cy+Math.sqrt(Math.pow(rad5,2)-Math.pow(rad1,2)))+" L"+(cx+rad1)+","+(cy+Math.sqrt(Math.pow(rad6,2)-Math.pow(rad1,2)))+" A"+rad6+","+rad6+" 0,0,0 "+(cx+rad2)+","+(cy+Math.sqrt(Math.pow(rad6,2)-Math.pow(rad2,2)))+" Z");
 		spacePathArray[21]=paper.path("M"+cx+","+(cy-rad5)+" A"+rad5+","+rad5+" 0,0,1 "+(cx+rad1)+","+(cy-Math.sqrt(Math.pow(rad5,2)-Math.pow(rad1,2)))+" L"+(cx+rad1)+","+(cy-Math.sqrt(Math.pow(rad6,2)-Math.pow(rad1,2)))+" A"+rad6+","+rad6+" 0,0,0 "+cx+","+(cy-rad6)+" Z");
 		spacePathArray[22]=paper.path("M"+cx+","+(cy-rad4)+" A"+rad4+","+rad4+" 0,0,1 "+(cx+rad1)+","+(cy-Math.sqrt(Math.pow(rad4,2)-Math.pow(rad1,2)))+" L"+(cx+rad1)+","+(cy-Math.sqrt(Math.pow(rad5,2)-Math.pow(rad1,2)))+" A"+rad5+","+rad5+" 0,0,0 "+cx+","+(cy-rad5)+" Z");
 		spacePathArray[23]=paper.path("M"+cx+","+(cy-rad3)+" A"+rad3+","+rad3+" 0,0,1 "+(cx+rad1)+","+(cy-Math.sqrt(Math.pow(rad3,2)-Math.pow(rad1,2)))+" L"+(cx+rad1)+","+(cy-Math.sqrt(Math.pow(rad4,2)-Math.pow(rad1,2)))+" A"+rad4+","+rad4+" 0,0,0 "+cx+","+(cy-rad4)+" Z");
@@ -774,45 +811,63 @@ function drawGameBoard(resize) {
 		spacePathArray[29]=paper.path("M"+cx+","+(cy+rad3)+" A"+rad3+","+rad3+" 0,0,0 "+(cx+rad1)+","+(cy+Math.sqrt(Math.pow(rad3,2)-Math.pow(rad1,2)))+" L"+(cx+rad1)+","+(cy+Math.sqrt(Math.pow(rad4,2)-Math.pow(rad1,2)))+" A"+rad4+","+rad4+" 0,0,1 "+cx+","+(cy+rad4)+" Z");
 		spacePathArray[30]=paper.path("M"+cx+","+(cy+rad4)+" A"+rad4+","+rad4+" 0,0,0 "+(cx+rad1)+","+(cy+Math.sqrt(Math.pow(rad4,2)-Math.pow(rad1,2)))+" L"+(cx+rad1)+","+(cy+Math.sqrt(Math.pow(rad5,2)-Math.pow(rad1,2)))+" A"+rad5+","+rad5+" 0,0,1 "+cx+","+(cy+rad5)+" Z");
 		spacePathArray[31]=paper.path("M"+cx+","+(cy+rad5)+" A"+rad5+","+rad5+" 0,0,0 "+(cx+rad1)+","+(cy+Math.sqrt(Math.pow(rad5,2)-Math.pow(rad1,2)))+" L"+(cx+rad1)+","+(cy+Math.sqrt(Math.pow(rad6,2)-Math.pow(rad1,2)))+" A"+rad6+","+rad6+" 0,0,1 "+cx+","+(cy+rad6)+" Z");
-		spacePathArray[32]=paper.path("M"+cx+","+(cy-rad5)+" A"+rad5+","+rad5+" 0,0,1 "+(cx-rad1)+","+(cy-Math.sqrt(Math.pow(rad5,2)-Math.pow(rad1,2)))+" L"+(cx-rad1)+","+(cy-Math.sqrt(Math.pow(rad6,2)-Math.pow(rad1,2)))+" A"+rad6+","+rad6+" 0,0,1 "+cx+","+(cy-rad6)+" Z");
-		spacePathArray[33]=paper.path("M"+cx+","+(cy-rad4)+" A"+rad4+","+rad4+" 0,0,1 "+(cx-rad1)+","+(cy-Math.sqrt(Math.pow(rad4,2)-Math.pow(rad1,2)))+" L"+(cx-rad1)+","+(cy-Math.sqrt(Math.pow(rad5,2)-Math.pow(rad1,2)))+" A"+rad5+","+rad5+" 0,0,1 "+cx+","+(cy-rad5)+" Z");
-		spacePathArray[34]=paper.path("M"+cx+","+(cy-rad3)+" A"+rad3+","+rad3+" 0,0,1 "+(cx-rad1)+","+(cy-Math.sqrt(Math.pow(rad3,2)-Math.pow(rad1,2)))+" L"+(cx-rad1)+","+(cy-Math.sqrt(Math.pow(rad4,2)-Math.pow(rad1,2)))+" A"+rad4+","+rad4+" 0,0,1 "+cx+","+(cy-rad4)+" Z");
-		spacePathArray[35]=paper.path("M"+cx+","+(cy-rad2)+" A"+rad2+","+rad2+" 0,0,1 "+(cx-rad1)+","+(cy-Math.sqrt(Math.pow(rad2,2)-Math.pow(rad1,2)))+" L"+(cx-rad1)+","+(cy-Math.sqrt(Math.pow(rad3,2)-Math.pow(rad1,2)))+" A"+rad3+","+rad3+" 0,0,1 "+cx+","+(cy-rad3)+" Z");
-		spacePathArray[36]=paper.path("M"+(cx-rad1)+","+cy+" A"+rad1+","+rad1+" 0,0,0 "+cx+","+(cy-rad1)+" L"+cx+","+(cy-rad2)+" A"+rad2+","+rad2+" 0,0,0 "+(cx-rad1)+","+(cy-Math.sqrt(Math.pow(rad2,2)-Math.pow(rad1,2)))+" Z");
+		spacePathArray[32]=paper.path("M"+cx+","+(cy-rad5)+" A"+rad5+","+rad5+" 0,0,0 "+(cx-rad1)+","+(cy-Math.sqrt(Math.pow(rad5,2)-Math.pow(rad1,2)))+" L"+(cx-rad1)+","+(cy-Math.sqrt(Math.pow(rad6,2)-Math.pow(rad1,2)))+" A"+rad6+","+rad6+" 0,0,1 "+cx+","+(cy-rad6)+" Z");
+		spacePathArray[33]=paper.path("M"+cx+","+(cy-rad4)+" A"+rad4+","+rad4+" 0,0,0 "+(cx-rad1)+","+(cy-Math.sqrt(Math.pow(rad4,2)-Math.pow(rad1,2)))+" L"+(cx-rad1)+","+(cy-Math.sqrt(Math.pow(rad5,2)-Math.pow(rad1,2)))+" A"+rad5+","+rad5+" 0,0,1 "+cx+","+(cy-rad5)+" Z");
+		spacePathArray[34]=paper.path("M"+cx+","+(cy-rad3)+" A"+rad3+","+rad3+" 0,0,0 "+(cx-rad1)+","+(cy-Math.sqrt(Math.pow(rad3,2)-Math.pow(rad1,2)))+" L"+(cx-rad1)+","+(cy-Math.sqrt(Math.pow(rad4,2)-Math.pow(rad1,2)))+" A"+rad4+","+rad4+" 0,0,1 "+cx+","+(cy-rad4)+" Z");
+		spacePathArray[35]=paper.path("M"+cx+","+(cy-rad2)+" A"+rad2+","+rad2+" 0,0,0 "+(cx-rad1)+","+(cy-Math.sqrt(Math.pow(rad2,2)-Math.pow(rad1,2)))+" L"+(cx-rad1)+","+(cy-Math.sqrt(Math.pow(rad3,2)-Math.pow(rad1,2)))+" A"+rad3+","+rad3+" 0,0,1 "+cx+","+(cy-rad3)+" Z");
+		spacePathArray[36]=paper.path("M"+(cx-rad1)+","+cy+" A"+rad1+","+rad1+" 0,0,1 "+cx+","+(cy-rad1)+" L"+cx+","+(cy-rad2)+" A"+rad2+","+rad2+" 0,0,0 "+(cx-rad1)+","+(cy-Math.sqrt(Math.pow(rad2,2)-Math.pow(rad1,2)))+" Z");
 		spacePathArray[37]=paper.path("M"+cx+","+(cy-rad1)+" A"+rad1+","+rad1+" 0,0,0 "+cx+","+(cy+rad1)+" Z");
 		spacePathArray[38]=paper.path("M"+(cx-rad1)+","+cy+" A"+rad1+","+rad1+" 0,0,0 "+cx+","+(cy+rad1)+" L"+cx+","+(cy+rad2)+" A"+rad2+","+rad2+" 0,0,1 "+(cx-rad1)+","+(cy+Math.sqrt(Math.pow(rad2,2)-Math.pow(rad1,2)))+" Z");
 		spacePathArray[39]=paper.path("M"+cx+","+(cy+rad2)+" A"+rad2+","+rad2+" 0,0,1 "+(cx-rad1)+","+(cy+Math.sqrt(Math.pow(rad2,2)-Math.pow(rad1,2)))+" L"+(cx-rad1)+","+(cy+Math.sqrt(Math.pow(rad3,2)-Math.pow(rad1,2)))+" A"+rad3+","+rad3+" 0,0,0 "+cx+","+(cy+rad3)+" Z");
 		spacePathArray[40]=paper.path("M"+cx+","+(cy+rad3)+" A"+rad3+","+rad3+" 0,0,1 "+(cx-rad1)+","+(cy+Math.sqrt(Math.pow(rad3,2)-Math.pow(rad1,2)))+" L"+(cx-rad1)+","+(cy+Math.sqrt(Math.pow(rad4,2)-Math.pow(rad1,2)))+" A"+rad4+","+rad4+" 0,0,0 "+cx+","+(cy+rad4)+" Z");
 		spacePathArray[41]=paper.path("M"+cx+","+(cy+rad4)+" A"+rad4+","+rad4+" 0,0,1 "+(cx-rad1)+","+(cy+Math.sqrt(Math.pow(rad4,2)-Math.pow(rad1,2)))+" L"+(cx-rad1)+","+(cy+Math.sqrt(Math.pow(rad5,2)-Math.pow(rad1,2)))+" A"+rad5+","+rad5+" 0,0,0 "+cx+","+(cy+rad5)+" Z");
 		spacePathArray[42]=paper.path("M"+cx+","+(cy+rad5)+" A"+rad5+","+rad5+" 0,0,1 "+(cx-rad1)+","+(cy+Math.sqrt(Math.pow(rad5,2)-Math.pow(rad1,2)))+" L"+(cx-rad1)+","+(cy+Math.sqrt(Math.pow(rad6,2)-Math.pow(rad1,2)))+" A"+rad6+","+rad6+" 0,0,0 "+cx+","+(cy+rad6)+" Z");
-		spacePathArray[43]=paper.path();
-		spacePathArray[44]=paper.path();
-		spacePathArray[45]=paper.path();
-		spacePathArray[46]=paper.path();
+		spacePathArray[43]=paper.path("M"+(cx-rad2)+","+(cy-Math.sqrt(Math.pow(rad5,2)-Math.pow(rad2,2)))+" A"+rad5+","+rad5+" 0,0,1 "+(cx-rad1)+","+(cy-Math.sqrt(Math.pow(rad5,2)-Math.pow(rad1,2)))+" L"+(cx-rad1)+","+(cy-Math.sqrt(Math.pow(rad6,2)-Math.pow(rad1,2)))+" A"+rad6+","+rad6+" 0,0,0 "+(cx-rad2)+","+(cy-Math.sqrt(Math.pow(rad6,2)-Math.pow(rad2,2)))+" Z");
+		spacePathArray[44]=paper.path("M"+(cx-rad2)+","+(cy-Math.sqrt(Math.pow(rad4,2)-Math.pow(rad2,2)))+" A"+rad4+","+rad4+" 0,0,1 "+(cx-rad1)+","+(cy-Math.sqrt(Math.pow(rad4,2)-Math.pow(rad1,2)))+" L"+(cx-rad1)+","+(cy-Math.sqrt(Math.pow(rad5,2)-Math.pow(rad1,2)))+" A"+rad5+","+rad5+" 0,0,0 "+(cx-rad2)+","+(cy-Math.sqrt(Math.pow(rad5,2)-Math.pow(rad2,2)))+" Z");
+		spacePathArray[45]=paper.path("M"+(cx-rad2)+","+(cy-Math.sqrt(Math.pow(rad3,2)-Math.pow(rad2,2)))+" A"+rad3+","+rad3+" 0,0,1 "+(cx-rad1)+","+(cy-Math.sqrt(Math.pow(rad3,2)-Math.pow(rad1,2)))+" L"+(cx-rad1)+","+(cy-Math.sqrt(Math.pow(rad4,2)-Math.pow(rad1,2)))+" A"+rad4+","+rad4+" 0,0,0 "+(cx-rad2)+","+(cy-Math.sqrt(Math.pow(rad4,2)-Math.pow(rad2,2)))+" Z");
+		spacePathArray[46]=paper.path("M"+(cx-rad2)+","+cy+" A"+rad2+","+rad2+" 0,0,1 "+(cx-rad1)+","+(cy-Math.sqrt(Math.pow(rad2,2)-Math.pow(rad1,2)))+" L"+(cx-rad1)+","+(cy-Math.sqrt(Math.pow(rad3,2)-Math.pow(rad1,2)))+" A"+rad3+","+rad3+" 0,0,0 "+(cx-rad2)+","+(cy-Math.sqrt(Math.pow(rad3,2)-Math.pow(rad2,2)))+" Z");
 		spacePathArray[47]=paper.path("M"+(cx-rad1)+","+(cy-Math.sqrt(Math.pow(rad2,2)-Math.pow(rad1,2)))+" A"+rad2+","+rad2+" 0,0,0 "+(cx-rad1)+","+(cy+Math.sqrt(Math.pow(rad2,2)-Math.pow(rad1,2)))+" Z");
-		spacePathArray[48]=paper.path();
-		spacePathArray[49]=paper.path();
-		spacePathArray[50]=paper.path();
-		spacePathArray[51]=paper.path();
-		spacePathArray[52]=paper.path();
-		spacePathArray[53]=paper.path();
-		spacePathArray[54]=paper.path();
+		spacePathArray[48]=paper.path("M"+(cx-rad2)+","+cy+" A"+rad2+","+rad2+" 0,0,0 "+(cx-rad1)+","+(cy+Math.sqrt(Math.pow(rad2,2)-Math.pow(rad1,2)))+" L"+(cx-rad1)+","+(cy+Math.sqrt(Math.pow(rad3,2)-Math.pow(rad1,2)))+" A"+rad3+","+rad3+" 0,0,1 "+(cx-rad2)+","+(cy+Math.sqrt(Math.pow(rad3,2)-Math.pow(rad2,2)))+" Z");
+		spacePathArray[49]=paper.path("M"+(cx-rad2)+","+(cy+Math.sqrt(Math.pow(rad3,2)-Math.pow(rad2,2)))+" A"+rad3+","+rad3+" 0,0,0 "+(cx-rad1)+","+(cy+Math.sqrt(Math.pow(rad3,2)-Math.pow(rad1,2)))+" L"+(cx-rad1)+","+(cy+Math.sqrt(Math.pow(rad4,2)-Math.pow(rad1,2)))+" A"+rad4+","+rad4+" 0,0,1 "+(cx-rad2)+","+(cy+Math.sqrt(Math.pow(rad4,2)-Math.pow(rad2,2)))+" Z");
+		spacePathArray[50]=paper.path("M"+(cx-rad2)+","+(cy+Math.sqrt(Math.pow(rad4,2)-Math.pow(rad2,2)))+" A"+rad4+","+rad4+" 0,0,0 "+(cx-rad1)+","+(cy+Math.sqrt(Math.pow(rad4,2)-Math.pow(rad1,2)))+" L"+(cx-rad1)+","+(cy+Math.sqrt(Math.pow(rad5,2)-Math.pow(rad1,2)))+" A"+rad5+","+rad5+" 0,0,1 "+(cx-rad2)+","+(cy+Math.sqrt(Math.pow(rad5,2)-Math.pow(rad2,2)))+" Z");
+		spacePathArray[51]=paper.path("M"+(cx-rad2)+","+(cy+Math.sqrt(Math.pow(rad5,2)-Math.pow(rad2,2)))+" A"+rad5+","+rad5+" 0,0,0 "+(cx-rad1)+","+(cy+Math.sqrt(Math.pow(rad5,2)-Math.pow(rad1,2)))+" L"+(cx-rad1)+","+(cy+Math.sqrt(Math.pow(rad6,2)-Math.pow(rad1,2)))+" A"+rad6+","+rad6+" 0,0,1 "+(cx-rad2)+","+(cy+Math.sqrt(Math.pow(rad6,2)-Math.pow(rad2,2)))+" Z");
+		spacePathArray[52]=paper.path("M"+(cx-rad3)+","+(cy-Math.sqrt(Math.pow(rad5,2)-Math.pow(rad3,2)))+" A"+rad5+","+rad5+" 0,0,1 "+(cx-rad2)+","+(cy-Math.sqrt(Math.pow(rad5,2)-Math.pow(rad2,2)))+" L"+(cx-rad2)+","+(cy-Math.sqrt(Math.pow(rad6,2)-Math.pow(rad2,2)))+" A"+rad6+","+rad6+" 0,0,0 "+(cx-rad3)+","+(cy-Math.sqrt(Math.pow(rad6,2)-Math.pow(rad3,2)))+" Z");
+		spacePathArray[53]=paper.path("M"+(cx-rad3)+","+(cy-Math.sqrt(Math.pow(rad4,2)-Math.pow(rad3,2)))+" A"+rad4+","+rad4+" 0,0,1 "+(cx-rad2)+","+(cy-Math.sqrt(Math.pow(rad4,2)-Math.pow(rad2,2)))+" L"+(cx-rad2)+","+(cy-Math.sqrt(Math.pow(rad5,2)-Math.pow(rad2,2)))+" A"+rad5+","+rad5+" 0,0,0 "+(cx-rad3)+","+(cy-Math.sqrt(Math.pow(rad5,2)-Math.pow(rad3,2)))+" Z");
+		spacePathArray[54]=paper.path("M"+(cx-rad3)+","+cy+" A"+rad3+","+rad3+" 0,0,1 "+(cx-rad2)+","+(cy-Math.sqrt(Math.pow(rad3,2)-Math.pow(rad2,2)))+" L"+(cx-rad2)+","+(cy-Math.sqrt(Math.pow(rad4,2)-Math.pow(rad2,2)))+" A"+rad4+","+rad4+" 0,0,0 "+(cx-rad3)+","+(cy-Math.sqrt(Math.pow(rad4,2)-Math.pow(rad3,2)))+" Z");
 		spacePathArray[55]=paper.path("M"+(cx-rad2)+","+(cy-Math.sqrt(Math.pow(rad3,2)-Math.pow(rad2,2)))+" A"+rad3+","+rad3+" 0,0,0 "+(cx-rad2)+","+(cy+Math.sqrt(Math.pow(rad3,2)-Math.pow(rad2,2)))+" Z");
-		spacePathArray[56]=paper.path();
-		spacePathArray[57]=paper.path();
-		spacePathArray[58]=paper.path();
-		spacePathArray[59]=paper.path();
-		spacePathArray[60]=paper.path();
+		spacePathArray[56]=paper.path("M"+(cx-rad3)+","+cy+" A"+rad3+","+rad3+" 0,0,0 "+(cx-rad2)+","+(cy+Math.sqrt(Math.pow(rad3,2)-Math.pow(rad2,2)))+" L"+(cx-rad2)+","+(cy+Math.sqrt(Math.pow(rad4,2)-Math.pow(rad2,2)))+" A"+rad4+","+rad4+" 0,0,1 "+(cx-rad3)+","+(cy+Math.sqrt(Math.pow(rad4,2)-Math.pow(rad3,2)))+" Z");
+		spacePathArray[57]=paper.path("M"+(cx-rad3)+","+(cy+Math.sqrt(Math.pow(rad4,2)-Math.pow(rad3,2)))+" A"+rad4+","+rad4+" 0,0,0 "+(cx-rad2)+","+(cy+Math.sqrt(Math.pow(rad4,2)-Math.pow(rad2,2)))+" L"+(cx-rad2)+","+(cy+Math.sqrt(Math.pow(rad5,2)-Math.pow(rad2,2)))+" A"+rad5+","+rad5+" 0,0,1 "+(cx-rad3)+","+(cy+Math.sqrt(Math.pow(rad5,2)-Math.pow(rad3,2)))+" Z");
+		spacePathArray[58]=paper.path("M"+(cx-rad3)+","+(cy+Math.sqrt(Math.pow(rad5,2)-Math.pow(rad3,2)))+" A"+rad5+","+rad5+" 0,0,0 "+(cx-rad2)+","+(cy+Math.sqrt(Math.pow(rad5,2)-Math.pow(rad2,2)))+" L"+(cx-rad2)+","+(cy+Math.sqrt(Math.pow(rad6,2)-Math.pow(rad2,2)))+" A"+rad6+","+rad6+" 0,0,1 "+(cx-rad3)+","+(cy+Math.sqrt(Math.pow(rad6,2)-Math.pow(rad3,2)))+" Z");
+		spacePathArray[59]=paper.path("M"+(cx-rad4)+","+(cy-Math.sqrt(Math.pow(rad5,2)-Math.pow(rad4,2)))+" A"+rad5+","+rad5+" 0,0,1 "+(cx-rad3)+","+(cy-Math.sqrt(Math.pow(rad5,2)-Math.pow(rad3,2)))+" L"+(cx-rad3)+","+(cy-Math.sqrt(Math.pow(rad6,2)-Math.pow(rad3,2)))+" A"+rad6+","+rad6+" 0,0,0 "+(cx-rad4)+","+(cy-Math.sqrt(Math.pow(rad6,2)-Math.pow(rad4,2)))+" Z");
+		spacePathArray[60]=paper.path("M"+(cx-rad4)+","+cy+" A"+rad4+","+rad4+" 0,0,1 "+(cx-rad3)+","+(cy-Math.sqrt(Math.pow(rad4,2)-Math.pow(rad3,2)))+" L"+(cx-rad3)+","+(cy-Math.sqrt(Math.pow(rad5,2)-Math.pow(rad3,2)))+" A"+rad5+","+rad5+" 0,0,0 "+(cx-rad4)+","+(cy-Math.sqrt(Math.pow(rad5,2)-Math.pow(rad4,2)))+" Z");
 		spacePathArray[61]=paper.path("M"+(cx-rad3)+","+(cy-Math.sqrt(Math.pow(rad4,2)-Math.pow(rad3,2)))+" A"+rad4+","+rad4+" 0,0,0 "+(cx-rad3)+","+(cy+Math.sqrt(Math.pow(rad4,2)-Math.pow(rad3,2)))+" Z");
-		spacePathArray[62]=paper.path();
-		spacePathArray[63]=paper.path();
+		spacePathArray[62]=paper.path("M"+(cx-rad4)+","+cy+" A"+rad4+","+rad4+" 0,0,0 "+(cx-rad3)+","+(cy+Math.sqrt(Math.pow(rad4,2)-Math.pow(rad3,2)))+" L"+(cx-rad3)+","+(cy+Math.sqrt(Math.pow(rad5,2)-Math.pow(rad3,2)))+" A"+rad5+","+rad5+" 0,0,1 "+(cx-rad4)+","+(cy+Math.sqrt(Math.pow(rad5,2)-Math.pow(rad4,2)))+" Z");
+		spacePathArray[63]=paper.path("M"+(cx-rad4)+","+(cy+Math.sqrt(Math.pow(rad5,2)-Math.pow(rad4,2)))+" A"+rad5+","+rad5+" 0,0,0 "+(cx-rad3)+","+(cy+Math.sqrt(Math.pow(rad5,2)-Math.pow(rad3,2)))+" L"+(cx-rad3)+","+(cy+Math.sqrt(Math.pow(rad6,2)-Math.pow(rad3,2)))+" A"+rad6+","+rad6+" 0,0,1 "+(cx-rad4)+","+(cy+Math.sqrt(Math.pow(rad6,2)-Math.pow(rad4,2)))+" Z");
 	}
 
-	$(".extended").remove(); //this is here in case any media flyouts were created right as the 'Play' button was pressed
 
-	//if its a new game, set up pieces in their starting positions
+	$(window).resize(function() {
+		if(document.getElementById("sp1")) { //only draw board on resize if game was in progress
+			$("svg").remove();
+			$(".banner").hide();
+			$(".navbar").hide();
+			$(".desktopMedia").hide();
+			$(".mobileMedia").hide();
+			$("#top").hide();
+			$("#chess").hide();
+			$(".mobileMedia").hide();
+			if(!windowIsSmall || wasBig)
+				drawGameBoard(1,spaceObjectArray,1);
+			else
+				drawGameBoard(1,spaceObjectArray,0);
+		}
+	});
+
+
+	/*if its a new game, set up pieces in their starting positions
+	otherwise, import board data from initial setup*/
 	if(!resize) { //if new game
-		/*spaceObjectArray[1].occupied=1;
+		spaceObjectArray[1].occupied=1;
 		spaceObjectArray[6].occupied=1;
 		spaceObjectArray[13].occupied=1;
 		spaceObjectArray[22].occupied=1;
@@ -827,7 +882,55 @@ function drawGameBoard(resize) {
 		spaceObjectArray[41].occupied=2;
 		spaceObjectArray[50].occupied=2;
 		spaceObjectArray[57].occupied=2;
-		spaceObjectArray[62].occupied=2;*/
+		spaceObjectArray[62].occupied=2;
+		spaceObjectArray[1].isPawnUnmoved=1;
+		spaceObjectArray[6].isPawnUnmoved=1;
+		spaceObjectArray[13].isPawnUnmoved=1;
+		spaceObjectArray[22].isPawnUnmoved=1;
+		spaceObjectArray[33].isPawnUnmoved=1;
+		spaceObjectArray[44].isPawnUnmoved=1;
+		spaceObjectArray[53].isPawnUnmoved=1;
+		spaceObjectArray[60].isPawnUnmoved=1;
+		spaceObjectArray[3].isPawnUnmoved=1;
+		spaceObjectArray[10].isPawnUnmoved=1;
+		spaceObjectArray[19].isPawnUnmoved=1;
+		spaceObjectArray[30].isPawnUnmoved=1;
+		spaceObjectArray[41].isPawnUnmoved=1;
+		spaceObjectArray[50].isPawnUnmoved=1;
+		spaceObjectArray[57].isPawnUnmoved=1;
+		spaceObjectArray[62].isPawnUnmoved=1;
+		spaceObjectArray[3].quadrant=1;
+		spaceObjectArray[10].quadrant=1;
+		spaceObjectArray[19].quadrant=1;
+		spaceObjectArray[30].quadrant=1;
+		spaceObjectArray[1].quadrant=2;
+		spaceObjectArray[6].quadrant=2;
+		spaceObjectArray[13].quadrant=2;
+		spaceObjectArray[22].quadrant=2;
+		spaceObjectArray[33].quadrant=3;
+		spaceObjectArray[44].quadrant=3;
+		spaceObjectArray[53].quadrant=3;
+		spaceObjectArray[60].quadrant=3;
+		spaceObjectArray[41].quadrant=4;
+		spaceObjectArray[50].quadrant=4;
+		spaceObjectArray[57].quadrant=4;
+		spaceObjectArray[62].quadrant=4;
+		spaceObjectArray[1].singularity=0;
+		spaceObjectArray[6].singularity=0;
+		spaceObjectArray[13].singularity=0;
+		spaceObjectArray[22].singularity=0;
+		spaceObjectArray[33].singularity=0;
+		spaceObjectArray[44].singularity=0;
+		spaceObjectArray[53].singularity=0;
+		spaceObjectArray[60].singularity=0;
+		spaceObjectArray[3].singularity=0;
+		spaceObjectArray[10].singularity=0;
+		spaceObjectArray[19].singularity=0;
+		spaceObjectArray[30].singularity=0;
+		spaceObjectArray[41].singularity=0;
+		spaceObjectArray[50].singularity=0;
+		spaceObjectArray[57].singularity=0;
+		spaceObjectArray[62].singularity=0;
 
 		spaceObjectArray[0].occupied=3;
 		spaceObjectArray[59].occupied=3;
@@ -851,23 +954,9 @@ function drawGameBoard(resize) {
 		spaceObjectArray[42].occupied=12;
 	}
 	else { //if page has been resized
-		//get previous piece location data somehow
-		spaceObjectArray[1].occupied=1;
-		spaceObjectArray[6].occupied=1;
-		spaceObjectArray[13].occupied=1;
-		spaceObjectArray[22].occupied=1;
-		spaceObjectArray[33].occupied=1;
-		spaceObjectArray[44].occupied=1;
-		spaceObjectArray[53].occupied=1;
-		spaceObjectArray[60].occupied=1;
-		spaceObjectArray[3].occupied=2;
-		spaceObjectArray[10].occupied=2;
-		spaceObjectArray[19].occupied=2;
-		spaceObjectArray[30].occupied=2;
-		spaceObjectArray[41].occupied=2;
-		spaceObjectArray[50].occupied=2;
-		spaceObjectArray[57].occupied=2;
-		spaceObjectArray[62].occupied=2;
+		for(var i=0;i<64;i++) {
+			spaceObjectArray[i]=objectArray[i];
+		}
 	}
 
 
@@ -885,7 +974,7 @@ function drawGameBoard(resize) {
 	}
 
 
-	/* set basic space attributes for the spacePathArray. this includes: id, index #, color, and the (x,y) coord of the center of the piece */
+	//set basic space attributes for the spacePathArray. this includes: id, index #, color, and the (x,y) coord of the center of the piece
 	for(var i=0; i<64; i++) {
 		var title=i.toString();
 		var id="sp".concat((i+1).toString());
@@ -901,9 +990,9 @@ function drawGameBoard(resize) {
 		spacePathArray[i].node.setAttribute("class","boardSpace");
 		spacePathArray[i].node.setAttribute("id",id);
 		if(devmode)
-			spacePathArray[i].attr("title",title); //allows hover to show the index of each space
+			spacePathArray[i].attr("title",title); //allows hover to show the index of each space during devmode
 
-		//creates the x,y coordinates for each space (NEEDS ADJUSTING)
+		//creates the x,y coordinates for each space
 		var sBounds=spacePathArray[i].getBBox();
 		var xOffset=(40/881)*boardWidth; //scaling based on empirically-determined ratio
 		var yOffset=(35/881)*boardWidth; //scaling based on empirically-determined ratio
@@ -915,7 +1004,11 @@ function drawGameBoard(resize) {
 			spaceObjectArray[i].cx=sBounds.x+(sBounds.width/2)-xOffset;
 		spaceObjectArray[i].cy=sBounds.y+rad05-yOffset;
 
-		if(isWide) { //fine adjustments to center (x,y) coords
+
+		//=======================================================================
+		// Fine adjustments to (x,y) coords of piece images
+		//=======================================================================
+		if(isWide) {
 			if(i==4 || i==63 || i==57 || i==49)
 				spaceObjectArray[i].cx+=15;
 			if(i==11 || i==58 || i==18 || i==54 || i==7 || i==60 || i==10)
@@ -925,48 +1018,105 @@ function drawGameBoard(resize) {
 			if(i==51 || i==31 || i==42 || i==29 || i==34 || i==23 || i==15 || i==46 || i==39 || i==28 || i==36 || i==25 || i==1 || i==30 || i==41 || i==19 || i==56)
 				spaceObjectArray[i].cx+=5;
 		}
-		else {
-
+		else {//fix the method used to calculate (x,y) coords for vertical, they're pretty messed up by default
+			if(i==60 || i==1 || i==54) {
+				spaceObjectArray[i].cx+=10;
+				spaceObjectArray[i].cy+=22;
+			}
+			if(i==59 || i==0 || i==4 || i==63)
+				spaceObjectArray[i].cy+=20;
+			if(i==53 || i==6 || i==52 || i==5 || i==14)
+				spaceObjectArray[i].cy+=10;
+			if(i==44 || i==13 || i==50 || i==19 || i==43 || i==12)
+				spaceObjectArray[i].cy+=5;
+			if(i==45) {
+				spaceObjectArray[i].cy+=10;
+				spaceObjectArray[i].cx+=4;
+			}
+			if(i==7) {
+				spaceObjectArray[i].cy+=22;
+				spaceObjectArray[i].cx+=10;
+			}
+			if(i==61) {
+				spaceObjectArray[i].cy+=80;
+				spaceObjectArray[i].cx+=4;
+			}
+			if(i==55) {
+				spaceObjectArray[i].cy+=63;
+				spaceObjectArray[i].cx+=4;
+			}
+			if(i==47) {
+				spaceObjectArray[i].cy+=41;
+				spaceObjectArray[i].cx+=4;
+			}
+			if(i==36 || i==25) {
+				spaceObjectArray[i].cy+=6;
+				spaceObjectArray[i].cx+=10;
+			}
+			if(i==37) {
+				spaceObjectArray[i].cy+=11;
+				spaceObjectArray[i].cx+=4;
+			}
+			if(i==46 || i==15) {
+				spaceObjectArray[i].cy+=11;
+				spaceObjectArray[i].cx+=12;
+			}
+			if(i==26)
+				spaceObjectArray[i].cy+=11;
+			if(i==16)
+				spaceObjectArray[i].cy+=41;
+			if(i==8)
+				spaceObjectArray[i].cy+=63;
 		}
 	}
 
+	setPieces(paper, spaceObjectArray, boardWidth, windowIsSmall, wasBig);
 
-	//draw pieces after center (x,y) coords have been determined
-	for(var i=0;i<64;i++) {
-		if(spaceObjectArray[i].occupied!=0)
-			setPiece(paper, spaceObjectArray[i].occupied, spaceObjectArray[i].cx, spaceObjectArray[i].cy, i, boardWidth);
+	//set space hover attributes
+	if(!windowIsSmall || wasBig) { //hover function only set on md and lg window sizes
+		$(".boardSpace").hover(function(){
+			$(this).attr("fill",colorH);
+			$(this).attr("stroke",colorHS);
+		}, function(){
+			var idNum = parseInt($(this).attr("id").replace("sp",""));
+			if(idNum%2==0)
+				$(this).attr("fill",color1);
+			else
+				$(this).attr("fill",color2);
+			$(this).attr("stroke",colorS);
+		});
 	}
 
-	/* set space hover attributes */
-	$(".boardSpace").hover(function(){
-		$(this).attr("fill",colorH);
-		$(this).attr("stroke",colorHS);
-	}, function(){
-		var idNum = parseInt($(this).attr("id").replace("sp",""));
-		if(idNum%2==0) {
-			$(this).attr("fill",color1);
-			$(this).attr("stroke",colorS);
-		}
-		else {
-			$(this).attr("fill",color2);
-			$(this).attr("stroke",colorS);
-		}
-	});
 
-
-	/* set ALL space click functionality */
+	//=======================================================================
+	// ALL functionality for when a boardspace is clicked, including movable spaces
+	//=======================================================================
 	$(".boardSpace").click(function(){
 		if(document.getElementById("selectedSpace")) {
 			$("#selectedSpace").remove();
 			$(".movableSpaces").remove();
-			$(".temp").remove();
 		}
 		var index=parseInt($(this).attr("id").replace("sp",""))-1;
 		var isOccupied=spaceObjectArray[index].occupied;
 		var selectedPath;
 
-		if(isOccupied!=0 && isCorrectTurn(devmode,turnColor,isOccupied)) {
+		//temp segment, remove for final
+		if(devmode) {
+			if(spaceObjectArray[index].isWhiteDanger==1 && spaceObjectArray[index].isBlackDanger==0) {
+				//alert("White is in danger");
+				//alert(spaceObjectArray[index].quadrant);
+			}
+			else if(spaceObjectArray[index].isWhiteDanger==0 && spaceObjectArray[index].isBlackDanger==1) {
+				//alert("Black is in danger");
+				//alert(spaceObjectArray[index].quadrant);
+			}
+			else if(spaceObjectArray[index].isWhiteDanger==1 && spaceObjectArray[index].isBlackDanger==1) {
+				//alert("Both colors are in danger");
+				//alert(spaceObjectArray[index].quadrant);
+			}
+		}//end temp segment
 
+		if(isOccupied!=0 && isCorrectTurn(devmode,turnColor,isOccupied)) {
 			//color the clicked on space
 			selectedPath = spacePathArray[index].clone();
 			selectedPath.node.setAttribute("id","selectedSpace");
@@ -974,212 +1124,87 @@ function drawGameBoard(resize) {
 			selectedPath.attr("stroke",colorSelectS);
 
 			switch(isOccupied) {
-				//FIX ISSUES WITH VECTOR TRANSITIONS IN THE CORNERS OF THE BOARD
-				//FIX ISSUES WITH VECTOR TRANSITIONS IN THE CENTER OF THE BOARD
 /*white pawn*/	case(1):
 /*black pawn*/	case(2):
-					//account for 2 squares on first turn
-					//account for en passant
-					//account for diagonal captures
+					calculatePawnMovement(1, spaceObjectArray, spacePathArray, index);
 					break;
 /*white rook*/	case(3):
 /*black rook*/	case(4):
-					var originalIndex=index;
-					var originalNextDirIndex=0;
-					var nextDirIndex=0;
-					for(var j=0;j<4;j++) {
-						var nextIndex = spaceObjectArray[index].direct[nextDirIndex];
-						while(nextIndex!=-1 && spaceObjectArray[nextIndex].occupied==0) { //if the next board space exists and is unoccupied
-							for(var i=0; i<8; i++) //get piece's vector from current space and store it in next space
-								if(spaceObjectArray[nextIndex].direct[i]==index)
-									spaceObjectArray[nextIndex].prevDirIndex=i;
-							makeMovableSpace(spacePathArray[nextIndex],originalIndex,isOccupied);
-							
-							index=nextIndex;
-							nextDirIndex = spaceObjectArray[index].prevDirIndex+4;
-							if(nextDirIndex>7)
-								nextDirIndex-=8;
-							else if(nextDirIndex<0)
-								nextDirIndex+=8;
-							nextIndex = spaceObjectArray[index].direct[nextDirIndex];
-						}
-						if(nextIndex!=-1) {
-							if((spaceObjectArray[nextIndex].occupied%2==0 && spaceObjectArray[originalIndex].occupied%2!=0) || (spaceObjectArray[nextIndex].occupied%2!=0 && spaceObjectArray[originalIndex].occupied%2==0)) {
-								makeCaptureSpace(spacePathArray[nextIndex],originalIndex,isOccupied);
-							}
-						}
-						originalNextDirIndex+=2;
-						nextDirIndex=originalNextDirIndex;
-						index=originalIndex;
-					}
+					calculateRookMovement(1, spaceObjectArray, spacePathArray, index);
 					break;
 /*white knight*/case(5):
 /*black knight*/case(6):
-					//ISSUE: knights cannot currently capture
-					var originalNextDirIndex=0;
-					var originalIndex=index;
-					var nextDirIndex=0;
-					var nextIndex=spaceObjectArray[index].direct[nextDirIndex];
-					for(var j=0;j<4;j++) {
-						if(nextIndex!=-1 && spaceObjectArray[nextIndex].occupied==0) { //if the next board space exists and is unoccupied
-							for(var i=0; i<8; i++) //get piece's vector from current space and store it in next space
-								if(spaceObjectArray[nextIndex].direct[i]==index)
-									spaceObjectArray[nextIndex].prevDirIndex=i;
-							var diagDirIndex1=nextDirIndex+1;
-							if(diagDirIndex1>7)
-								diagDirIndex1-=8;
-							else if(diagDirIndex1<0)
-								diagDirIndex1+=8;
-							var diagDirIndex2=nextDirIndex-1;
-							if(diagDirIndex2>7)
-								diagDirIndex2-=8;
-							else if(diagDirIndex2<0)
-								diagDirIndex2+=8;
-							
-							var diagIndex1=spaceObjectArray[nextIndex].direct[diagDirIndex1];
-							var diagIndex2=spaceObjectArray[nextIndex].direct[diagDirIndex2];
-
-							if(diagIndex1!=-1) {
-								if(spaceObjectArray[diagIndex1].occupied==0) {
-									makeMovableSpace(spacePathArray[diagIndex1],originalIndex,isOccupied);
-								}
-							}
-							if(diagIndex2!=-1) {
-								if(spaceObjectArray[diagIndex2].occupied==0) {
-									makeMovableSpace(spacePathArray[diagIndex2],originalIndex,isOccupied);
-								}
-							}
-						}
-
-						index=originalIndex;
-						originalNextDirIndex+=2;
-						nextDirIndex=originalNextDirIndex;
-						nextIndex=spaceObjectArray[index].direct[nextDirIndex];
-					}
+					calculateKnightMovement(1, spaceObjectArray, spacePathArray, index);
 					break;
 /*white bishop*/case(7):
 /*black bishop*/case(8):
-					var originalIndex=index;
-					var originalNextDirIndex=1;
-					var nextDirIndex=1;
-					for(var j=0;j<4;j++) {
-						var nextIndex = spaceObjectArray[index].direct[nextDirIndex];
-						while(nextIndex!=-1 && spaceObjectArray[nextIndex].occupied==0) { //if the next board space exists and is unoccupied
-							for(var i=0; i<8; i++) //get piece's vector from current space and store it in next space
-								if(spaceObjectArray[nextIndex].direct[i]==index)
-									spaceObjectArray[nextIndex].prevDirIndex=i;
-							makeMovableSpace(spacePathArray[nextIndex],originalIndex,isOccupied);
-
-							index=nextIndex;
-							nextDirIndex = spaceObjectArray[index].prevDirIndex+4;
-							if(nextDirIndex>7)
-								nextDirIndex-=8;
-							else if(nextDirIndex<0)
-								nextDirIndex+=8;
-							nextIndex = spaceObjectArray[index].direct[nextDirIndex];
-						}
-						if(nextIndex!=-1) {
-							if((spaceObjectArray[nextIndex].occupied%2==0 && spaceObjectArray[originalIndex].occupied%2!=0) || (spaceObjectArray[nextIndex].occupied%2!=0 && spaceObjectArray[originalIndex].occupied%2==0)) {
-								makeCaptureSpace(spacePathArray[nextIndex],originalIndex,isOccupied);
-							}
-						}
-						originalNextDirIndex+=2;
-						nextDirIndex=originalNextDirIndex;
-						index=originalIndex;
-					}
+					calculateBishopMovement(1, spaceObjectArray, spacePathArray, index);
 					break;
 /*white queen*/	case(9):
 /*black queen*/	case(10):
-					var originalIndex=index;
-					var originalNextDirIndex=0;
-					var nextDirIndex=0;
-					for(var j=0;j<8;j++) {
-						var nextIndex = spaceObjectArray[index].direct[nextDirIndex];
-						while(nextIndex!=-1 && spaceObjectArray[nextIndex].occupied==0) { //if the next board space exists and is unoccupied
-							for(var i=0; i<8; i++) //get piece's vector from current space and store it in next space
-								if(spaceObjectArray[nextIndex].direct[i]==index)
-									spaceObjectArray[nextIndex].prevDirIndex=i;
-							makeMovableSpace(spacePathArray[nextIndex],originalIndex,isOccupied);
-
-							index=nextIndex;
-							nextDirIndex = spaceObjectArray[index].prevDirIndex+4;
-							if(nextDirIndex>7)
-								nextDirIndex-=8;
-							else if(nextDirIndex<0)
-								nextDirIndex+=8;
-							nextIndex = spaceObjectArray[index].direct[nextDirIndex];
-						}
-						if(nextIndex!=-1) {
-							if((spaceObjectArray[nextIndex].occupied%2==0 && spaceObjectArray[originalIndex].occupied%2!=0) || (spaceObjectArray[nextIndex].occupied%2!=0 && spaceObjectArray[originalIndex].occupied%2==0)) {
-								makeCaptureSpace(spacePathArray[nextIndex],originalIndex,isOccupied);
-							}
-						}
-						originalNextDirIndex++;
-						nextDirIndex=originalNextDirIndex;
-						index=originalIndex;
-					}
+					calculateQueenMovement(1, spaceObjectArray, spacePathArray, index);
 					break;
 /*white king*/	case(11):
 /*black king*/	case(12):
-					var originalIndex=index;
-					var originalNextDirIndex=0;
-					var nextDirIndex=0;
-					for(var j=0;j<8;j++) {
-						var nextIndex = spaceObjectArray[index].direct[nextDirIndex];
-						if(nextIndex!=-1 && spaceObjectArray[nextIndex].occupied==0) { //if the next board space exists and is unoccupied
-							for(var i=0; i<8; i++) //get piece's vector from current space and store it in next space
-								if(spaceObjectArray[nextIndex].direct[i]==index)
-									spaceObjectArray[nextIndex].prevDirIndex=i;
-							makeMovableSpace(spacePathArray[nextIndex],originalIndex,isOccupied);
-
-							index=nextIndex;
-							nextDirIndex = spaceObjectArray[index].prevDirIndex+4;
-							if(nextDirIndex>7)
-								nextDirIndex-=8;
-							else if(nextDirIndex<0)
-								nextDirIndex+=8;
-							nextIndex = spaceObjectArray[index].direct[nextDirIndex];
-						} else if(nextIndex!=-1 && spaceObjectArray[nextIndex].occupied!=0) {
-							if((spaceObjectArray[nextIndex].occupied%2==0 && spaceObjectArray[originalIndex].occupied%2!=0) || (spaceObjectArray[nextIndex].occupied%2!=0 && spaceObjectArray[originalIndex].occupied%2==0)) {
-								makeCaptureSpace(spacePathArray[nextIndex],originalIndex,isOccupied);
-							}
-						}
-						originalNextDirIndex++;
-						nextDirIndex=originalNextDirIndex;
-						index=originalIndex;
-					}
+					calculateKingMovement(1, spaceObjectArray, spacePathArray, index, 0);
 					break;
 				default:
 					alert("ERROR 1");
 					break;
 			}
-
-			//refresh and draw pieces
-			$(".piece").remove();
-			for(var i=0;i<64;i++) {
-				if(spaceObjectArray[i].occupied!=0)
-					setPiece(paper, spaceObjectArray[i].occupied, spaceObjectArray[i].cx, spaceObjectArray[i].cy, i, boardWidth);
-			}
+			setPieces(paper, spaceObjectArray, boardWidth, windowIsSmall, wasBig);
 		}
 
+		//deselect a selected space when said space is clicked
 		$("#selectedSpace").click(function(){
 			$(this).remove();
 			$(".movableSpaces").remove();
-			$(".temp").remove();
 		});
 
+
+
+		//=======================================================================
+		// Functionality when a movable space (yellow/red) is clicked
+		//=======================================================================
 		$(".movableSpaces").click(function(){
+			//parse data from selected space and store it in variables
 			var moveToIndex = parseInt($(this).attr("to"));
 			var moveFromIndex = parseInt($(this).attr("from"));
 			var piece = parseInt($(this).attr("with"));
-			spaceObjectArray[moveToIndex].occupied=piece;
-			spaceObjectArray[moveFromIndex].occupied=0;
-			$(".temp").remove();
 			$("#selectedSpace").remove();
 			$(".movableSpaces").remove();
 			$(".piece").remove();
+
+			//calculate pawn progress through the singularity
+			if(spaceObjectArray[moveFromIndex].quadrant!=0) //if piece is a pawn
+				updateSingularityMarkers(spaceObjectArray,moveToIndex,moveFromIndex);
+
+			/*set pawn as moved, if applicable, and ensure it doesn't get set to unmoved again.
+			THIS CANNOT BE DONE BEFORE UPDATING SINGULARITY MARKERS */
+			if(spaceObjectArray[moveFromIndex].isPawnUnmoved==1) {
+				spaceObjectArray[moveFromIndex].isPawnUnmoved=0;
+				spaceObjectArray[moveToIndex].isPawnUnmoved=0;
+			}
+			else {
+				spaceObjectArray[moveToIndex].isPawnUnmoved=0;
+			}
+
+			//fixes pawn movement direction after a diagonal capture
+			var fixPrevDirIndex=parseInt($(this).attr("pawn"));
+			if(fixPrevDirIndex)
+				captureMovementFix(spaceObjectArray, moveToIndex, moveFromIndex);
+
+			//set the moved to space to occupied and reset the spaced that was moved from
+			spaceObjectArray[moveToIndex].occupied=piece;
+			spaceObjectArray[moveFromIndex].occupied=0;
+
+			//if piece is a pawn, transfer the origin quadrant to the new space
+			if(spaceObjectArray[moveFromIndex].quadrant!=0) {
+				spaceObjectArray[moveToIndex].quadrant=spaceObjectArray[moveFromIndex].quadrant;
+			}
+			spaceObjectArray[moveFromIndex].quadrant=0;
 			
-			//disables/enables piece selection based on whos turn it is
+			//disables or enables piece selection based on whos turn it is
 			if(devmode) //if devmode is on, all pieces can be selected at any time
 				document.getElementById("gameDisplay1").innerHTML="Devmode Enabled";
 			else {
@@ -1192,134 +1217,14 @@ function drawGameBoard(resize) {
 				document.getElementById("gameDisplay2").innerHTML="Move #"+moveCount;
 			}
 
-			//refresh and draw pieces
-			$(".piece").remove();
-			for(var i=0;i<64;i++) {
-				if(spaceObjectArray[i].occupied!=0)
-					setPiece(paper, spaceObjectArray[i].occupied, spaceObjectArray[i].cx, spaceObjectArray[i].cy, i, boardWidth);
-			}
-		});
-	});
-}
+			setPieces(paper, spaceObjectArray, boardWidth, windowIsSmall, wasBig);
+			calculateDangerSpaces(spaceObjectArray, spacePathArray);
+			checkStatus(spaceObjectArray, spacePathArray);
 
+			//create svg objects of danger spaces if in devmode
+			if(devmode)
+				visualizeDangerSpaces(spaceObjectArray,spacePathArray);
 
-function setPiece(paper, piece, x, y, index, boardWidth) {
-	var pieceSize=(65/881)*boardWidth; //size scaled based on empirically determined ratio
-	switch(piece) {
-		case(1): //white pawn
-			var pawn = paper.image("images/chess/pawn_white.svg", x, y, pieceSize, pieceSize);
-			pawn.node.setAttribute("class","piece");
-			pawn.node.setAttribute("index",index);
-			break;
-		case(2): //black pawn
-			var pawn = paper.image("images/chess/pawn_black.svg", x, y, pieceSize, pieceSize);
-			pawn.node.setAttribute("class","piece");
-			pawn.node.setAttribute("index",index);
-			break;
-		case(3): //white rook
-			var rook = paper.image("images/chess/rook_white.svg", x, y, pieceSize, pieceSize);
-			rook.node.setAttribute("class","piece");
-			rook.node.setAttribute("index",index);
-			break;
-		case(4): //black rook
-			var rook = paper.image("images/chess/rook_black.svg", x, y, pieceSize, pieceSize);
-			rook.node.setAttribute("class","piece");
-			rook.node.setAttribute("index",index);
-			break;
-		case(5): //white knite
-			var knight = paper.image("images/chess/knight_white.svg", x, y, pieceSize, pieceSize);
-			knight.node.setAttribute("class","piece");
-			knight.node.setAttribute("index",index);
-			break;
-		case(6): //black knite
-			var knight = paper.image("images/chess/knight_black.svg", x, y, pieceSize, pieceSize);
-			knight.node.setAttribute("class","piece");
-			knight.node.setAttribute("index",index);
-			break;
-		case(7): //white bishop
-			var bishop = paper.image("images/chess/bishop_white.svg", x, y, pieceSize, pieceSize);
-			bishop.node.setAttribute("class","piece");
-			bishop.node.setAttribute("index",index);
-			break;
-		case(8): //black bishop
-			var bishop = paper.image("images/chess/bishop_black.svg", x, y, pieceSize, pieceSize);
-			bishop.node.setAttribute("class","piece");
-			bishop.node.setAttribute("index",index);
-			break;
-		case(9): //white queen
-			var queen = paper.image("images/chess/queen_white.svg", x, y, pieceSize, pieceSize);
-			queen.node.setAttribute("class","piece");
-			queen.node.setAttribute("index",index);
-			break;
-		case(10): //black queen
-			var queen = paper.image("images/chess/queen_black.svg", x, y, pieceSize, pieceSize);
-			queen.node.setAttribute("class","piece");
-			queen.node.setAttribute("index",index);
-			break;
-		case(11): //white king
-			var king = paper.image("images/chess/king_white.svg", x, y, pieceSize, pieceSize);
-			king.node.setAttribute("class","piece");
-			king.node.setAttribute("index",index);
-			break;
-		case(12): //black king
-			var king = paper.image("images/chess/king_black.svg", x, y, pieceSize, pieceSize);
-			king.node.setAttribute("class","piece");
-			king.node.setAttribute("index",index);
-			break;
-		default:
-			break;
-	}
-
-	//allow the pieces to be hovered through
-	$('.piece').hover(function () {
-		var pathId="#sp".concat(parseInt($(this).attr("index"))+1);
-		$(pathId).attr("fill","#0ff");
-	},function () {
-		var pieceIndex=parseInt($(this).attr("index"));
-	    var pathId="#sp".concat(parseInt($(this).attr("index"))+1);
-	    if(pieceIndex%2!=0) {
-			$(pathId).attr("fill","#333");
-		}
-		else {
-			$(pathId).attr("fill","#bbb");
-		}
-	});
-
-	//allow the pieces to be clicked through
-	$('.piece').click(function (e) {
-	    $(this).hide();
-	    $(document.elementFromPoint(e.clientX, e.clientY)).trigger("click");
-	    $(this).show();
-	});
-}
-
-function makeMovableSpace(spacePathObject, index, isOccupied) { //function for drawing all highlighted yellow (movable) spaces
-	var moveToIndex = parseInt(spacePathObject.node.getAttribute("id").replace("sp",""))-1;
-	var movable = spacePathObject.clone();
-	movable.node.setAttribute("class","movableSpaces");
-	movable.node.setAttribute("to",moveToIndex);
-	movable.node.setAttribute("from",index);
-	movable.node.setAttribute("with",isOccupied);
-	movable.attr("fill","#FFFF52");
-	movable.attr("stroke","#8C8C2E");
-}
-
-function makeCaptureSpace(spacePathObject, index, isOccupied) { //function for drawing all highlighted red (capturable) spaces
-	var moveToIndex = parseInt(spacePathObject.node.getAttribute("id").replace("sp",""))-1;
-	var movable = spacePathObject.clone();
-	movable.node.setAttribute("class","movableSpaces");
-	movable.node.setAttribute("to",moveToIndex);
-	movable.node.setAttribute("from",index);
-	movable.node.setAttribute("with",isOccupied);
-	movable.attr("fill","#FF6666");
-	movable.attr("stroke","#8C2E2E");
-}
-
-function isCorrectTurn(devmode, turnColor, isOccupied) { //determines whether or not a piece can be moved based on whos turn it is
-	if(devmode)
-		return 1;
-	else if((turnColor.search("White")==0 && isOccupied%2==0) || (turnColor.search("Black")==0 && isOccupied%2!=0))
-		return 0;
-	else
-		return 1;
-}
+		});//end movableSpace click function
+	});//end boardSpace click function
+}//end drawGameBoard
