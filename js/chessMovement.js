@@ -178,7 +178,7 @@ function calculateKnightMovement(draw, spaceObjectArray, spacePathArray, index) 
 	var nextDirIndex=0;
 	var nextIndex=spaceObjectArray[index].direct[nextDirIndex];
 
-	var tempStorageArray=new Array(64);
+	var tempStorageArray=new Array(64); //since prevDirIndexes of occupied spaces get changed, they need to be reset after movement is calculated
 	for(var i=0;i<64;i++) {
 		tempStorageArray[i]=new Object();
 		tempStorageArray[i].prevDirIndex=spaceObjectArray[i].prevDirIndex;
@@ -189,33 +189,16 @@ function calculateKnightMovement(draw, spaceObjectArray, spacePathArray, index) 
 			for(var i=0; i<8; i++)
 				if(spaceObjectArray[nextIndex].direct[i]==index)
 					spaceObjectArray[nextIndex].prevDirIndex=i;
-
+			
 			//nextDirIndex fixes for knights moving from inside the singularity
-			if(originalIndex==2 || originalIndex==8 || originalIndex==16 || originalIndex==26) {
-				switch(j) {
-					case(1):
-						nextDirIndex=4;
-					break;
-					case(2):
-						nextDirIndex=0;
-						break;
-					default:
-						break;
-				}
+			if(originalIndex==26 && j==3) {
+				spaceObjectArray[37].prevDirIndex=0;
 			}
-			else if(originalIndex==61 || originalIndex==55 || originalIndex==47 || originalIndex==37) {
-				switch(j) {
-					case(2):
-						nextDirIndex=0;
-						break;
-					case(3):
-						nextDirIndex=4;
-						break;
-					default:
-						break;
-				}
+			else if(originalIndex==37 && j==2) {
+				spaceObjectArray[26].prevDirIndex=4;
 			}
 
+			nextDirIndex=spaceObjectArray[nextIndex].prevDirIndex+4;
 			var diagDirIndex1=nextDirIndex+1;
 			var diagDirIndex2=nextDirIndex-1;
 			diagDirIndex1=fixIndex(diagDirIndex1);
@@ -223,9 +206,6 @@ function calculateKnightMovement(draw, spaceObjectArray, spacePathArray, index) 
 
 			var diagIndex1=spaceObjectArray[nextIndex].direct[diagDirIndex1];
 			var diagIndex2=spaceObjectArray[nextIndex].direct[diagDirIndex2];
-
-			if(draw)
-				alert("moving to index "+nextIndex+" with a nextDirIndex of "+nextDirIndex+" and checking diagonals "+diagIndex1+" and "+diagIndex2);
 
 			if(diagIndex1!=-1) {
 				if(spaceObjectArray[diagIndex1].occupied==0 && draw) {
@@ -260,13 +240,8 @@ function calculateKnightMovement(draw, spaceObjectArray, spacePathArray, index) 
 				}
 			}
 		}
-		
-		for(var i=0; i<8; i++)
-			if(spaceObjectArray[nextIndex].direct[i]==index)
-				spaceObjectArray[nextIndex].prevDirIndex=i;
-		originalNextDirIndex+=2;
 
-		index=originalIndex;
+		originalNextDirIndex+=2;
 		nextDirIndex=originalNextDirIndex;
 		nextIndex=spaceObjectArray[index].direct[nextDirIndex];
 	}
@@ -517,7 +492,7 @@ function singularityMovementFix(originalIndex, index, nextIndex, spaceObjectArra
 			else if(nextIndex==26 && index==37)
 				spaceObjectArray[nextIndex].prevDirIndex=6;
 			else
-				spaceObjectArray[nextIndex].prevDirIndex=3;
+				spaceObjectArray[nextIndex].prevDirIndex=6;
 			break;
 		//vert diagonals bottom
 		case(37):
