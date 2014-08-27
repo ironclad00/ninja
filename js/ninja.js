@@ -2,8 +2,6 @@
 
 /*To-Do
 	- add function for compressing mobile media links on small phones like the Galaxy Express
-	- fix media flyouts so the don't get stuck
-	- fix size changes on the Jump To menus when page is scrolled
 */
 
 $(document).ready(function(){
@@ -13,9 +11,14 @@ $(document).ready(function(){
 	var getScrollDir=window.pageYOffset;
 	var mediaIsHidden=0;
 	var dmTop;
+	var widthPadding,jumpToWidth; //widthPadding keeps the bottom border on the JumpTo menus constant
 	if(!document.getElementById("gameboard")) {
 		dmTop = $(".mainTab").offset().top;
 		$(".desktopMedia").css({"top":dmTop+25+"px"});
+	}
+	if(document.getElementById("jumpTo")) {
+		widthPadding = (22/1680)*$(window).width();
+		jumpToWidth = $("#jumpTo").width();
 	}
 
 	//=======================================================================
@@ -89,14 +92,15 @@ $(document).ready(function(){
 			var square=paper.path("M"+xmin+",0 L"+x+",0 L"+x+","+cHeight+" L"+xmin+","+cHeight+" z");
 			square.attr("fill",color);
 			square.attr("stroke",color);
-			//square.node.setAttribute("id","extended"); //omg it worked
 			square.node.setAttribute("class","extended");
 		
 			if(count>=10)
 				clearInterval(anim);
 		},10);
 	}, function() {
-		$(".extended").parent().remove();
+		setTimeout(function(){//removal of flyout NEEDS to be delayed to prevent deletion of the flyout before the animation is compelete
+			$(".extended").parent().remove();
+		}, 10);
 	});
 
 
@@ -150,8 +154,7 @@ $(document).ready(function(){
 	// All functions for when the user scrolls
 	//=======================================================================
 	$(document).scroll(function() {
-		$(".extended").parent().remove();
-
+		//hides mobile media links if user scrolls down, shows if user scrolls up
 		if(getScrollDir > window.pageYOffset && mediaIsHidden) {
 			$(".mobileMedia").transition({
 				y:'0px'
@@ -170,17 +173,17 @@ $(document).ready(function(){
 			getScrollDir = window.pageYOffset;
 		}
 
+		//funcionality for scroll behavior for Jump To menus
 		var right,left;
-		var sf=0;
-		if(document.getElementById("jumpToBounds")){
-			sf=1;
+		var jumpToExists=0;
+		if(document.getElementById("jumpTo")){
+			jumpToExists=1;
 			right = document.getElementById("jumpToBounds").getBoundingClientRect();
 			left = document.getElementById("jumpToIndent").getBoundingClientRect();
 		}
-
 		if(window.pageYOffset>150) {
-			if(sf) {
-				$("#jumpTo").css({"position":"fixed","top":"0","margin-left":(right.right-left.left+10),"margin-top":"0"});
+			if(jumpToExists) {
+				$("#jumpTo").css({"position":"fixed","top":"0","margin-left":(right.right-left.left+10),"margin-top":"0","width":jumpToWidth+widthPadding+"px"});
 			}
 			if(!isScrolled && document.getElementById("topShortcut")) {
 				isScrolled=1;
@@ -200,16 +203,19 @@ $(document).ready(function(){
 	// All functions for when the user resizes the page
 	//=======================================================================
 	$(window).resize(function() {
-		if($(window).width() > 768) {
-			$(".extended").parent().remove();
-		}
-		else {
-			$(".extended").parent().remove();
-		}
-
+		//reload the gauge if on the Liftoff page
 		if(document.getElementById("liftoff")) {
 			$("svg").remove();
 			loadGauge("gauge",0);
+		}
+
+		//hides mobile media link to Twitter if there's no room
+		if($(window).width()<993) {
+			var availableSpace = $(window).width()-$("#topShortcut").width()-20;
+			if(availableSpace<288)
+				$("#twitterLinkMobile").hide();
+			else
+				$("#twitterLinkMobile").show();
 		}
 	});
 });

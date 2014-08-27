@@ -15,7 +15,6 @@
 // Function to draw pieces on the board using svg image files
 //=======================================================================
 function setPieces(paper, objectArray, boardWidth, windowIsSmall, wasBig) {
-	$(".extended").remove(); //this is here in case a media flyout was created right as the 'Play' button was pressed
 	$(".piece").remove();
 	var pieceSize=(65/881)*boardWidth; //size scaled based on empirically determined ratio
 	for(var i=0;i<64;i++) {
