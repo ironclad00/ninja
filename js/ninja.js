@@ -1,5 +1,11 @@
 "use strict";
 
+/*To-Do
+	- add function for compressing mobile media links on small phones like the Galaxy Express
+	- fix media flyouts so the don't get stuck
+	- fix size changes on the Jump To menus when page is scrolled
+*/
+
 $(document).ready(function(){
 	var numGalleryImages=13;
 	var currImage=1;
@@ -211,7 +217,7 @@ $(document).ready(function(){
 //=======================================================================
 // All stand-alone functions
 //=======================================================================
-function loadProg(num) {
+function loadProg(num) {//toggles the visibility of programs on the Euler page
 	var id = "#prog".concat(num.toString());
 	var prev = document.getElementsByClassName("progactive")[0];
 	$(".progactive").hide();
@@ -221,6 +227,6 @@ function loadProg(num) {
 	$(id).show();
 }
 
-function vibrate(num) {
+function vibrate(num) {//causes vibration on supported devices
 	navigator.vibrate(num);
 }

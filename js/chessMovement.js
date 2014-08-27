@@ -63,7 +63,7 @@ function calculatePawnMovement(draw, spaceObjectArray, spacePathArray, index) {
 		nextDirIndex=fixIndex(nextDirIndex);
 		nextIndex = spaceObjectArray[index].direct[nextDirIndex];
 
-		if(spaceObjectArray[originalIndex].isPawnUnmoved==1 && draw) {
+		if(spaceObjectArray[originalIndex].isPawnUnmoved==1 && draw && spaceObjectArray[nextIndex].occupied==0) {
 			for(var i=0; i<8; i++) {
 				if(spaceObjectArray[nextIndex].direct[i]==index) {
 					spaceObjectArray[nextIndex].prevDirIndex=i;
@@ -177,19 +177,55 @@ function calculateKnightMovement(draw, spaceObjectArray, spacePathArray, index) 
 	var originalIndex=index;
 	var nextDirIndex=0;
 	var nextIndex=spaceObjectArray[index].direct[nextDirIndex];
+
+	var tempStorageArray=new Array(64);
+	for(var i=0;i<64;i++) {
+		tempStorageArray[i]=new Object();
+		tempStorageArray[i].prevDirIndex=spaceObjectArray[i].prevDirIndex;
+	}
+
 	for(var j=0;j<4;j++) {
 		if(nextIndex!=-1) {
 			for(var i=0; i<8; i++)
 				if(spaceObjectArray[nextIndex].direct[i]==index)
 					spaceObjectArray[nextIndex].prevDirIndex=i;
 
+			//nextDirIndex fixes for knights moving from inside the singularity
+			if(originalIndex==2 || originalIndex==8 || originalIndex==16 || originalIndex==26) {
+				switch(j) {
+					case(1):
+						nextDirIndex=4;
+					break;
+					case(2):
+						nextDirIndex=0;
+						break;
+					default:
+						break;
+				}
+			}
+			else if(originalIndex==61 || originalIndex==55 || originalIndex==47 || originalIndex==37) {
+				switch(j) {
+					case(2):
+						nextDirIndex=0;
+						break;
+					case(3):
+						nextDirIndex=4;
+						break;
+					default:
+						break;
+				}
+			}
+
 			var diagDirIndex1=nextDirIndex+1;
 			var diagDirIndex2=nextDirIndex-1;
 			diagDirIndex1=fixIndex(diagDirIndex1);
 			diagDirIndex2=fixIndex(diagDirIndex2);
-			
+
 			var diagIndex1=spaceObjectArray[nextIndex].direct[diagDirIndex1];
 			var diagIndex2=spaceObjectArray[nextIndex].direct[diagDirIndex2];
+
+			if(draw)
+				alert("moving to index "+nextIndex+" with a nextDirIndex of "+nextDirIndex+" and checking diagonals "+diagIndex1+" and "+diagIndex2);
 
 			if(diagIndex1!=-1) {
 				if(spaceObjectArray[diagIndex1].occupied==0 && draw) {
@@ -224,12 +260,19 @@ function calculateKnightMovement(draw, spaceObjectArray, spacePathArray, index) 
 				}
 			}
 		}
+		
+		for(var i=0; i<8; i++)
+			if(spaceObjectArray[nextIndex].direct[i]==index)
+				spaceObjectArray[nextIndex].prevDirIndex=i;
+		originalNextDirIndex+=2;
 
 		index=originalIndex;
-		originalNextDirIndex+=2;
 		nextDirIndex=originalNextDirIndex;
 		nextIndex=spaceObjectArray[index].direct[nextDirIndex];
 	}
+
+	for(var i=0;i<64;i++)
+		spaceObjectArray[i].prevDirIndex=tempStorageArray[i].prevDirIndex;
 }
 
 

@@ -22,15 +22,16 @@
 		<![endif]-->
 	</head>
 	<body>
-		<div id="gameboard"></div>
-		<img id="chessBackground" src="images/chess/chess_background.jpg"/>
-		<div id="gameControls">
-			<button id="quitChess" class="blueBtn" onclick="quitChess(0)">Quit</button>
-			<button id="newGame" class="blueBtn" onclick="quitChess(1)">New Game</button>
-			<button id="devButton1" class="blueBtn">Show Danger Spaces</button>
-			<button id="devButton2" class="blueBtn">Hide Danger Spaces</button>
-			<p id="gameDisplay1"></p>
-			<p id="gameDisplay2"></p>
+		<div id="gameboard">
+			<img id="chessBackground" src="images/chess/chess_background.jpg"/>
+			<div id="gameControls">
+				<button id="quitChess" class="blueBtn" onclick="quitChess(0)">Quit</button>
+				<button id="newGame" class="blueBtn" onclick="quitChess(1)">New Game</button>
+				<!-- <button id="devButton1" class="blueBtn">Show Danger Spaces</button>
+				<button id="devButton2" class="blueBtn">Hide Danger Spaces</button> -->
+				<p id="gameDisplay1"></p>
+				<p id="gameDisplay2"></p>
+			</div>
 		</div>
 
 		<header class="banner hidden-xs">
@@ -102,7 +103,7 @@
 					<div id="jumpToBounds" class="col-sm-9 pFixWithMargins">
 						<h2 class="hidden-lg hidden-md hidden-sm firstH2">Overview</h2>
 							<p>Singularity chess is a chess variant where all the squares converge in the center of the board. I started working on a 2-player version (no AI) of this game as a challenge to myself to make a game/app using nothing but standard web technologies. It has proven to be more difficult than I thought since the warped board renders the meaning of standard directions like "forwards" and "backwards" virtually meaningless.</p>
-							<p>The game is still under construction, but if you want to take a look, press Play!</p>
+							<p>Right now the game is still being developed, but it's mostly playable. Unfortunately, since Fall classes have now started, I may not have much time to work it, but I'll update it whenever I can.</p>
 					</div>
 					<br>
 					<div class="row">
@@ -113,8 +114,25 @@
 				</div>
 				<h2 id="howtoplay">How to Play</h2>
 					<p><i>Under Construction</i></p>
+					<p>Until I get a chance to write this section, check out <a href="http://abstractstrategygames.blogspot.com/2010/10/singularity-chess.html" target="_blank">la diagonale du fou</a>. A brief explaination of how Singularity Chess works is given there.</p>
 				<h2 id="features">Features & Bugs</h2>
-					<p><i>Under Construction</i></p>
+					<div class="row">
+						<div class="col-sm-6">
+							<p>- <b>Feature:</b> Clicking on a piece will highlight all spaces that said piece can move to</p>
+							<p>- <b>Feature:</b> Notification if a king is in check</p>
+							<p>- <b>Bug:</b> Rooks and Queens will occasionally not move through the singularity correctly</p>
+							<p>- <b>Bug:</b> Knights do not move through the singularity correctly (close but not quite...)</p>
+							<p>- <b>Bug:</b> Pawns may not complete a loop around the singularity properly if said pawn makes a capture</p>
+							<p>- <b>Bug:</b> The browser crashes if the window is resized too many times</p>
+						</div>
+						<div class="col-sm-6">
+							<p>- <b>Bug:</b> Piece images do not always display properly if the board is oriented vertically</p>
+							<p>- <b>Coming Soon:</b> Prevention of moves that puts friendly king in check</p>
+							<p>- <b>Coming Soon:</b> En passant detection</p>
+							<p>- <b>Coming Soon:</b> Checkmate detection (Right now, kings can be captured and the game won't automatically end.)</p>
+							<p>- <b>Coming Soon:</b> AI experiments! (This is quite ambitious; the word "soon" is used very loosely here.)</p>
+						</div>
+					</div>
 				<h2 id="methods">Programming Methods</h2>
 					<p><i>Under Construction</i></p>
 			</div>

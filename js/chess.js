@@ -13,6 +13,7 @@
 */
 
 function playChess() {
+	$("#gamboard").show();
 	$(".dangerSpace").hide();
 	$(".banner").fadeOut(500);
 	$(".navbar").fadeOut(500);
@@ -53,6 +54,7 @@ function quitChess(newGame) {
 			$("body").css({"overflow-y":"visible"}); //re-enable scrolling
 			$("html").css({"overflow-y":"visible"}); //re-enable scrolling
 			setTimeout(function() {
+				$("#gamboard").hide();
 				$(".banner").fadeIn(500);
 				$(".navbar").fadeIn(500);
 				$(".desktopMedia").fadeIn(500);
