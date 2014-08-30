@@ -1176,57 +1176,73 @@ function drawGameBoard(resize,objectArray,wasBig) { //main function that runs mo
 			$("#selectedSpace").remove();
 			$(".movableSpaces").remove();
 			$(".piece").remove();
+			var proceed=1;
 
-			//calculate pawn progress through the singularity
-			if(spaceObjectArray[moveFromIndex].quadrant!=0) //if piece is a pawn
-				updateSingularityMarkers(spaceObjectArray,moveToIndex,moveFromIndex);
-
-			/*set pawn as moved, if applicable, and ensure it doesn't get set to unmoved again.
-			THIS CANNOT BE DONE BEFORE UPDATING SINGULARITY MARKERS */
-			if(spaceObjectArray[moveFromIndex].isPawnUnmoved==1) {
-				spaceObjectArray[moveFromIndex].isPawnUnmoved=0;
-				spaceObjectArray[moveToIndex].isPawnUnmoved=0;
-			}
-			else {
-				spaceObjectArray[moveToIndex].isPawnUnmoved=0;
-			}
-
-			//fixes pawn movement direction after a diagonal capture
-			var fixPrevDirIndex=parseInt($(this).attr("pawn"));
-			if(fixPrevDirIndex)
-				captureMovementFix(spaceObjectArray, moveToIndex, moveFromIndex);
-
-			//set the moved to space to occupied and reset the spaced that was moved from
-			spaceObjectArray[moveToIndex].occupied=piece;
+			//the following checks to see if the move will place the friendly king in check. if so, the move will be prevented
+			var checkMoveTo = spaceObjectArray[moveToIndex].occupied;
+			var checkMoveFrom = spaceObjectArray[moveFromIndex].occupied;
+			spaceObjectArray[moveToIndex].occupied=checkMoveFrom;
 			spaceObjectArray[moveFromIndex].occupied=0;
-
-			//if piece is a pawn, transfer the origin quadrant to the new space
-			if(spaceObjectArray[moveFromIndex].quadrant!=0) {
-				spaceObjectArray[moveToIndex].quadrant=spaceObjectArray[moveFromIndex].quadrant;
-			}
-			spaceObjectArray[moveFromIndex].quadrant=0;
-			
-			//disables or enables piece selection based on whos turn it is
-			if(devmode) //if devmode is on, all pieces can be selected at any time
-				document.getElementById("gameDisplay1").innerHTML="Devmode Enabled";
-			else {
-				if(turnColor.search("White")==0)
-					turnColor="Black";
-				else
-					turnColor="White";
-				moveCount++;
-				document.getElementById("gameDisplay1").innerHTML=turnColor.concat("'s Turn");
-				document.getElementById("gameDisplay2").innerHTML="Move #"+moveCount;
-			}
-
-			setPieces(paper, spaceObjectArray, boardWidth, windowIsSmall, wasBig);
 			calculateDangerSpaces(spaceObjectArray, spacePathArray);
-			checkStatus(spaceObjectArray, spacePathArray);
+			var isCheck = checkStatus(spaceObjectArray, spacePathArray, moveFromIndex);
+			if((isCheck==1 && spaceObjectArray[moveToIndex].occupied%2!=0) || (isCheck==2 && spaceObjectArray[moveToIndex].occupied%2==0)) {
+				proceed=0;
+				spaceObjectArray[moveToIndex].occupied=checkMoveTo;
+				spaceObjectArray[moveFromIndex].occupied=checkMoveFrom;
+				setPieces(paper, spaceObjectArray, boardWidth, windowIsSmall, wasBig);
+				alert("This move will leave your king in check. Choose another move.");
+			}
 
-			//create svg objects of danger spaces if in devmode
-			if(devmode)
-				visualizeDangerSpaces(spaceObjectArray,spacePathArray);
+			if(proceed || devmode) {
+				//calculate pawn progress through the singularity
+				if(spaceObjectArray[moveFromIndex].quadrant!=0) //if piece is a pawn
+					updateSingularityMarkers(spaceObjectArray,moveToIndex,moveFromIndex);
 
+				/*set pawn as moved, if applicable, and ensure it doesn't get set to unmoved again.
+				THIS CANNOT BE DONE BEFORE UPDATING SINGULARITY MARKERS */
+				if(spaceObjectArray[moveFromIndex].isPawnUnmoved==1) {
+					spaceObjectArray[moveFromIndex].isPawnUnmoved=0;
+					spaceObjectArray[moveToIndex].isPawnUnmoved=0;
+				}
+				else {
+					spaceObjectArray[moveToIndex].isPawnUnmoved=0;
+				}
+
+				//fixes pawn movement direction after a diagonal capture
+				var fixPrevDirIndex=parseInt($(this).attr("pawn"));
+				if(fixPrevDirIndex)
+					captureMovementFix(spaceObjectArray, moveToIndex, moveFromIndex);
+
+				//set the moved to space to occupied and reset the spaced that was moved from
+				spaceObjectArray[moveToIndex].occupied=piece;
+				spaceObjectArray[moveFromIndex].occupied=0;
+
+				//if piece is a pawn, transfer the origin quadrant to the new space
+				if(spaceObjectArray[moveFromIndex].quadrant!=0) {
+					spaceObjectArray[moveToIndex].quadrant=spaceObjectArray[moveFromIndex].quadrant;
+				}
+				spaceObjectArray[moveFromIndex].quadrant=0;
+
+				calculateDangerSpaces(spaceObjectArray, spacePathArray);
+				setPieces(paper, spaceObjectArray, boardWidth, windowIsSmall, wasBig);
+				
+				//disables or enables piece selection based on whos turn it is
+				if(devmode) //if devmode is on, all pieces can be selected at any time
+					document.getElementById("gameDisplay1").innerHTML="Devmode Enabled";
+				else {
+					if(turnColor.search("White")==0)
+						turnColor="Black";
+					else
+						turnColor="White";
+					moveCount++;
+					document.getElementById("gameDisplay1").innerHTML=turnColor.concat("'s Turn");
+					document.getElementById("gameDisplay2").innerHTML="Move #"+moveCount;
+				}
+
+				//create svg objects of danger spaces if in devmode
+				if(devmode)
+					visualizeDangerSpaces(spaceObjectArray,spacePathArray);
+			}
 		});//end movableSpace click function
 	});//end boardSpace click function
 }//end drawGameBoard

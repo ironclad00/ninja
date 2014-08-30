@@ -178,14 +178,14 @@ function isCorrectTurn(devmode, turnColor, isOccupied) { //determines whether or
 //=======================================================================
 // Determines if a king is in checkmate or just check
 //=======================================================================
-function checkMateProtocol(spaceObjectArray, spacePathArray, index) {
-	/*var isOccupied=spaceObjectArray[index].occupied;
+function checkMateProtocol(spaceObjectArray, spacePathArray, index, indexOfChecker) {
+	var isOccupied=spaceObjectArray[index].occupied;
 	var kingColor;
 	if(spaceObjectArray[index].occupied%2==0)
 		kingColor=0;//black
 	else
 		kingColor=1;//white
-	var tempStorageArray=new Array(64); //create a temp array
+	var tempStorageArray=new Array(64);
 	for(var i=0;i<64;i++) {
 		tempStorageArray[i]=new Object();
 		tempStorageArray[i]=spaceObjectArray[i];
@@ -193,6 +193,8 @@ function checkMateProtocol(spaceObjectArray, spacePathArray, index) {
 
 	var kingData=new Object();
 	kingData=calculateKingMovement(0, spaceObjectArray, spacePathArray, index, 1);
+
+	//alert("king can make "+kingData.numMoves+" moves and "+kingData.numCaps+" captures");
 
 	for(var i=0;i<kingData.numCaps;i++) {//if the king can capture a nearby piece, do so and recalculate danger spaces for each possible capture
 		var capIndex=kingData.capIndexes[i];
@@ -208,12 +210,28 @@ function checkMateProtocol(spaceObjectArray, spacePathArray, index) {
 			spaceObjectArray[index].occupied=isOccupied;
 			for(var i=0;i<64;i++)
 				spaceObjectArray[i]=tempStorageArray[i];
+			calculateDangerSpaces(spaceObjectArray, spacePathArray);
 			return 0;
 		}
-	}*/
+	}
 	
+	for(var i=0;i<kingData.numMoves;i++) {//check if any nearby spaces exist that aren't danger spaces
+		var moveIndex=kingData.moveIndexes[i];
 
-	/* algorithm:
+		if((kingColor && !spaceObjectArray[moveIndex].isWhiteDanger) || (!kingColor && !spaceObjectArray[moveIndex].isBlackDanger))
+			return 0;
+	}
+
+	/*for(var i=0;i<64;i++){
+		if(kingColor && spaceObjectArray[i].occupied%2!=0) {
+
+		}
+		else {
+
+		}
+	}*/
+
+	/* checkmate algorithm:
 	1) can the king capture a nearby piece?
 		if yes: 1) temporarily delete a capturable piece
 				2) recalculate danger spaces
@@ -236,9 +254,12 @@ function checkMateProtocol(spaceObjectArray, spacePathArray, index) {
 							if yes: NOT checkmate, return 0
 							if no: checkmate, return 1
 						if no: repeat steps 1-3
-					if no: NOT checkmate, return 0
+					if no: proceed to step 4
+	4) can a piece friendly to the checked king capture the piece that just moved to put the king in check?
+		if yes: not checkmate, return 0
+		if no: CHECKMATE, return 1
 	*/
-	return 0;
+	return 1;
 }
 
 
@@ -276,6 +297,9 @@ function isOccupiedByOpposite(moveFromIndex, moveToIndex, objectArray) {
 //=======================================================================
 function updateSingularityMarkers(spaceObjectArray,moveToIndex,moveFromIndex) {
 	var initialStatus=spaceObjectArray[moveFromIndex].singularity;
+	var isWhite=0;
+	if(spaceObjectArray[moveFromIndex].occupied==1)
+		isWhite=1;
 	spaceObjectArray[moveFromIndex].singularity=0;
 	
 	switch(moveToIndex) {
@@ -392,22 +416,27 @@ function calculateDangerSpaces(spaceObjectArray, spacePathArray) {
 
 
 
-function checkStatus(spaceObjectArray, spacePathArray) {
+function checkStatus(spaceObjectArray, spacePathArray, indexOfChecker) {
 	//check current positions in case of a check
 	for(var i=0; i<64; i++) {
 		if(spaceObjectArray[i].occupied==11 && spaceObjectArray[i].isWhiteDanger==1) { //white king
-			var checkMate=checkMateProtocol(spaceObjectArray, spacePathArray, i);
-			if(!checkMate)
-				alert("White King is in check.");
+			var checkMate=checkMateProtocol(spaceObjectArray, spacePathArray, i, indexOfChecker);
+			if(!checkMate) {
+				//alert("White king is in check");
+				return 1;
+			}
 			else
 				alert("Checkmate. Black has won!");
 		}
 		else if(spaceObjectArray[i].occupied==12 && spaceObjectArray[i].isBlackDanger==1) { //black king
-			var checkMate=checkMateProtocol(spaceObjectArray, spacePathArray, i);
-			if(!checkMate)
-				alert("Black King is in check.");
+			var checkMate=checkMateProtocol(spaceObjectArray, spacePathArray, i, indexOfChecker);
+			if(!checkMate) {
+				//alert("Black king is in check");
+				return 2;
+			}
 			else
 				alert("Checkmate. White has won!");
 		}
 	}
+	return 0;
 }

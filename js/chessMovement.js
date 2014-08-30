@@ -412,7 +412,7 @@ function calculateKingMovement(draw, spaceObjectArray, spacePathArray, index, ch
 					spaceObjectArray[nextIndex].isBlackDanger=1;
 				}
 			}
-			else {
+			else if(isOccupiedByOpposite(originalIndex,nextIndex,spaceObjectArray) && checkCheck) {
 				checkObject.capIndexes[checkObject.numCaps]=nextIndex;
 				checkObject.numCaps++;
 			}
@@ -651,8 +651,12 @@ function captureMovementFix(spaceObjectArray, moveToIndex, moveFromIndex) {
 				//catch-all for capture movements determined by whether the pawn has moved throught the singularity or not
 				if(spaceObjectArray[moveFromIndex].singularity==3)
 					spaceObjectArray[moveToIndex].prevDirIndex=0;
-				else
-					spaceObjectArray[moveToIndex].prevDirIndex=4;
+				else {
+					if(spaceObjectArray[moveFromIndex].singularity==0)
+						spaceObjectArray[moveToIndex].prevDirIndex=0;
+					else
+						spaceObjectArray[moveToIndex].prevDirIndex=4;
+				}
 				break;
 		}
 	}
@@ -720,8 +724,12 @@ function captureMovementFix(spaceObjectArray, moveToIndex, moveFromIndex) {
 				//catch-all for capture movements determined by whether the pawn has moved throught the singularity or not
 				if(spaceObjectArray[moveFromIndex].singularity==3)
 					spaceObjectArray[moveToIndex].prevDirIndex=4;
-				else
-					spaceObjectArray[moveToIndex].prevDirIndex=0;
+				else {
+					if(spaceObjectArray[moveFromIndex].singularity==0)
+						spaceObjectArray[moveToIndex].prevDirIndex=4;
+					else
+						spaceObjectArray[moveToIndex].prevDirIndex=0;
+				}
 				break;
 		}
 	}
