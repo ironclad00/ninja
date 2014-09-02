@@ -99,7 +99,6 @@ function setPieces(paper, objectArray, boardWidth, windowIsSmall, wasBig) {
 	var string1;
 	for(var i=0; i<64; i++) {
 		string1 = ((i.toString()).concat(": ")).concat((objectArray[i].prevDirIndex.toString()).concat("\n"));
-		//alert(string1);
 	}
 
 	//allow the pieces to be hovered through
@@ -144,7 +143,7 @@ function makeMovableSpace(spacePathObject, index, isOccupied, isPawn, isCapture)
 	
 	if(isPawn && isCapture)
 		movable.node.setAttribute("pawn",1); //the "pawn" attribute is only set on a space that a pawn can capture diagonally. if the pawn captures,
-	else									 //the main function reads the "pawn" attribute and corrects the capturing pawns direction.
+	else									 //the main function (drawGameBoard()) reads the "pawn" attribute and corrects the capturing pawns direction.
 		movable.node.setAttribute("pawn",0);
 	
 	if(isCapture) { //if capture space, color it red
@@ -178,10 +177,11 @@ function isCorrectTurn(devmode, turnColor, isOccupied) { //determines whether or
 //=======================================================================
 // Determines if a king is in checkmate or just check
 //=======================================================================
-function checkMateProtocol(spaceObjectArray, spacePathArray, index, indexOfChecker) {
-	var isOccupied=spaceObjectArray[index].occupied;
+function checkMateProtocol(spaceObjectArray, spacePathArray, indexOfKing, indexOfAggressor, devmode) {
+	//note on terminology: "checking piece" and "aggressing piece" are synonymous and refer to the piece most recently moved that caused a check to occur
+	var isOccupied=spaceObjectArray[indexOfKing].occupied;
 	var kingColor;
-	if(spaceObjectArray[index].occupied%2==0)
+	if(spaceObjectArray[indexOfKing].occupied%2==0)
 		kingColor=0;//black
 	else
 		kingColor=1;//white
@@ -191,74 +191,169 @@ function checkMateProtocol(spaceObjectArray, spacePathArray, index, indexOfCheck
 		tempStorageArray[i]=spaceObjectArray[i];
 	}
 
+	var displayPieceData=0;
+	if(devmode && kingColor)
+		displayPieceData = confirm("White king is in check. Display piece data as checkmate calculations are being made?");
+	else if(devmode && !kingColor)
+		displayPieceData = confirm("Black king is in check. Display piece data as checkmate calculations are being made?");
+
 	var kingData=new Object();
-	kingData=calculateKingMovement(0, spaceObjectArray, spacePathArray, index, 1);
+	kingData=calculateKingMovement(0, spaceObjectArray, spacePathArray, indexOfKing, 1);
+	
+	if(devmode)
+		alert("Attempting to find non-capture spaces that the king can safely move to...");
+	for(var i=0;i<kingData.numMoves;i++) {//check if any spaces exist that 1) the king can move to and 2) that aren't danger spaces
+		var moveIndex=kingData.moveIndexes[i];
 
-	//alert("king can make "+kingData.numMoves+" moves and "+kingData.numCaps+" captures");
+		if((kingColor && !spaceObjectArray[moveIndex].isWhiteDanger) || (!kingColor && !spaceObjectArray[moveIndex].isBlackDanger)) {
+			if(devmode)
+				alert("A safe move has been found at index "+kingData.moveIndexes[i]);
+			return 0;
+		}
+	}
 
+	if(devmode)
+		alert("None found. Attempting to find safe captures that the king can make...");
 	for(var i=0;i<kingData.numCaps;i++) {//if the king can capture a nearby piece, do so and recalculate danger spaces for each possible capture
 		var capIndex=kingData.capIndexes[i];
 		var capPiece=spaceObjectArray[capIndex].occupied;
 
 		spaceObjectArray[capIndex].occupied=isOccupied;
-		spaceObjectArray[index].occupied=0;
+		spaceObjectArray[indexOfKing].occupied=0;
 		calculateDangerSpaces(spaceObjectArray, spacePathArray);
 
 		//if the king is safe at the new index, king is not in checkmate
 		if((!spaceObjectArray[capIndex].isWhiteDanger && kingColor) || (!spaceObjectArray[capIndex].isBlackDanger && !kingColor)) {
 			spaceObjectArray[capIndex].occupied=capPiece;
-			spaceObjectArray[index].occupied=isOccupied;
-			for(var i=0;i<64;i++)
-				spaceObjectArray[i]=tempStorageArray[i];
+			spaceObjectArray[indexOfKing].occupied=isOccupied;
+			for(var j=0;j<64;j++)
+				spaceObjectArray[j]=tempStorageArray[j];
 			calculateDangerSpaces(spaceObjectArray, spacePathArray);
+			if(devmode)
+				alert("The king can safely capture the aggressing piece.");
 			return 0;
 		}
-	}
-	
-	for(var i=0;i<kingData.numMoves;i++) {//check if any nearby spaces exist that aren't danger spaces
-		var moveIndex=kingData.moveIndexes[i];
-
-		if((kingColor && !spaceObjectArray[moveIndex].isWhiteDanger) || (!kingColor && !spaceObjectArray[moveIndex].isBlackDanger))
-			return 0;
-	}
-
-	/*for(var i=0;i<64;i++){
-		if(kingColor && spaceObjectArray[i].occupied%2!=0) {
-
+		else {//if the king is not safe at the new index, reset and try again
+			spaceObjectArray[capIndex].occupied=capPiece;
+			spaceObjectArray[indexOfKing].occupied=isOccupied;
+			for(var j=0;j<64;j++)
+				spaceObjectArray[j]=tempStorageArray[j];
+			calculateDangerSpaces(spaceObjectArray, spacePathArray);
 		}
-		else {
+	}
 
+	if(devmode)
+		alert("None found. Attempting to find a friendly piece can safely capture OR block the checking piece...");
+	for(var i=0;i<64;i++) {//without using the king, try capturing or moving in front of the checking piece
+		if(!isOccupiedByOpposite(indexOfKing,i,spaceObjectArray) && spaceObjectArray[i].occupied!=0 && spaceObjectArray[i].occupied!=11 && spaceObjectArray[i].occupied!=12) {//if piece is friendly to checked king, get movement and capture data for piece
+			var pieceData=new Object();
+			
+			switch(spaceObjectArray[i].occupied) {//create movement and capture data for friendly piece
+				case(1):
+				case(2):
+					pieceData=calculatePawnMovement(0, spaceObjectArray, spacePathArray, i, 1);
+					break;
+				case(3):
+				case(4):
+					pieceData=calculateRookMovement(0, spaceObjectArray, spacePathArray, i, 1);
+					break;
+				case(5):
+				case(6):
+					pieceData=calculateKnightMovement(0, spaceObjectArray, spacePathArray, i, 1);
+					break;
+				case(7):
+				case(8):
+					pieceData=calculateBishopMovement(0, spaceObjectArray, spacePathArray, i, 1);
+					break;
+				case(9):
+				case(10):
+					pieceData=calculateQueenMovement(0, spaceObjectArray, spacePathArray, i, 1);
+					break;
+				default:
+					alert("ERROR 4");
+					break;
+			}
+
+			if(devmode && displayPieceData)
+				displayAllPieceData(pieceData,i);
+
+			for(var j=0;j<pieceData.numCaps;j++) {//try capturing the checking piece
+				if(pieceData.capIndexes[j]==indexOfAggressor) {//if a friendly piece can capture the aggressing piece, do so and recalculate danger spaces
+					alert("friendly piece at index "+i+" can capture the aggressor... is it safe to do so?");
+					var aggressivePiece=spaceObjectArray[indexOfAggressor].occupied;
+					var friendlyIndex=i;
+					var friendlyPiece=spaceObjectArray[i].occupied;
+
+					spaceObjectArray[indexOfAggressor].occupied=friendlyPiece;
+					spaceObjectArray[friendlyIndex].occupied=0;
+					calculateDangerSpaces(spaceObjectArray, spacePathArray);
+
+					//if the king is safe with the piece captured, checkmate has not occured
+					if((!spaceObjectArray[indexOfKing].isWhiteDanger && kingColor) || (!spaceObjectArray[indexOfKing].isBlackDanger && !kingColor)) {
+						spaceObjectArray[indexOfAggressor].occupied=aggressivePiece;
+						spaceObjectArray[friendlyIndex].occupied=friendlyPiece;
+						for(var k=0;k<64;k++)
+							spaceObjectArray[k]=tempStorageArray[k];
+						calculateDangerSpaces(spaceObjectArray, spacePathArray);
+						if(devmode)
+							alert("a piece at index "+i+" has been found that can capture the aggressor!");
+						return 0;
+					}
+					else {//if the king is not safe once the capture has been made, reset and retry
+						spaceObjectArray[indexOfAggressor].occupied=aggressivePiece;
+						spaceObjectArray[friendlyIndex].occupied=friendlyPiece;
+						for(var k=0;k<64;k++)
+							spaceObjectArray[k]=tempStorageArray[k];
+						calculateDangerSpaces(spaceObjectArray, spacePathArray);
+					}
+				}
+			}
+
+			for(var j=0;j<pieceData.numMoves;j++) {
+				var moveIndex=pieceData.moveIndexes[j];
+				var friendlyIndex=i;
+				var friendlyPiece=spaceObjectArray[i].occupied;
+
+				spaceObjectArray[moveIndex].occupied=friendlyPiece;
+				spaceObjectArray[i].occupied=0;
+				calculateDangerSpaces(spaceObjectArray, spacePathArray);
+
+				//if the king is safe once the move has been made, checkmate has not occured
+				if((!spaceObjectArray[indexOfKing].isWhiteDanger && kingColor) || (!spaceObjectArray[indexOfKing].isBlackDanger && !kingColor)) {
+					spaceObjectArray[moveIndex].occupied=0;
+					spaceObjectArray[friendlyIndex].occupied=friendlyPiece;
+					for(var k=0;k<64;k++)
+						spaceObjectArray[k]=tempStorageArray[k];
+					calculateDangerSpaces(spaceObjectArray, spacePathArray);
+					if(devmode)
+						alert("a piece at index "+i+" has been found that can block the aggressor!");
+					return 0;
+				}
+				else {//if the king is not safe once the capture has been made, reset and retry
+					spaceObjectArray[moveIndex].occupied=0;
+					spaceObjectArray[friendlyIndex].occupied=friendlyPiece;
+					for(var k=0;k<64;k++)
+						spaceObjectArray[k]=tempStorageArray[k];
+					calculateDangerSpaces(spaceObjectArray, spacePathArray);
+				}
+			}
+
+			//the following section should NOT be necessary. it addresses faults in the checkMateProtocol algorithm that SHOULD only be seen if the game is run in devmode
+			//determine if there are ANY other captures that can be made that would result in the king being freed from check
+			/*for(var j=0;j<64;j++) {
+				if(spaceObjectArray[j].occupied!=0 && isOccupiedByOpposite(spaceObjectArray[j].occupied,kingColor)) {
+					if((kingColor && spaceObjectArray[j].isBlackDanger) || (!kingColor && spaceObjectArray[j].isWhiteDanger)) {
+						var enemyTestPiece=spaceObjectArray[j].occupied;
+						var enemyTestIndex=j;
+
+
+					}
+				}
+			}*/
 		}
-	}*/
+	}
 
-	/* checkmate algorithm:
-	1) can the king capture a nearby piece?
-		if yes: 1) temporarily delete a capturable piece
-				2) recalculate danger spaces
-				3) replace deleted piece
-				4) was the captured piece on a danger space?
-					if yes: perform steps 1-3 for each capturable piece. did any yield a result of no?
-						if yes: NOT checkmate, return 0
-						if no: proceed to step 2
-					if no: NOT checkmate, return 0
-		if no: proceed to step 2
-	2) can the king move to any nearby spaces that are not danger spaces?
-			if yes: NOT checkmate, return 0
-			if no: proceed to step 3
-	3) can a piece friendly to the checked king move to a friendly danger space?
-		if yes: 1) spawn a temporary copy of said friendly piece at a single, unoccupied danger space
-				2) recalculate danger pieces
-				3) is the king still in check?
-					if yes: has steps 1-3 been done for every single friendly danger space?
-						if yes: Was an permutation found that removed the check?
-							if yes: NOT checkmate, return 0
-							if no: checkmate, return 1
-						if no: repeat steps 1-3
-					if no: proceed to step 4
-	4) can a piece friendly to the checked king capture the piece that just moved to put the king in check?
-		if yes: not checkmate, return 0
-		if no: CHECKMATE, return 1
-	*/
+	//If this point is reached, circumventing the check is not possible. therefore, a checkmate has occured
 	return 1;
 }
 
@@ -298,59 +393,35 @@ function isOccupiedByOpposite(moveFromIndex, moveToIndex, objectArray) {
 function updateSingularityMarkers(spaceObjectArray,moveToIndex,moveFromIndex) {
 	var initialStatus=spaceObjectArray[moveFromIndex].singularity;
 	var isWhite=0;
-	if(spaceObjectArray[moveFromIndex].occupied==1)
+	if(spaceObjectArray[moveToIndex].occupied==1)
 		isWhite=1;
-	spaceObjectArray[moveFromIndex].singularity=0;
+	spaceObjectArray[moveToIndex].singularity=0;
 	
-	switch(moveToIndex) {
-		case(2):
-		case(8):
-		case(16):
-		case(26):
-			if(initialStatus==2)
-				spaceObjectArray[moveToIndex].singularity=3;
-			else
-				spaceObjectArray[moveToIndex].singularity=1;
-			break;
-		case(37):
-		case(47):
-		case(55):
-		case(61):
-			if(initialStatus==1)
-				spaceObjectArray[moveToIndex].singularity=3;
-			else
-				spaceObjectArray[moveToIndex].singularity=2;
-			break;
-		case(7):
-		case(9):
-			//sets singularity movement status appropriately if edge pawns choose to move 2 spaces
-			if(spaceObjectArray[moveFromIndex].isPawnUnmoved==1) {
-				spaceObjectArray[moveToIndex].singularity=1;
+	var moveToAbsolute=moveToIndex;
+	for(var i=0;i<2;i++) {
+		if(isWhite) {
+			if((moveToIndex>36 && moveToIndex<43) && (moveFromIndex>25 && moveFromIndex<32)) {
+				spaceObjectArray[moveToAbsolute].singularity=1;
 			}
-			else {
-				spaceObjectArray[moveToIndex].singularity=initialStatus;
+		}
+		else {
+			if(moveToIndex>31 && moveToIndex<38 && moveFromIndex>20 && moveFromIndex<27) {
+				spaceObjectArray[moveToAbsolute].singularity=1;
 			}
-			break;
-		case(54):
-		case(56):
-			//sets singularity movement status appropriately if edge pawns choose to move 2 spaces
-			if(spaceObjectArray[moveFromIndex].isPawnUnmoved==1) {
-				spaceObjectArray[moveToIndex].singularity=2;
-			}
-			else {
-				spaceObjectArray[moveToIndex].singularity=initialStatus;
-			}
-			break;
-		default:
-			spaceObjectArray[moveToIndex].singularity=initialStatus;
-			break;
+		}
+
+		var temp=moveToIndex;
+		moveToIndex=moveFromIndex;
+		moveFromIndex=temp;
 	}
 }
 
 
 
 
-
+//=======================================================================
+// 
+//=======================================================================
 function calculateDangerSpaces(spaceObjectArray, spacePathArray) {
 	// Calculate all danger spaces for both colors
 	for(var i=0; i<64; i++) {//reset danger spaces every turn
@@ -415,28 +486,86 @@ function calculateDangerSpaces(spaceObjectArray, spacePathArray) {
 
 
 
-
-function checkStatus(spaceObjectArray, spacePathArray, indexOfChecker) {
+//=======================================================================
+// 
+//=======================================================================
+function checkStatus(spaceObjectArray, spacePathArray, indexOfPreviouslyMovedPiece, devmode) {
 	//check current positions in case of a check
 	for(var i=0; i<64; i++) {
 		if(spaceObjectArray[i].occupied==11 && spaceObjectArray[i].isWhiteDanger==1) { //white king
-			var checkMate=checkMateProtocol(spaceObjectArray, spacePathArray, i, indexOfChecker);
-			if(!checkMate) {
-				//alert("White king is in check");
-				return 1;
+			var checkMate;
+			if(isOccupiedByOpposite(i,indexOfPreviouslyMovedPiece,spaceObjectArray)) {//a checkmate canNOT occur if a friendly piece puts a friendly king in check
+				checkMate=checkMateProtocol(spaceObjectArray, spacePathArray, i, indexOfPreviouslyMovedPiece, devmode);
 			}
 			else
+				checkMate=0;
+
+			if(!checkMate)
+				return 1;
+			else {
 				alert("Checkmate. Black has won!");
+				return 3;
+			}
 		}
 		else if(spaceObjectArray[i].occupied==12 && spaceObjectArray[i].isBlackDanger==1) { //black king
-			var checkMate=checkMateProtocol(spaceObjectArray, spacePathArray, i, indexOfChecker);
-			if(!checkMate) {
-				//alert("Black king is in check");
-				return 2;
+			var checkMate;
+			if(isOccupiedByOpposite(i,indexOfPreviouslyMovedPiece,spaceObjectArray)) {//a checkmate canNOT occur if a friendly piece puts a friendly king in check
+				checkMate=checkMateProtocol(spaceObjectArray, spacePathArray, i, indexOfPreviouslyMovedPiece, devmode);
 			}
 			else
+				checkMate=0;
+
+			if(!checkMate)
+				return 2;
+			else {
 				alert("Checkmate. White has won!");
+				return 3;
+			}
 		}
+	}
+	return 0;
+}
+
+
+
+
+//=======================================================================
+// 
+//=======================================================================
+function hasCrossedVertCenter(moveFromIndex,moveToIndex) {
+	for(var i=0;i<2;i++) {
+		switch(moveFromIndex) {
+			case(1):
+				if(moveToIndex==3)
+					return 1;
+			case(7):
+				if(moveToIndex==9)
+					return 1;
+			case(15):
+				if(moveToIndex==17)
+					return 1;
+			case(25):
+				if(moveToIndex==27)
+					return 1;
+			case(36):
+				if(moveToIndex==38)
+					return 1;
+			case(46):
+				if(moveToIndex==48)
+					return 1;
+			case(54):
+				if(moveToIndex==56)
+					return 1;
+			case(60):
+				if(moveToIndex==62)
+					return 1;
+			default:
+				break;
+		}
+
+		var temp=moveFromIndex;
+		moveFromIndex=moveToIndex;
+		moveToIndex=temp;
 	}
 	return 0;
 }

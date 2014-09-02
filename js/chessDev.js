@@ -131,3 +131,34 @@ function visualizeDangerSpaces(spaceObjectArray, spacePathArray) {
 		$(".dangerSpace").hide();
 	});
 }
+
+
+function displayAllPieceData(pieceData,index) {
+	alert(
+		"The piece at index "+index+" has "+pieceData.numMoves+" moves and "+pieceData.numCaps+" captures.\n"+
+		"Move 1: "+pieceData.moveIndexes[0]+"        Cap 1: "+pieceData.capIndexes[0]+"\n"+
+		"Move 2: "+pieceData.moveIndexes[1]+"        Cap 2: "+pieceData.capIndexes[1]+"\n"+
+		"Move 3: "+pieceData.moveIndexes[2]+"        Cap 3: "+pieceData.capIndexes[2]+"\n"+
+		"Move 4: "+pieceData.moveIndexes[3]+"        Cap 4: "+pieceData.capIndexes[3]+"\n"+
+		"Move 5: "+pieceData.moveIndexes[4]+"        Cap 5: "+pieceData.capIndexes[4]+"\n"+
+		"Move 6: "+pieceData.moveIndexes[5]+"        Cap 6: "+pieceData.capIndexes[5]+"\n"+
+		"Move 7: "+pieceData.moveIndexes[6]+"        Cap 7: "+pieceData.capIndexes[6]+"\n"+
+		"Move 8: "+pieceData.moveIndexes[7]+"        Cap 8: "+pieceData.capIndexes[7]+"\n"+
+		"Move 9: "+pieceData.moveIndexes[8]+"        Cap 9: "+pieceData.capIndexes[8]+"\n"+
+		"Move 10: "+pieceData.moveIndexes[9]+"       Cap 10: "+pieceData.capIndexes[9]+"\n"+
+		"Move 11: "+pieceData.moveIndexes[10]+"       Cap 11: "+pieceData.capIndexes[10]+"\n"+
+		"Move 12: "+pieceData.moveIndexes[11]+"       Cap 12: "+pieceData.capIndexes[11]+"\n"+
+		"Move 13: "+pieceData.moveIndexes[12]+"       Cap 13: "+pieceData.capIndexes[12]+"\n"+
+		"Move 14: "+pieceData.moveIndexes[13]+"       Cap 14: "+pieceData.capIndexes[13]+"\n"+
+		"Move 15: "+pieceData.moveIndexes[14]+"       Cap 15: "+pieceData.capIndexes[14]+"\n"+
+		"Move 16: "+pieceData.moveIndexes[15]+"       Cap 16: "+pieceData.capIndexes[15]+"\n"+
+		"Move 17: "+pieceData.moveIndexes[16]+"       Cap 17: "+pieceData.capIndexes[16]+"\n"+
+		"Move 18: "+pieceData.moveIndexes[17]+"       Cap 18: "+pieceData.capIndexes[17]+"\n"+
+		"Move 19: "+pieceData.moveIndexes[18]+"       Cap 19: "+pieceData.capIndexes[18]+"\n"+
+		"Move 20: "+pieceData.moveIndexes[19]+"       Cap 20: "+pieceData.capIndexes[19]+"\n"+
+		"Move 21: "+pieceData.moveIndexes[20]+"       Cap 21: "+pieceData.capIndexes[20]+"\n"+
+		"Move 22: "+pieceData.moveIndexes[21]+"       Cap 22: "+pieceData.capIndexes[21]+"\n"+
+		"Move 23: "+pieceData.moveIndexes[22]+"       Cap 23: "+pieceData.capIndexes[22]+"\n"+
+		"Move 24: "+pieceData.moveIndexes[23]+"       Cap 24: "+pieceData.capIndexes[23]+"\n"
+	);
+}

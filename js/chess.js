@@ -2,13 +2,8 @@
 //images from http://commons.wikimedia.org/wiki/Category:SVG_chess_pieces
 
 /* Bug/To-Do list
-	- add en passant to pawn movement rules
-	- add ability to detect checkmates and unsafe moves for king
 	- tweek piece coords in both wide and vert modes
-	- turn off hover coloring on touchscreen-only devices
-	- ensure knights are moving throught the singularity properly
 	- fix issue: chrome crashes when too many resizes have been done
-	- disable text highlighting
 	- disable user interactions with background picture
 */
 
@@ -84,7 +79,8 @@ function drawGameBoard(resize,objectArray,wasBig) { //main function that runs mo
 	var paper;					//Raphael object that the board is drawn in/on
 	var rad1;					//initial radius used to draw the board
 	var turnColor="White";		//tracks whos turn it is
-	var devmode=1;				//turns off turn rotations if enabled (1)
+	var devmode=0;				//turns off turn rotations if enabled (1)
+	var gameover=0;				//if checkmate has occured, value set to 1 and pieces can no longer be moved or selected
 	var windowIsSmall=1;		//if true, assume user is on mobile device. used to determine whether or not board spaces should have hover function
 								//true=no hover, false=enable hover
 	var moveCount=1;			//current move number
@@ -97,7 +93,6 @@ function drawGameBoard(resize,objectArray,wasBig) { //main function that runs mo
 	var colorSelectS="#8C8C2E";	//stroke (edge) color for selected and movable spaces
 	var colorCapture="#FF6666";	//fill color for capture spaces
 	var colorCaptureS="#8C2E2E";//stroke (edge) color for capture spaces
-
 
 	//set up info displays. if devmode is enabled, display will be static
 	//otherwise, display will show the user whos turn it is and how many moves have been made
@@ -192,11 +187,9 @@ function drawGameBoard(resize,objectArray,wasBig) { //main function that runs mo
 		spaceObjectArray[i].isBlackDanger=0;	//stores whether or not a black piece can be captured by existing on space i
 		spaceObjectArray[i].quadrant=0;			/*pawn-only attribute. stores the quadrant that the ith pawn was originally drawn in.
 												quadrants numbers are assigned in the same fashion as quadrants in cartesian coordinate systems*/
-		spaceObjectArray[i].singularity=0;		/*pawn-only attribute. stores whether or not the pawn has passed through the singularity or not.
-												0=not passed/unused
-												1=through the top part of the loop only (indexes 2,8,16, or 26)
-												2=through the bottom part of the loop only (indexes 37,47,55, or 61)
-												3=passed through both parts of the loop*/
+		spaceObjectArray[i].singularity=0;		/*stores whether or not a pawn has crossed its color's respective singularity bound. the definition of a
+												singularity bound is given under the Programming Methods of my website (www.jeremybaker.ninja/chess).
+												if 0, the pawn has not crossed its singularity bound; if 1, it has.*/
 	}
 
 
@@ -917,22 +910,6 @@ function drawGameBoard(resize,objectArray,wasBig) { //main function that runs mo
 		spaceObjectArray[50].quadrant=4;
 		spaceObjectArray[57].quadrant=4;
 		spaceObjectArray[62].quadrant=4;
-		spaceObjectArray[1].singularity=0;
-		spaceObjectArray[6].singularity=0;
-		spaceObjectArray[13].singularity=0;
-		spaceObjectArray[22].singularity=0;
-		spaceObjectArray[33].singularity=0;
-		spaceObjectArray[44].singularity=0;
-		spaceObjectArray[53].singularity=0;
-		spaceObjectArray[60].singularity=0;
-		spaceObjectArray[3].singularity=0;
-		spaceObjectArray[10].singularity=0;
-		spaceObjectArray[19].singularity=0;
-		spaceObjectArray[30].singularity=0;
-		spaceObjectArray[41].singularity=0;
-		spaceObjectArray[50].singularity=0;
-		spaceObjectArray[57].singularity=0;
-		spaceObjectArray[62].singularity=0;
 
 		spaceObjectArray[0].occupied=3;
 		spaceObjectArray[59].occupied=3;
@@ -1094,155 +1071,147 @@ function drawGameBoard(resize,objectArray,wasBig) { //main function that runs mo
 	// ALL functionality for when a boardspace is clicked, including movable spaces
 	//=======================================================================
 	$(".boardSpace").click(function(){
-		if(document.getElementById("selectedSpace")) {
-			$("#selectedSpace").remove();
-			$(".movableSpaces").remove();
-		}
-		var index=parseInt($(this).attr("id").replace("sp",""))-1;
-		var isOccupied=spaceObjectArray[index].occupied;
-		var selectedPath;
-
-		//temp segment, remove for final
-		if(devmode) {
-			if(spaceObjectArray[index].isWhiteDanger==1 && spaceObjectArray[index].isBlackDanger==0) {
-				//alert("White is in danger");
-				//alert(spaceObjectArray[index].quadrant);
+		if(!gameover) {//if checkmate has occured, pieces can no longer be moved nor selected
+			if(document.getElementById("selectedSpace")) {
+				$("#selectedSpace").remove();
+				$(".movableSpaces").remove();
 			}
-			else if(spaceObjectArray[index].isWhiteDanger==0 && spaceObjectArray[index].isBlackDanger==1) {
-				//alert("Black is in danger");
-				//alert(spaceObjectArray[index].quadrant);
-			}
-			else if(spaceObjectArray[index].isWhiteDanger==1 && spaceObjectArray[index].isBlackDanger==1) {
-				//alert("Both colors are in danger");
-				//alert(spaceObjectArray[index].quadrant);
-			}
-		}//end temp segment
+			var index=parseInt($(this).attr("id").replace("sp",""))-1;
+			var isOccupied=spaceObjectArray[index].occupied;
+			var selectedPath;
 
-		if(isOccupied!=0 && isCorrectTurn(devmode,turnColor,isOccupied)) {
-			//color the clicked on space
-			selectedPath = spacePathArray[index].clone();
-			selectedPath.node.setAttribute("id","selectedSpace");
-			selectedPath.attr("fill",colorSelect);
-			selectedPath.attr("stroke",colorSelectS);
+			if(isOccupied!=0 && isCorrectTurn(devmode,turnColor,isOccupied)) {
+				//color the clicked on space
+				selectedPath = spacePathArray[index].clone();
+				selectedPath.node.setAttribute("id","selectedSpace");
+				selectedPath.attr("fill",colorSelect);
+				selectedPath.attr("stroke",colorSelectS);
 
-			switch(isOccupied) {
-/*white pawn*/	case(1):
-/*black pawn*/	case(2):
-					calculatePawnMovement(1, spaceObjectArray, spacePathArray, index);
-					break;
-/*white rook*/	case(3):
-/*black rook*/	case(4):
-					calculateRookMovement(1, spaceObjectArray, spacePathArray, index);
-					break;
-/*white knight*/case(5):
-/*black knight*/case(6):
-					calculateKnightMovement(1, spaceObjectArray, spacePathArray, index);
-					break;
-/*white bishop*/case(7):
-/*black bishop*/case(8):
-					calculateBishopMovement(1, spaceObjectArray, spacePathArray, index);
-					break;
-/*white queen*/	case(9):
-/*black queen*/	case(10):
-					calculateQueenMovement(1, spaceObjectArray, spacePathArray, index);
-					break;
-/*white king*/	case(11):
-/*black king*/	case(12):
-					calculateKingMovement(1, spaceObjectArray, spacePathArray, index, 0);
-					break;
-				default:
-					alert("ERROR 1");
-					break;
-			}
-			setPieces(paper, spaceObjectArray, boardWidth, windowIsSmall, wasBig);
-		}
-
-		//deselect a selected space when said space is clicked
-		$("#selectedSpace").click(function(){
-			$(this).remove();
-			$(".movableSpaces").remove();
-		});
-
-
-
-		//=======================================================================
-		// Functionality when a movable space (yellow/red) is clicked
-		//=======================================================================
-		$(".movableSpaces").click(function(){
-			//parse data from selected space and store it in variables
-			var moveToIndex = parseInt($(this).attr("to"));
-			var moveFromIndex = parseInt($(this).attr("from"));
-			var piece = parseInt($(this).attr("with"));
-			$("#selectedSpace").remove();
-			$(".movableSpaces").remove();
-			$(".piece").remove();
-			var proceed=1;
-
-			//the following checks to see if the move will place the friendly king in check. if so, the move will be prevented
-			var checkMoveTo = spaceObjectArray[moveToIndex].occupied;
-			var checkMoveFrom = spaceObjectArray[moveFromIndex].occupied;
-			spaceObjectArray[moveToIndex].occupied=checkMoveFrom;
-			spaceObjectArray[moveFromIndex].occupied=0;
-			calculateDangerSpaces(spaceObjectArray, spacePathArray);
-			var isCheck = checkStatus(spaceObjectArray, spacePathArray, moveFromIndex);
-			if((isCheck==1 && spaceObjectArray[moveToIndex].occupied%2!=0) || (isCheck==2 && spaceObjectArray[moveToIndex].occupied%2==0)) {
-				proceed=0;
-				spaceObjectArray[moveToIndex].occupied=checkMoveTo;
-				spaceObjectArray[moveFromIndex].occupied=checkMoveFrom;
+				switch(isOccupied) {
+/*white pawn*/		case(1):
+/*black pawn*/		case(2):
+						calculatePawnMovement(1, spaceObjectArray, spacePathArray, index);
+						break;
+/*white rook*/		case(3):
+/*black rook*/		case(4):
+						calculateRookMovement(1, spaceObjectArray, spacePathArray, index);
+						break;
+/*white knight*/	case(5):
+/*black knight*/	case(6):
+						calculateKnightMovement(1, spaceObjectArray, spacePathArray, index);
+						break;
+/*white bishop*/	case(7):
+/*black bishop*/	case(8):
+						calculateBishopMovement(1, spaceObjectArray, spacePathArray, index);
+						break;
+/*white queen*/		case(9):
+/*black queen*/		case(10):
+						calculateQueenMovement(1, spaceObjectArray, spacePathArray, index);
+						break;
+/*white king*/		case(11):
+/*black king*/		case(12):
+						calculateKingMovement(1, spaceObjectArray, spacePathArray, index, 0);
+						break;
+					default:
+						alert("ERROR 1");
+						break;
+				}
 				setPieces(paper, spaceObjectArray, boardWidth, windowIsSmall, wasBig);
-				alert("This move will leave your king in check. Choose another move.");
 			}
 
-			if(proceed || devmode) {
-				//calculate pawn progress through the singularity
-				if(spaceObjectArray[moveFromIndex].quadrant!=0) //if piece is a pawn
-					updateSingularityMarkers(spaceObjectArray,moveToIndex,moveFromIndex);
+			//deselect a selected space when said space is clicked
+			$("#selectedSpace").click(function(){
+				$(this).remove();
+				$(".movableSpaces").remove();
+			});
 
-				/*set pawn as moved, if applicable, and ensure it doesn't get set to unmoved again.
-				THIS CANNOT BE DONE BEFORE UPDATING SINGULARITY MARKERS */
-				if(spaceObjectArray[moveFromIndex].isPawnUnmoved==1) {
-					spaceObjectArray[moveFromIndex].isPawnUnmoved=0;
-					spaceObjectArray[moveToIndex].isPawnUnmoved=0;
-				}
-				else {
-					spaceObjectArray[moveToIndex].isPawnUnmoved=0;
-				}
 
-				//fixes pawn movement direction after a diagonal capture
-				var fixPrevDirIndex=parseInt($(this).attr("pawn"));
-				if(fixPrevDirIndex)
-					captureMovementFix(spaceObjectArray, moveToIndex, moveFromIndex);
 
-				//set the moved to space to occupied and reset the spaced that was moved from
-				spaceObjectArray[moveToIndex].occupied=piece;
+			//=======================================================================
+			// Functionality when a movable space (yellow/red) is clicked
+			//=======================================================================
+			$(".movableSpaces").click(function(){
+				//var pieceData=calculateKnightMovement(0, spaceObjectArray, spacePathArray, 58, 1);
+				//alert("the knight at index 58 has "+pieceData.numMoves+" moves and "+pieceData.numCaps+" captures");
+				//parse data from selected space and store it in variables
+				var moveToIndex = parseInt($(this).attr("to"));
+				var moveFromIndex = parseInt($(this).attr("from"));
+				var piece = parseInt($(this).attr("with"));
+				$("#selectedSpace").remove();
+				$(".movableSpaces").remove();
+				$(".piece").remove();
+				var proceed=1;
+
+				//the following checks to see if the move will place the friendly king in check. if so, the move will be prevented
+				var checkMoveTo = spaceObjectArray[moveToIndex].occupied;
+				var checkMoveFrom = spaceObjectArray[moveFromIndex].occupied;
+				spaceObjectArray[moveToIndex].occupied=checkMoveFrom;
 				spaceObjectArray[moveFromIndex].occupied=0;
-
-				//if piece is a pawn, transfer the origin quadrant to the new space
-				if(spaceObjectArray[moveFromIndex].quadrant!=0) {
-					spaceObjectArray[moveToIndex].quadrant=spaceObjectArray[moveFromIndex].quadrant;
-				}
-				spaceObjectArray[moveFromIndex].quadrant=0;
-
 				calculateDangerSpaces(spaceObjectArray, spacePathArray);
-				setPieces(paper, spaceObjectArray, boardWidth, windowIsSmall, wasBig);
-				
-				//disables or enables piece selection based on whos turn it is
-				if(devmode) //if devmode is on, all pieces can be selected at any time
-					document.getElementById("gameDisplay1").innerHTML="Devmode Enabled";
-				else {
-					if(turnColor.search("White")==0)
-						turnColor="Black";
-					else
-						turnColor="White";
-					moveCount++;
-					document.getElementById("gameDisplay1").innerHTML=turnColor.concat("'s Turn");
-					document.getElementById("gameDisplay2").innerHTML="Move #"+moveCount;
+				var isCheck = checkStatus(spaceObjectArray, spacePathArray, moveToIndex, devmode);
+				if((isCheck==1 && spaceObjectArray[moveToIndex].occupied%2!=0) || (isCheck==2 && spaceObjectArray[moveToIndex].occupied%2==0)) {
+					proceed=0;
+					spaceObjectArray[moveToIndex].occupied=checkMoveTo;
+					spaceObjectArray[moveFromIndex].occupied=checkMoveFrom;
+					setPieces(paper, spaceObjectArray, boardWidth, windowIsSmall, wasBig);
+					alert("This move will leave your king in check. Please choose another move.");
+				}
+				else if(isCheck==3) {
+					gameover=1;
 				}
 
-				//create svg objects of danger spaces if in devmode
-				if(devmode)
-					visualizeDangerSpaces(spaceObjectArray,spacePathArray);
-			}
-		});//end movableSpace click function
+				if(proceed || devmode) {
+					//if the piece is a pawn, has it moved across its respective color's singularity bound? (need to write definition for singularity bound)
+					if(spaceObjectArray[moveFromIndex].quadrant!=0) //if piece is a pawn
+						updateSingularityMarkers(spaceObjectArray,moveToIndex,moveFromIndex);
+
+					/*set pawn as moved, if applicable, and ensure it doesn't get set to unmoved again.
+					THIS CANNOT BE DONE BEFORE UPDATING SINGULARITY MARKERS */
+					if(spaceObjectArray[moveFromIndex].isPawnUnmoved==1) {
+						spaceObjectArray[moveFromIndex].isPawnUnmoved=0;
+						spaceObjectArray[moveToIndex].isPawnUnmoved=0;
+					}
+					else {
+						spaceObjectArray[moveToIndex].isPawnUnmoved=0;
+					}
+
+					//fixes pawn movement direction after a diagonal capture
+					var fixPrevDirIndex=parseInt($(this).attr("pawn"));
+					if(fixPrevDirIndex) {
+						captureMovementFix(spaceObjectArray, moveToIndex, moveFromIndex);
+					}
+
+					//set the moved to space to occupied and reset the spaced that was moved from
+					spaceObjectArray[moveToIndex].occupied=piece;
+					spaceObjectArray[moveFromIndex].occupied=0;
+
+					//if piece is a pawn, transfer the origin quadrant to the new space
+					if(spaceObjectArray[moveFromIndex].quadrant!=0) {
+						spaceObjectArray[moveToIndex].quadrant=spaceObjectArray[moveFromIndex].quadrant;
+					}
+					spaceObjectArray[moveFromIndex].quadrant=0;
+
+					calculateDangerSpaces(spaceObjectArray, spacePathArray);
+					setPieces(paper, spaceObjectArray, boardWidth, windowIsSmall, wasBig);
+					
+					//disables or enables piece selection based on whos turn it is
+					if(devmode) //if devmode is on, all pieces can be selected at any time
+						document.getElementById("gameDisplay1").innerHTML="Devmode Enabled";
+					else {
+						if(turnColor.search("White")==0)
+							turnColor="Black";
+						else
+							turnColor="White";
+						moveCount++;
+						document.getElementById("gameDisplay1").innerHTML=turnColor.concat("'s Turn");
+						document.getElementById("gameDisplay2").innerHTML="Move #"+moveCount;
+					}
+
+					//create svg objects of danger spaces if in devmode
+					if(devmode)
+						visualizeDangerSpaces(spaceObjectArray,spacePathArray);
+				}
+			});//end movableSpace click function
+		}
 	});//end boardSpace click function
 }//end drawGameBoard

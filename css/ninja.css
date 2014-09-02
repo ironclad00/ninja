@@ -629,6 +629,7 @@ fade {
 	position:fixed;
 	width:100%;
 	height:100%;
+	pointer-events:none;/*disable image dragging*/
 }
 
 #chessHeader {
@@ -639,4 +640,13 @@ fade {
 	display:inline;
 	margin:0;
 	width:15%;
+}
+
+#gameboard {/*disable text highlighting*/
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
 }
