@@ -279,7 +279,6 @@ function checkMateProtocol(spaceObjectArray, spacePathArray, indexOfKing, indexO
 
 			for(var j=0;j<pieceData.numCaps;j++) {//try capturing the checking piece
 				if(pieceData.capIndexes[j]==indexOfAggressor) {//if a friendly piece can capture the aggressing piece, do so and recalculate danger spaces
-					alert("friendly piece at index "+i+" can capture the aggressor... is it safe to do so?");
 					var aggressivePiece=spaceObjectArray[indexOfAggressor].occupied;
 					var friendlyIndex=i;
 					var friendlyPiece=spaceObjectArray[i].occupied;

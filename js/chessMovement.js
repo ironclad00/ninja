@@ -245,9 +245,6 @@ function calculateKnightMovement(draw, spaceObjectArray, spacePathArray, index, 
 			var diagIndex1=spaceObjectArray[nextIndex].direct[diagDirIndex1];
 			var diagIndex2=spaceObjectArray[nextIndex].direct[diagDirIndex2];
 
-			if(checkCheck)
-				alert("diagIndex1="+diagIndex1+", diagIndex2="+diagIndex2);
-
 			if(diagIndex1!=-1) {
 				if(spaceObjectArray[diagIndex1].occupied==0) {
 					if(draw)
