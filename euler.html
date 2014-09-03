@@ -107,7 +107,7 @@
 						<td class="solved"><a href="javascript:;" onclick="loadProg(18)">18</a></td>
 						<td>19</td>
 						<td>20</td>
-						<td>21</td>
+						<td class="solved"><a href="javascript:;" onclick="loadProg(21)">21</a></td>
 						<td>22</td>
 						<td>23</td>
 						<td>24</td>
@@ -192,6 +192,7 @@
 						<li><a href="javascript:;" onclick="loadProg(16)">16</a></li>
 						<li><a href="javascript:;" onclick="loadProg(17)">17</a></li>
 						<li><a href="javascript:;" onclick="loadProg(18)">18</a></li>
+						<li><a href="javascript:;" onclick="loadProg(21)">21</a></li>
 						<li><a href="javascript:;" onclick="loadProg(48)">48</a></li>
 						<li><a href="javascript:;" onclick="loadProg(67)">67</a></li>
 					</ul>
@@ -1370,7 +1371,7 @@ int main() {
                         That is, 3+7+4+9 = 23.</p>
                     <p>
                         <i>For 18: </i>Find the maximum total from top to bottom in the triangle give in <a href="https://github.com/ironclad00/euler/blob/master/18input.txt" target="_blank">my github file</a> that contains 15 rows.<br>
-                        <i>For 67: </i>Find the maximum total from top to bottom in <a href="https://projecteuler.net/project/triangle.txt" target="_blank">triangle.txt</a>, a 15K text file containing a triangle with one-hundred rows.
+                        <i>For 67: </i>Find the maximum total from top to bottom in <a href="https://projecteuler.net/project/resources/p067_triangle.txt" target="_blank">triangle.txt</a>, a 15K text file containing a triangle with one-hundred rows.
                     </p>
 					<h2>Comments</h2>
 					<p>This entry encompasses solutions for both problems 18 and 67, which are technically the same, only 67 forces the coder to use a more efficient algorithm than in 18. </p>
@@ -1471,6 +1472,51 @@ int main() {
     cout&lt;&lt;"The maximum total from top to bottom of the triangle with "&lt;&lt;TARGET&lt;" lines is "&lt;&lt;triangle[0][0]&lt;&lt;".\n";
 
     return 0;
+}
+					</pre>
+				</div>
+				<div id="prog21" class="progactive">
+					<h2>Problem 21</h2>
+					<p>Let d(n) be defined as the sum of proper divisors of n (numbers less than n which divide evenly into n). If d(a) = b and d(b) = a, where a ≠ b, then a and b are an amicable pair and each of a and b are called amicable numbers.</p>
+					<p>For example, the proper divisors of 220 are 1, 2, 4, 5, 10, 11, 20, 22, 44, 55 and 110; therefore d(220) = 284. The proper divisors of 284 are 1, 2, 4, 71 and 142; so d(284) = 220.</p>
+					<p>Evaluate the sum of all the amicable numbers under 10000.</p>
+					<h2>Comments</h2>
+					<p>None.</p>
+					<h2>Output</h2>
+					<p>The sum of all amicable numbers under 10000 is 31626.</p>
+					<pre class="brush: cpp;">
+#include &lt;stdio.h>
+#define TARGET 10000
+
+int main() {
+	int sum=0;
+    int i;
+    
+    for(i=0;i&lt;TARGET;i++) {
+        int num1=d(i);		//284=d(220)
+        int num2=d(num1);	//220=d(284)
+        
+        if(num2==i && i!=num1) {
+            sum+=i;
+        }
+    }
+    
+    printf("The sum of all amicable numbers under %d is %d.\n",TARGET,sum);
+
+    return 0;
+}
+
+int d(int number) {
+    int sum=1;
+    int i;
+    
+    for(i=2;i&lt;number;i++) {
+        if(number%i==0) {
+            sum+=i;
+        }
+    }
+    
+    return sum;
 }
 					</pre>
 				</div>
