@@ -258,7 +258,6 @@ function calculateKnightMovement(draw, spaceObjectArray, spacePathArray, index, 
 					if(draw)
 						makeMovableSpace(spacePathArray[diagIndex1],originalIndex,isOccupied,0,1);
 					else if(checkCheck) {
-						//alert("a "+spaceObjectArray[diagIndex1].occupied+" can be captured at index "+diagIndex1);
 						checkObject.capIndexes[checkObject.numCaps]=diagIndex1;
 						checkObject.numCaps++;
 					}
@@ -285,7 +284,6 @@ function calculateKnightMovement(draw, spaceObjectArray, spacePathArray, index, 
 					if(draw)
 						makeMovableSpace(spacePathArray[diagIndex2],originalIndex,isOccupied,0,1);
 					else if(checkCheck) {
-						//alert("a "+spaceObjectArray[diagIndex2].occupied+" can be captured at index "+diagIndex2);
 						checkObject.capIndexes[checkObject.numCaps]=diagIndex2;
 						checkObject.numCaps++;
 					}

@@ -1131,8 +1131,6 @@ function drawGameBoard(resize,objectArray,wasBig) { //main function that runs mo
 			// Functionality when a movable space (yellow/red) is clicked
 			//=======================================================================
 			$(".movableSpaces").click(function(){
-				//var pieceData=calculateKnightMovement(0, spaceObjectArray, spacePathArray, 58, 1);
-				//alert("the knight at index 58 has "+pieceData.numMoves+" moves and "+pieceData.numCaps+" captures");
 				//parse data from selected space and store it in variables
 				var moveToIndex = parseInt($(this).attr("to"));
 				var moveFromIndex = parseInt($(this).attr("from"));
@@ -1203,7 +1201,10 @@ function drawGameBoard(resize,objectArray,wasBig) { //main function that runs mo
 						else
 							turnColor="White";
 						moveCount++;
-						document.getElementById("gameDisplay1").innerHTML=turnColor.concat("'s Turn");
+						if(!gameover)
+							document.getElementById("gameDisplay1").innerHTML=turnColor.concat("'s Turn");
+						else
+							document.getElementById("gameDisplay1").innerHTML="Game Over";
 						document.getElementById("gameDisplay2").innerHTML="Move #"+moveCount;
 					}
 
