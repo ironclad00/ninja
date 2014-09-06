@@ -236,3 +236,7 @@ function loadProg(num) {//toggles the visibility of programs on the Euler page
 function vibrate(num) {//causes vibration on supported devices
 	navigator.vibrate(num);
 }
+
+function getResume() {
+    window.open("https://docs.google.com/document/d/1_nBJDVH88IDn9W3NpL39mT8CsY24MiI0utvXqyBxiDg/","_blank");
+}
