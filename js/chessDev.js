@@ -97,7 +97,7 @@ function displayAllOccupied(spaceObjectArray) {
 
 
 //=======================================================================
-// Physically display danger spaces on the board.
+// Physically display danger spaces on the board. DOES NOT WORK AS OF 9/3
 // white space=white is in danger of capture
 // black space=black is in danger of capture
 // green space=both are in danger of capture

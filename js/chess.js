@@ -4,7 +4,6 @@
 /* Bug/To-Do list
 	- tweek piece coords in both wide and vert modes
 	- fix issue: chrome crashes when too many resizes have been done
-	- disable user interactions with background picture
 */
 
 function playChess() {
@@ -67,12 +66,17 @@ function quitChess(newGame) {
 
 function drawGameBoard(resize,objectArray,wasBig) { //main function that runs most aspects of the game
 	//initial css changes
-	if(resize)
-		$("svg").remove(); //this prevents the browser from crashing due to too many SVG objects being drawn (browser is still crashing D:)
+	//if(resize)
+	//	$("svg").remove(); //this prevents the browser from crashing due to too many SVG objects being drawn
 	$("#gameControls").css({"display":"inline"});
 	$("body").css({"overflow-y":"hidden"}); //disable
 	$("html").css({"overflow-y":"hidden"}); //scrolling
-
+	
+	//displays thinner than 581px cannot display the full text "New Game" in the New Game button, so its shortened to "New"
+	if($(window).width()<581)
+		document.getElementById("newGame").innerHTML="New";
+	else
+		document.getElementById("newGame").innerHTML="New Game";
 
 	//declarations for a some initial variables
 	var isWide;					//stores the orientation of the board (vertical or horizontal)
@@ -81,6 +85,7 @@ function drawGameBoard(resize,objectArray,wasBig) { //main function that runs mo
 	var turnColor="White";		//tracks whos turn it is
 	var devmode=0;				//turns off turn rotations if enabled (1)
 	var gameover=0;				//if checkmate has occured, value set to 1 and pieces can no longer be moved or selected
+	var canResize=1;
 	var windowIsSmall=1;		//if true, assume user is on mobile device. used to determine whether or not board spaces should have hover function
 								//true=no hover, false=enable hover
 	var moveCount=1;			//current move number
@@ -842,19 +847,15 @@ function drawGameBoard(resize,objectArray,wasBig) { //main function that runs mo
 
 
 	$(window).resize(function() {
-		if(document.getElementById("sp1")) { //only draw board on resize if game was in progress
-			$("svg").remove();
-			$(".banner").hide();
-			$(".navbar").hide();
-			$(".desktopMedia").hide();
-			$(".mobileMedia").hide();
-			$("#top").hide();
-			$("#chess").hide();
-			$(".mobileMedia").hide();
-			if(!windowIsSmall || wasBig)
-				drawGameBoard(1,spaceObjectArray,1);
-			else
-				drawGameBoard(1,spaceObjectArray,0);
+		/*this is a work-around for the crashes caused by resizing:
+		instead of immediately resizing, the game waits 50ms before calling resizeChess() and will not do so again until the resizeChess()
+		function is done executing. this prevents the function from being rapidly called multiple times in a small time frame, which is my
+		my guess as to what is causing the browser to slow/crash */
+		if(canResize) {
+			canResize=0;
+			setTimeout(function(){
+				resizeChess(windowIsSmall, wasBig, spaceObjectArray, canResize);
+			},50);
 		}
 	});
 
@@ -952,7 +953,7 @@ function drawGameBoard(resize,objectArray,wasBig) { //main function that runs mo
 		}
 	}
 
-
+	var pieceSize=(65/881)*smallest(boardWidth,boardHeight); //size scaled based on empirically determined ratio
 	//set basic space attributes for the spacePathArray. this includes: id, index #, color, and the (x,y) coord of the center of the piece
 	for(var i=0; i<64; i++) {
 		var title=i.toString();
@@ -975,81 +976,37 @@ function drawGameBoard(resize,objectArray,wasBig) { //main function that runs mo
 		var sBounds=spacePathArray[i].getBBox();
 		var xOffset=(40/881)*boardWidth; //scaling based on empirically-determined ratio
 		var yOffset=(35/881)*boardWidth; //scaling based on empirically-determined ratio
-		if(i==1 || i==7 || i==15 || i==25 || i==36 || i==46 || i==54 || i==60)
-			spaceObjectArray[i].cx=sBounds.x+(sBounds.width/3.6)-xOffset;
-		else if(i==3 || i==9 || i==17 || i==27 || i==38 || i==48 || i==56 || i==62)
-			spaceObjectArray[i].cx=sBounds.x+(sBounds.width/1.4)-xOffset;
-		else
-			spaceObjectArray[i].cx=sBounds.x+(sBounds.width/2)-xOffset;
-		spaceObjectArray[i].cy=sBounds.y+rad05-yOffset;
-
-
-		//=======================================================================
-		// Fine adjustments to (x,y) coords of piece images
-		//=======================================================================
 		if(isWide) {
-			if(i==4 || i==63 || i==57 || i==49)
-				spaceObjectArray[i].cx+=15;
-			if(i==11 || i==58 || i==18 || i==54 || i==7 || i==60 || i==10)
-				spaceObjectArray[i].cx+=10;
-			if(i==20 || i==40)
-				spaceObjectArray[i].cx+=8;
-			if(i==51 || i==31 || i==42 || i==29 || i==34 || i==23 || i==15 || i==46 || i==39 || i==28 || i==36 || i==25 || i==1 || i==30 || i==41 || i==19 || i==56)
-				spaceObjectArray[i].cx+=5;
+			if(i==60 || i==54 || i==46 || i==36 || i==25 || i==15 || i==7 || i==1) {
+				spaceObjectArray[i].cx=sBounds.x+(sBounds.width/3.8)-(pieceSize/2);
+				spaceObjectArray[i].cy=sBounds.y+(sBounds.height/2)-(pieceSize/2);
+			}
+			else if(i==62 || i==56 || i==48 || i==38 || i==27 || i==17 || i==9 || i==3) {
+				spaceObjectArray[i].cx=sBounds.x+(sBounds.width/1.5)-(pieceSize/2);
+				spaceObjectArray[i].cy=sBounds.y+(sBounds.height/2)-(pieceSize/2);
+			}
+			else {
+				spaceObjectArray[i].cx=sBounds.x+(sBounds.width/2)-(pieceSize/2);
+				spaceObjectArray[i].cy=sBounds.y+(sBounds.height/2)-(pieceSize/2);
+			}
 		}
-		else {//fix the method used to calculate (x,y) coords for vertical, they're pretty messed up by default
-			if(i==60 || i==1 || i==54) {
-				spaceObjectArray[i].cx+=10;
-				spaceObjectArray[i].cy+=22;
+		else {
+			if(i==60 || i==54 || i==46 || i==36 || i==25 || i==15 || i==7 || i==1) {
+				spaceObjectArray[i].cx=sBounds.x+(sBounds.width/2)-(pieceSize/2);
+				spaceObjectArray[i].cy=sBounds.y+(sBounds.height/4)-(pieceSize/2);
 			}
-			if(i==59 || i==0 || i==4 || i==63)
-				spaceObjectArray[i].cy+=20;
-			if(i==53 || i==6 || i==52 || i==5 || i==14)
-				spaceObjectArray[i].cy+=10;
-			if(i==44 || i==13 || i==50 || i==19 || i==43 || i==12)
-				spaceObjectArray[i].cy+=5;
-			if(i==45) {
-				spaceObjectArray[i].cy+=10;
-				spaceObjectArray[i].cx+=4;
+			else if(i==62 || i==56 || i==48 || i==38 || i==27 || i==17 || i==9 || i==3) {
+				spaceObjectArray[i].cx=sBounds.x+(sBounds.width/2)-(pieceSize/2);
+				spaceObjectArray[i].cy=sBounds.y+(sBounds.height/1.5)-(pieceSize/2);
 			}
-			if(i==7) {
-				spaceObjectArray[i].cy+=22;
-				spaceObjectArray[i].cx+=10;
+			else {
+				spaceObjectArray[i].cx=sBounds.x+(sBounds.width/2)-(pieceSize/2);
+				spaceObjectArray[i].cy=sBounds.y+(sBounds.height/2)-(pieceSize/2);
 			}
-			if(i==61) {
-				spaceObjectArray[i].cy+=80;
-				spaceObjectArray[i].cx+=4;
-			}
-			if(i==55) {
-				spaceObjectArray[i].cy+=63;
-				spaceObjectArray[i].cx+=4;
-			}
-			if(i==47) {
-				spaceObjectArray[i].cy+=41;
-				spaceObjectArray[i].cx+=4;
-			}
-			if(i==36 || i==25) {
-				spaceObjectArray[i].cy+=6;
-				spaceObjectArray[i].cx+=10;
-			}
-			if(i==37) {
-				spaceObjectArray[i].cy+=11;
-				spaceObjectArray[i].cx+=4;
-			}
-			if(i==46 || i==15) {
-				spaceObjectArray[i].cy+=11;
-				spaceObjectArray[i].cx+=12;
-			}
-			if(i==26)
-				spaceObjectArray[i].cy+=11;
-			if(i==16)
-				spaceObjectArray[i].cy+=41;
-			if(i==8)
-				spaceObjectArray[i].cy+=63;
 		}
 	}
 
-	setPieces(paper, spaceObjectArray, boardWidth, windowIsSmall, wasBig);
+	setPieces(paper, spaceObjectArray, boardWidth, windowIsSmall, wasBig, pieceSize);
 
 	//set space hover attributes
 	if(!windowIsSmall || wasBig) { //hover function only set on md and lg window sizes
@@ -1116,7 +1073,7 @@ function drawGameBoard(resize,objectArray,wasBig) { //main function that runs mo
 						alert("ERROR 1");
 						break;
 				}
-				setPieces(paper, spaceObjectArray, boardWidth, windowIsSmall, wasBig);
+				setPieces(paper, spaceObjectArray, boardWidth, windowIsSmall, wasBig, pieceSize);
 			}
 
 			//deselect a selected space when said space is clicked
@@ -1138,7 +1095,7 @@ function drawGameBoard(resize,objectArray,wasBig) { //main function that runs mo
 				$("#selectedSpace").remove();
 				$(".movableSpaces").remove();
 				$(".piece").remove();
-				var proceed=1;
+				var proceed=1;//proceed stores whether or not the move is allowed. 1=allowed, 0=not allowed
 
 				//the following checks to see if the move will place the friendly king in check. if so, the move will be prevented
 				var checkMoveTo = spaceObjectArray[moveToIndex].occupied;
@@ -1146,12 +1103,12 @@ function drawGameBoard(resize,objectArray,wasBig) { //main function that runs mo
 				spaceObjectArray[moveToIndex].occupied=checkMoveFrom;
 				spaceObjectArray[moveFromIndex].occupied=0;
 				calculateDangerSpaces(spaceObjectArray, spacePathArray);
-				var isCheck = checkStatus(spaceObjectArray, spacePathArray, moveToIndex, devmode);
-				if((isCheck==1 && spaceObjectArray[moveToIndex].occupied%2!=0) || (isCheck==2 && spaceObjectArray[moveToIndex].occupied%2==0)) {
+				var isCheck=checkStatus(spaceObjectArray, spacePathArray, moveToIndex, devmode);
+				if((isCheck==1 && spaceObjectArray[moveToIndex].occupied%2!=0) || (isCheck==2 && spaceObjectArray[moveToIndex].occupied%2==0) || isCheck==4) {
 					proceed=0;
 					spaceObjectArray[moveToIndex].occupied=checkMoveTo;
 					spaceObjectArray[moveFromIndex].occupied=checkMoveFrom;
-					setPieces(paper, spaceObjectArray, boardWidth, windowIsSmall, wasBig);
+					setPieces(paper, spaceObjectArray, boardWidth, windowIsSmall, wasBig, pieceSize);
 					alert("This move will leave your king in check. Please choose another move.");
 				}
 				else if(isCheck==3) {
@@ -1190,7 +1147,7 @@ function drawGameBoard(resize,objectArray,wasBig) { //main function that runs mo
 					spaceObjectArray[moveFromIndex].quadrant=0;
 
 					calculateDangerSpaces(spaceObjectArray, spacePathArray);
-					setPieces(paper, spaceObjectArray, boardWidth, windowIsSmall, wasBig);
+					setPieces(paper, spaceObjectArray, boardWidth, windowIsSmall, wasBig, pieceSize);
 					
 					//disables or enables piece selection based on whos turn it is
 					if(devmode) //if devmode is on, all pieces can be selected at any time
@@ -1201,11 +1158,14 @@ function drawGameBoard(resize,objectArray,wasBig) { //main function that runs mo
 						else
 							turnColor="White";
 						moveCount++;
-						if(!gameover)
+						if(!gameover) {
 							document.getElementById("gameDisplay1").innerHTML=turnColor.concat("'s Turn");
-						else
+							document.getElementById("gameDisplay2").innerHTML="Move #"+moveCount;
+						}
+						else {
 							document.getElementById("gameDisplay1").innerHTML="Game Over";
-						document.getElementById("gameDisplay2").innerHTML="Move #"+moveCount;
+							document.getElementById("gameDisplay2").innerHTML=(moveCount-1)+" Moves";
+						}
 					}
 
 					//create svg objects of danger spaces if in devmode

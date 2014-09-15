@@ -14,6 +14,7 @@
 		<link href="css/ninja.css" rel="stylesheet">
 		<link href='http://fonts.googleapis.com/css?family=Rosario|Open+Sans' rel='stylesheet' type='text/css'>
 
+		<script src="//widget.battleforthenet.com/widget.min.js" async></script>
 		<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
 		<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
 		<!--[if lt IE 9]>
@@ -23,8 +24,8 @@
 	</head>
 
 	<!-- NOTES
-	* 
-	* 
+	* make paragraph spacing under About Me to match all other paragraph spacing
+	* merge desktopMedia and mobileMedia into one section so images don't need to load twice
 	* 
 	/NOTES -->
 
@@ -67,7 +68,7 @@
 			<a href="https://twitter.com/jeremyjaybaker" target="_blank"><img id="mflag6" src="images/twitter.png"/></a>
 			<a href="https://github.com/jeremyjaybaker" target="_blank"><img id="mflag5" src="images/github.png"/></a>
 			<a href="https://www.linkedin.com/in/jeremyjaybaker" target="_blank"><img id="mflag3" src="images/linked.png"/></a>
-			<a href="mailto:jbaker920@ufl.edu" target="_blank"><img id="mflag4" src="images/email.png"/></a>
+			<a href="#"><img id="mflag4" src="images/email.png"/></a>
 		</div>
 		<div class="mobileMedia hidden-md hidden-lg">
 			<a href="https://www.facebook.com/JeremyBaker920" target="_blank"><img title="Facebook" src="images/facebook.png"/></a>
@@ -100,10 +101,11 @@
 				<p>I made this site with <a href="http://getbootstrap.com/" target="_blank">Bootstrap 3</a>. Boostrap is awesome and I highly recommend it for anyone interested in responsive web design. I also used two jQuery libraries called <a href="http://ricostacruz.com/jquery.transit/" target="_blank">Transit</a> and <a href="http://raphaeljs.com/">Raphael</a>. The syntax highlighter I use for displaying code was created by <a href="http://alexgorbatchev.com/SyntaxHighlighter" target="_blank"/>Alex Gorbachev</a>.</p>
 				<p>Construction began in the middle of summer 2014 and I've been adding to it ever since. All of the code and files for this site are stored on my public GitHub repository <a href="https://github.com/ironclad00/ninja/" target="_blank">ninja</a>.</p>
 				<p>This site was developed using Chrome 35+ but should also be compatible with recent versions of Firefox and Internet Explorer. I'm working on display/functionality issues for other browsers and versions along with other tasks given in the Coming Soon section below.</p>
-				<p><i>Last Updated:</i> 9/2/14</p>
+				<p><i>Last Updated:</i> 9/3/14</p>
 			</div>
 			<div class="col-md-12">
 				<h2>Coming Soon</h2>
+				<p>- Fix for my email link</p>
 				<p>- Gameplay footage of Stick Flick</p>
 				<p>- Compatibility fixes for more browsers</p>
 				<p>- Misc fixes for super high-res monitors (4k and above)</p>
@@ -111,6 +113,31 @@
 				<p>- Better interface for viewing Euler code on mobile devices</p>
 			</div>
 		</div>
+
+		<div id="emailModal">
+			<div id="modalHeader">
+				<span id="closeModal" class="glyphicon glyphicon-remove-circle"></span>
+				<h2>Email Form</h2>
+			</div>
+			<div id="modalBody">
+				<form role="form">
+					<div class="form-group">
+						<label class="sr-only" for="">Your Email address</label>
+						<input type="email" class="form-control" id="" placeholder="Your Email Address">
+					</div>
+					<div class="form-group">
+						<label class="sr-only" for="">Email Subject</label>
+						<input type="text" class="form-control" id="" placeholder="Email Subject (Required)">
+					</div>
+					<label class="sr-only" for="">Email Message</label>
+					<textarea class="form-control" rows="5" placeholder="Your Message (Required)"></textarea>
+					<br>
+					<button class="btn btn-default btn-success" disabled>Send</button>
+					<button id="cancelModal" class="btn btn-default btn-danger">Cancel</button>
+				</form>
+			</div>
+		</div>
+		<div id="modalBackground">
 
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
 		<script src="js/bootstrap.min.js"></script>

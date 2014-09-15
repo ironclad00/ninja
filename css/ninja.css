@@ -661,3 +661,51 @@ fade {
 	-ms-user-select: none;
 	user-select: none;
 }
+
+#modalBackground {
+	display: none;
+	position: fixed;
+	left: 0;
+	top: 0;
+	width: 100%;
+	height: 100%;
+	background-color: #000;
+	opacity: 0.6;
+}
+
+#emailModal {
+	display: none;
+	position: fixed;
+	z-index: 1;
+}
+
+#emailModal h2 {
+	display: inline;
+}
+
+#modalHeader {
+	background: -webkit-linear-gradient(#D63030, #850000); /* For Safari 5.1 to 6.0 */
+	background: -o-linear-gradient(#D63030, #850000); /* For Opera 11.1 to 12.0 */
+	background: -moz-linear-gradient(#D63030, #850000); /* For Firefox 3.6 to 15 */
+	background: linear-gradient(#D63030, #850000); /* Standard syntax */
+	border-top-left-radius: 10px;
+	border-top-right-radius: 10px;
+	margin: 0;
+	padding-left: 10px;
+	padding-top: 10px;
+	padding-bottom: 10px;
+}
+
+#modalBody {
+	border-top: 4px solid #666;
+	background-color: #fff;
+	border-bottom-left-radius: 10px;
+	border-bottom-right-radius: 10px;
+	padding: 10px;
+	color: #333;
+}
+
+#closeModal {
+	position: absolute;
+	top: 23px;
+}

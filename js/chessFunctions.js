@@ -14,9 +14,8 @@
 //=======================================================================
 // Function to draw pieces on the board using svg image files
 //=======================================================================
-function setPieces(paper, objectArray, boardWidth, windowIsSmall, wasBig) {
+function setPieces(paper, objectArray, boardWidth, windowIsSmall, wasBig, pieceSize) {
 	$(".piece").remove();
-	var pieceSize=(65/881)*boardWidth; //size scaled based on empirically determined ratio
 	for(var i=0;i<64;i++) {
 		var x=objectArray[i].cx;
 		var y=objectArray[i].cy;
@@ -419,7 +418,7 @@ function updateSingularityMarkers(spaceObjectArray,moveToIndex,moveFromIndex) {
 
 
 //=======================================================================
-// 
+// Marks every space that a piece on the board can move to with respect to the pieces color
 //=======================================================================
 function calculateDangerSpaces(spaceObjectArray, spacePathArray) {
 	// Calculate all danger spaces for both colors
@@ -486,10 +485,23 @@ function calculateDangerSpaces(spaceObjectArray, spacePathArray) {
 
 
 //=======================================================================
-// 
+// If a king has been put in check, determines whether or not to look for a checkmate
 //=======================================================================
 function checkStatus(spaceObjectArray, spacePathArray, indexOfPreviouslyMovedPiece, devmode) {
-	//check current positions in case of a check
+	//the section below does a special check to make sure the move just made has not put both kings in
+	//check simultaneously, a scenario that the rest of the algorithm wasn't written to handle
+	var whiteKingIndex,blackKingIndex;
+	for(var i=0;i<64;i++) {
+		if(spaceObjectArray[i].occupied==11)
+			whiteKingIndex=i;
+		else if(spaceObjectArray[i].occupied==12)
+			blackKingIndex=i;
+	}
+	if(spaceObjectArray[whiteKingIndex].isWhiteDanger && spaceObjectArray[blackKingIndex].isBlackDanger)
+		return 4;
+	//end simultaneous check section
+
+	//standard section for determining checks and checkmate
 	for(var i=0; i<64; i++) {
 		if(spaceObjectArray[i].occupied==11 && spaceObjectArray[i].isWhiteDanger==1) { //white king
 			var checkMate;
@@ -529,7 +541,7 @@ function checkStatus(spaceObjectArray, spacePathArray, indexOfPreviouslyMovedPie
 
 
 //=======================================================================
-// 
+// Determines if a pawn has crossed the vertical center of the board
 //=======================================================================
 function hasCrossedVertCenter(moveFromIndex,moveToIndex) {
 	for(var i=0;i<2;i++) {
@@ -567,4 +579,41 @@ function hasCrossedVertCenter(moveFromIndex,moveToIndex) {
 		moveToIndex=temp;
 	}
 	return 0;
+}
+
+
+
+
+//=======================================================================
+// Determines behavior for when the window is resized during a game
+//=======================================================================
+function resizeChess(windowIsSmall, wasBig, spaceObjectArray, canResize) {
+	if(document.getElementById("sp1")) { //only draw board on resize if game was in progress
+		$("svg").remove();
+		$(".banner").hide();
+		$(".navbar").hide();
+		$(".desktopMedia").hide();
+		$(".mobileMedia").hide();
+		$("#top").hide();
+		$("#chess").hide();
+		$(".mobileMedia").hide();
+		canResize=1;
+		if(!windowIsSmall || wasBig)
+			drawGameBoard(1,spaceObjectArray,1);
+		else
+			drawGameBoard(1,spaceObjectArray,0);
+	}
+}
+
+
+
+
+//=======================================================================
+// Returns the smallest element of the two given numbers
+//=======================================================================
+function smallest(a,b) {
+	if(a<b)
+		return a;
+	else
+		return b;
 }

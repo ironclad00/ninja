@@ -1,7 +1,7 @@
 "use strict";
 
 /*To-Do
-	- add function for compressing mobile media links on small phones like the Galaxy Express
+	- 
 */
 
 $(document).ready(function(){
@@ -20,6 +20,22 @@ $(document).ready(function(){
 		widthPadding = (22/1680)*$(window).width();
 		jumpToWidth = $("#jumpTo").width();
 	}
+
+	var modalLength,modalTop,modalLeft;
+	if($(window).width() < 550)
+		modalLength = $(window).width() * 0.9;
+	else if($(window).height() < 550)
+		modalLength = $(window).height() * 0.9;
+	else
+		modalLength = 500;
+	modalTop = ($(window).height()/2) - modalLength/2;
+	modalLeft = ($(window).width()/2) - modalLength/2;
+	$("#emailModal").css({"width":modalLength+"px","height":modalLength+"px","top":modalTop+"px","left":modalLeft+"px"});
+	$("#closeModal").css({"left":(modalLength*0.94)+"px"});
+
+	//TEMPORARY
+	$("#mflag4").hide();
+	//TEMPORARY
 
 	//=======================================================================
 	// Enable vibration (if supported)
@@ -155,14 +171,14 @@ $(document).ready(function(){
 	//=======================================================================
 	$(document).scroll(function() {
 		//hides mobile media links if user scrolls down, shows if user scrolls up
-		if(getScrollDir > window.pageYOffset && mediaIsHidden) {
+		if((getScrollDir-5) > window.pageYOffset && mediaIsHidden) {//scroll up
 			$(".mobileMedia").transition({
 				y:'0px'
 			});
 			mediaIsHidden=0;
 			getScrollDir = window.pageYOffset;
 		}
-		else if (getScrollDir < window.pageYOffset && !mediaIsHidden) {
+		else if ((getScrollDir+10) < window.pageYOffset && !mediaIsHidden) {//scroll down.
 			$(".mobileMedia").transition({
 				y:'38px'
 			});
@@ -217,6 +233,34 @@ $(document).ready(function(){
 			else
 				$("#twitterLinkMobile").show();
 		}
+
+		//resize the email modal
+		if($(window).width() < 550)
+			modalLength = $(window).width() * 0.9;
+		else if($(window).height() < 550)
+			modalLength = $(window).height() * 0.9;
+		else
+			modalLength = 500;
+		modalTop = ($(window).height()/2) - modalLength/2;
+		modalLeft = ($(window).width()/2) - modalLength/2;
+		$("#emailModal").css({"width":modalLength+"px","height":modalLength+"px","top":modalTop+"px","left":modalLeft+"px"});
+		$("#closeModal").css({"left":(modalLength*0.94)+"px"});
+	});
+
+	//=======================================================================
+	// 
+	//=======================================================================
+	$("#mflag4").click(function() {
+		$("#modalBackground").fadeIn(500);
+		$("#emailModal").fadeIn(500);
+	});
+	$("#closeModal").click(function() {
+		$("#modalBackground").fadeOut(500);
+		$("#emailModal").fadeOut(500);
+	});
+	$("#cancelModal").click(function() {
+		$("#modalBackground").fadeOut(500);
+		$("#emailModal").fadeOut(500);
 	});
 });
 
