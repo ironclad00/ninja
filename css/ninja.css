@@ -496,9 +496,16 @@ fade {
 }
 
 .centered {
-    text-align:center;
+	text-align:center;
 }
 
+.linkButton {
+	text-align: center;
+}
+
+a .linkButton:hover {
+	text-decoration: none;
+}
 
 
 
