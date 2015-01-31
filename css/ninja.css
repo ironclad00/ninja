@@ -103,6 +103,10 @@
 		display:inline;
 	}
 
+	#resumeHeader {
+		text-align:center;
+	}
+
 	#formula16 {
 		width:100%;
 	}
@@ -501,10 +505,15 @@ fade {
 
 .linkButton {
 	text-align: center;
+	text-decoration: none;
 }
 
 a .linkButton:hover {
 	text-decoration: none;
+}
+
+.doubleSpaced p {
+	margin-bottom: 10px;
 }
 
 

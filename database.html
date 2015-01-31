@@ -22,8 +22,8 @@
 	</head>
 
 	<!-- NOTES
-	* make paragraph spacing under About Me to match all other paragraph spacing
-	* merge desktopMedia and mobileMedia into one section so images don't need to load twice
+	* remove hover over effect from the Go To button
+	* 
 	* 
 	/NOTES -->
 
@@ -85,19 +85,22 @@
 				<h1 class="hidden-xs">World of Warcraft Database</h1>
 				<div class="row">
 					<div class="col-sm-3">
-						<img src="http://a1241.phobos.apple.com/us/r1000/093/Purple/v4/d2/62/f0/d262f058-e84d-abac-e41e-0107070be168/mzl.sgalytnw.png" class="img-responsive headerpic" title=""/>
+						<a href="wow/index" target="_blank"><img src="http://a1241.phobos.apple.com/us/r1000/093/Purple/v4/d2/62/f0/d262f058-e84d-abac-e41e-0107070be168/mzl.sgalytnw.png" class="img-responsive headerpicNoBorder" style="max-height:200px" title=""/></a>
 					</div>
 					<h1 class="mobileTitle">World of Warcraft Database</h1>
-					<div class="col-sm-9 pFix">
-						<h2 class="hidden-lg hidden-md hidden-sm firstH2">World of Warcraft Database</h2>
-						<p>Under Construction</p>
+					<div class="col-sm-9 pFix doubleSpaced">
+						<!-- <h2 class="hidden-lg hidden-md hidden-sm firstH2">World of Warcraft Database</h2> -->
+						<p>As part of the semester-long project for my Database Systems I class (CIS4301 at UF), my class group and I created a web interface to parse Auction House data from the popular MMORPG World of Warcraft. Our group consisted of four people, including myself, and the aim of the database was to mimic <a href="https://theunderminejournal.com/" target="_blank">The Undermine Journal</a> on a smaller scale. In other words, it's a proof-of-concenpt for a tool that WoW players can use to parse Auction House data.</p>
+						<p>I designed the interface and wrote most of the code for the front-end. The work done to complete the SQL statements and PHP backend was split evenly between the four of us.</p> 
+						<p>In order to populate our database, we took about 100,000 tuples worth of auctions from five servers (Illidan, Templenoir, Naxxramas, Arathi, and Kel'Thuzad) using Blizzard's JSON API and a custom parsing script. The same was done for about 9,000 items, which brings the total tuple count to roughly 109,000. The backend was originally built using Oracle syntax on a UF server, but for security reasons I have converted the code to MySQL and have it stored on my domain's shared hosting servers.</p>
+						<p>As of 1/31/15, all major glitches have been fixed and the Oracle-to-MySQL conversion is complete! There's one or two minor CSS issues I'll attend to once my workload dies down.</p>
 					</div>
 				</div>
 			</div>
 		</div>
 
 		<div class="col-md-6 col-md-offset-3">
-			<a href="wow/index" class="redBtn btn-block linkButton" target="_blank">Go to database</a>
+			<a href="wow/index" class="redBtn btn-block linkButton" target="_blank">Go to database</a><br><br><br>
 		</div>
 
 
